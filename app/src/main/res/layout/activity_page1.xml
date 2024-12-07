@@ -23,7 +23,7 @@
 
 
 
-<!--District Dropdown-->
+<!--District Text -->
     <TextView
         android:id="@+id/district_text"
         android:layout_width="wrap_content"
@@ -39,8 +39,11 @@
         app:layout_constraintStart_toStartOf="parent"
         />
 
+
+
+<!--    District DropDown Layout -->
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/districtInputLayout"
+        android:id="@+id/districtInputLayout_pg1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/email_input_background"
@@ -85,7 +88,7 @@
         android:letterSpacing=".01"
         android:fontFamily="@font/sf_pro_display_medium"
         android:textColor="@color/black"
-        app:layout_constraintTop_toBottomOf="@id/districtInputLayout"
+        app:layout_constraintTop_toBottomOf="@id/districtInputLayout_pg1"
         app:layout_constraintStart_toStartOf="parent"
         />
 
@@ -191,7 +194,7 @@
         />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/propertyTypeInputLayout"
+        android:id="@+id/propertyTypeInputLayout_pg1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/email_input_background"
@@ -284,7 +287,7 @@
         android:textColor="@color/black"
         android:fontFamily="@font/sf_pro_display_medium"
         android:layout_marginTop="80dp"
-        app:layout_constraintTop_toBottomOf="@id/propertyTypeInputLayout"
+        app:layout_constraintTop_toBottomOf="@id/propertyTypeInputLayout_pg1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         />

@@ -51,7 +51,7 @@
 <!--            />-->
 <!--    </LinearLayout>-->
 
-    <!--District Dropdown-->
+    <!--District Dropdown Text -->
     <TextView
         android:id="@+id/district_text"
         android:layout_width="wrap_content"
@@ -67,6 +67,57 @@
         app:layout_constraintStart_toStartOf="parent"
         />
 
+    <!-- SVG Icons Container -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginEnd="40dp"
+        app:layout_constraintTop_toTopOf="@id/district_text"
+        app:layout_constraintBottom_toBottomOf="@id/district_text"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- First SVG Icon -->
+        <ImageView
+            android:id="@+id/add_destrict_icon"
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:src="@drawable/add"
+            android:contentDescription="Icon Add"
+            android:layout_marginStart="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:tint="#4CAF50 " />
+
+        <!-- Second SVG Icon -->
+        <ImageView
+            android:id="@+id/edit_district_icon"
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:src="@drawable/pencil_edit"
+            android:contentDescription="Icon Edit"
+            android:layout_marginStart="18dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:tint="#FFC107" />
+
+        <!-- Third SVG Icon -->
+        <ImageView
+            android:id="@+id/delete_district_icon"
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:src="@drawable/delete"
+            android:contentDescription="Icon Delete"
+            android:layout_marginStart="18dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:tint="#F44336 " />
+    </LinearLayout>
+
+
+
+
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/districtInputLayout"
         android:layout_width="match_parent"
@@ -81,24 +132,26 @@
         app:layout_constraintEnd_toEndOf="parent"
         >
 
+
         <AutoCompleteTextView
             android:id="@+id/districtDropdown"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Select your district"
             android:drawableStart="@drawable/map"
+            android:drawableEnd="@drawable/cross"
             android:drawableTint="#00ADEF"
-            android:tooltipText="Click to open drop down"
             android:drawablePadding="20sp"
             android:clickable="true"
-            android:focusable="false"
-            android:inputType="none"
+            android:focusable="true"
+            android:inputType="text"
             android:dropDownHeight="wrap_content"
             android:dropDownWidth="wrap_content"
             android:background="@null"
-            android:padding="12dp"
-            />
+            android:padding="12dp" />
     </com.google.android.material.textfield.TextInputLayout>
+
+
 
     <!--    Town DropDown -->
 
@@ -116,6 +169,55 @@
         app:layout_constraintTop_toBottomOf="@id/districtInputLayout"
         app:layout_constraintStart_toStartOf="parent"
         />
+
+
+    <!-- SVG Icons Container -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginEnd="40dp"
+        app:layout_constraintTop_toTopOf="@id/town_text"
+        app:layout_constraintBottom_toBottomOf="@id/town_text"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- First SVG Icon -->
+        <ImageView
+            android:id="@+id/add_town_icon"
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:src="@drawable/add"
+            android:contentDescription="Icon Add"
+            android:layout_marginStart="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:tint="#4CAF50 " />
+
+        <!-- Second SVG Icon -->
+        <ImageView
+            android:id="@+id/edit_town_icon"
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:src="@drawable/pencil_edit"
+            android:contentDescription="Icon Edit"
+            android:layout_marginStart="18dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:tint="#FFC107" />
+
+        <!-- Third SVG Icon -->
+        <ImageView
+            android:id="@+id/delete_town_icon"
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:src="@drawable/delete"
+            android:contentDescription="Icon Delete"
+            android:layout_marginStart="18dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:tint="#F44336 " />
+    </LinearLayout>
+
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/townInputLayout"
@@ -167,6 +269,53 @@
         app:layout_constraintTop_toBottomOf="@id/townInputLayout"
         app:layout_constraintStart_toStartOf="parent"
         />
+
+    <!-- SVG Icons Container -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginEnd="40dp"
+        app:layout_constraintTop_toTopOf="@id/propertyArea_text"
+        app:layout_constraintBottom_toBottomOf="@id/propertyArea_text"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- First SVG Icon -->
+        <ImageView
+            android:id="@+id/add_area_icon"
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:src="@drawable/add"
+            android:contentDescription="Icon Add"
+            android:layout_marginStart="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:tint="#4CAF50 " />
+
+        <!-- Second SVG Icon -->
+        <ImageView
+            android:id="@+id/edit_area_icon"
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:src="@drawable/pencil_edit"
+            android:contentDescription="Icon Edit"
+            android:layout_marginStart="18dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:tint="#FFC107" />
+
+        <!-- Third SVG Icon -->
+        <ImageView
+            android:id="@+id/delete_area_icon"
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:src="@drawable/delete"
+            android:contentDescription="Icon Delete"
+            android:layout_marginStart="18dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:tint="#F44336 " />
+    </LinearLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/propertyAreaInputLayout"
@@ -312,7 +461,7 @@
         android:layout_marginTop="70dp"
         app:cardCornerRadius="8dp"
         app:cardElevation="4dp"
-        app:layout_constraintTop_toBottomOf="@id/landTypeInputLayout"
+        app:layout_constraintTop_toBottomOf="@id/propertyTypeInputLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         >

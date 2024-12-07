@@ -53,7 +53,7 @@ class Page1Activity : AppCompatActivity() {
 
 // Data for towns to property areas
         val townsToPropertyAreas = mapOf(
-            "Allaama Iqbal Town" to listOf("Sukh Chayn Gardens", "Canal Gardens", "Bahria Town", ),
+            "Allama Iqbal Town" to listOf("Sukh Chayn Gardens", "Canal Gardens", "Bahria Town"),
             "Ravi Town" to listOf("Samanabad", "Gulshan Ravi"),
             "Rainbow Town" to listOf("Block A", "Block B"),
             "Baloch Town" to listOf("Zone 1", "Zone 2"),
@@ -65,7 +65,7 @@ class Page1Activity : AppCompatActivity() {
         val districts = districtToTowns.keys.toList()
         val districtAdapter = ArrayAdapter(
             this,
-            R.layout.simple_dropdown_item_1line,
+            com.hashimnaqvillc.wasiqanaveesapp.R.layout.custom_dropdown_item,
             districts
         )
         binding.districtDropdown.setAdapter(districtAdapter)
@@ -81,7 +81,7 @@ class Page1Activity : AppCompatActivity() {
             // Update Town Dropdown
             val townAdapter = ArrayAdapter(
                 this,
-                R.layout.simple_dropdown_item_1line,
+                com.hashimnaqvillc.wasiqanaveesapp.R.layout.custom_dropdown_item,
                 towns
             )
             binding.townDropdown.setAdapter(townAdapter)
@@ -107,7 +107,7 @@ class Page1Activity : AppCompatActivity() {
             // Update Property Area Dropdown
             val propertyAreaAdapter = ArrayAdapter(
                 this,
-                android.R.layout.simple_dropdown_item_1line,
+                com.hashimnaqvillc.wasiqanaveesapp.R.layout.custom_dropdown_item,
                 propertyAreas
             )
             binding.propertyAreaDropdown.setAdapter(propertyAreaAdapter)
@@ -133,8 +133,10 @@ class Page1Activity : AppCompatActivity() {
         val landTypeOptions = listOf("Residential", "Commercial", "Agricultural")
 
 // Adapters for the dropdowns
-        val propertyTypeAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, propertyTypeOptions)
-        val landTypeAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, landTypeOptions)
+        val propertyTypeAdapter = ArrayAdapter(this, com.hashimnaqvillc.wasiqanaveesapp.R.layout.custom_dropdown_item,
+            propertyTypeOptions)
+        val landTypeAdapter = ArrayAdapter(this, com.hashimnaqvillc.wasiqanaveesapp.R.layout.custom_dropdown_item,
+            landTypeOptions)
 
 // Set adapters to AutoCompleteTextViews
         propertyTypeAutoComplete.setAdapter(propertyTypeAdapter)
