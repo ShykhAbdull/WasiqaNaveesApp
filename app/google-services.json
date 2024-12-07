@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "823136960528",
+    "project_id": "wasiqa-nav",
+    "storage_bucket": "wasiqa-nav.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:823136960528:android:28fe16a188363ba9e78a95",
+        "android_client_info": {
+          "package_name": "com.hashimnaqvillc.wasiqanaveesapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "823136960528-a8vgb1utbp52prl7ke4t61cr7u8u8v4g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hashimnaqvillc.wasiqanaveesapp",
+            "certificate_hash": "62a5a29f97efb99f1c46cf7e46aa7601b17b9910"
+          }
+        },
+        {
+          "client_id": "823136960528-v0d6jc4iltagv3m658rf72bh8tk6vprk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQ6VTF2BjadinBDEFFWagPYM3TonyNDNA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "823136960528-v0d6jc4iltagv3m658rf72bh8tk6vprk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

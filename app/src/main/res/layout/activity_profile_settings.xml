@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ProfileActivtySettings"
+    >
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <!--Navigation-->
+        <include android:id="@+id/nav_settings" layout="@layout/activity_navigation"/>
+
+        <!--    Edit Button -->
+        <LinearLayout
+            android:id="@+id/edit_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/nav_settings"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:background="@drawable/rounded_btn"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginTop="30dp"
+            android:layout_marginEnd="15dp"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="12dp"
+            >
+            <View
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:background="@drawable/edit_btn"
+                android:layout_gravity="center"
+                android:layout_marginTop="2dp"
+                android:backgroundTint="@color/white"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Edit"
+                android:layout_gravity="center"
+                android:layout_marginStart="10dp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/sf_pro_display_regular"
+                android:textSize="20sp"
+                />
+        </LinearLayout>
+
+
+        <!--    1st Row -->
+        <TextView
+            android:id="@+id/stamp_duty_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Stamp Duty"
+            android:textSize="16sp"
+            android:fontFamily="@font/sf_pro_display_medium"
+            android:textColor="@color/black"
+            android:layout_marginTop="40dp"
+            android:layout_marginStart="20dp"
+            android:letterSpacing=".01"
+            app:layout_constraintTop_toBottomOf="@id/edit_btn"
+            app:layout_constraintStart_toStartOf="parent"
+            />
+
+
+
+        <TextView
+            android:id="@+id/tmaCorp_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TMA"
+            android:textSize="16sp"
+            android:fontFamily="@font/sf_pro_display_medium"
+            android:textColor="@color/black"
+            android:layout_marginTop="40dp"
+            android:letterSpacing=".01"
+            app:layout_constraintTop_toBottomOf="@id/edit_btn"
+            app:layout_constraintStart_toEndOf="@id/stamp_duty_text"
+            app:layout_constraintEnd_toStartOf="@id/regsFee_text"
+            />
+
+        <!--    2nd Editable Row -->
+
+        <EditText
+            android:id="@+id/stampDutyEditText"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:hint="%1"
+            android:textAlignment="center"
+            android:inputType="number"
+            android:background="@drawable/email_input_background"
+            android:padding="15dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintTop_toBottomOf="@id/stamp_duty_text"
+            app:layout_constraintStart_toStartOf="@id/stamp_duty_text"
+            />
+
+        <EditText
+            android:id="@+id/tmaCorpEditText"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:hint="1%"
+            android:textAlignment="center"
+            android:inputType="number"
+            android:background="@drawable/email_input_background"
+            android:padding="15dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintStart_toStartOf="@id/tmaCorp_text"
+            app:layout_constraintTop_toBottomOf="@id/tmaCorp_text"
+            app:layout_constraintEnd_toEndOf="@id/tmaCorp_text"
+            />
+
+
+        <!--    FBR 236-K title Row -->
+        <TextView
+            android:id="@+id/fbr236K_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="236-K\nFiler"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:fontFamily="@font/sf_pro_display_medium"
+            android:textColor="@color/black"
+            android:letterSpacing=".01"
+            app:layout_constraintTop_toTopOf="@id/fbr236Kfiler_text"
+            app:layout_constraintBottom_toBottomOf="@+id/fbr236Kfiler_text"
+            app:layout_constraintStart_toStartOf="@id/stamp_duty_text"
+            app:layout_constraintEnd_toEndOf="@id/stamp_duty_text"
+            />
+
+        <TextView
+            android:id="@+id/fbr236Kfiler_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="(236-K)\nNon-Filer"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:fontFamily="@font/sf_pro_display_medium"
+            android:textColor="@color/black"
+            android:layout_marginTop="40dp"
+            android:letterSpacing=".01"
+            app:layout_constraintTop_toBottomOf="@id/tmaCorpEditText"
+            app:layout_constraintStart_toStartOf="@id/tmaCorpEditText"
+            app:layout_constraintEnd_toEndOf="@id/tmaCorpEditText"
+
+            />
+
+
+
+        <!--    FBR 236-K EditText Row -->
+
+        <EditText
+            android:id="@+id/fbr236KEditText"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:hint="3%"
+            android:textAlignment="center"
+            android:inputType="number"
+            android:background="@drawable/email_input_background"
+            android:padding="15dp"
+            app:layout_constraintTop_toTopOf="@id/fbr236KfilerEditText"
+            app:layout_constraintBottom_toBottomOf="@+id/fbr236KfilerEditText"
+            app:layout_constraintStart_toStartOf="@id/fbr236K_text"
+            app:layout_constraintEnd_toEndOf="@id/fbr236K_text"
+            />
+
+        <EditText
+            android:id="@+id/fbr236KfilerEditText"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:hint="6%"
+            android:textAlignment="center"
+            android:inputType="number"
+            android:background="@drawable/email_input_background"
+            android:padding="15dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintStart_toStartOf="@id/fbr236Kfiler_text"
+            app:layout_constraintTop_toBottomOf="@id/fbr236Kfiler_text"
+            app:layout_constraintEnd_toEndOf="@id/fbr236Kfiler_text"
+            />
+
+        <!--    FBR 236-C title Row -->
+        <TextView
+            android:id="@+id/fbr236C_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="(236-C)\nFiler"
+            android:textSize="16sp"
+            android:fontFamily="@font/sf_pro_display_medium"
+            android:textColor="@color/black"
+            android:gravity="center"
+            android:letterSpacing=".01"
+            app:layout_constraintTop_toTopOf="@id/fbr236Cfiler_text"
+            app:layout_constraintBottom_toBottomOf="@id/fbr236Cfiler_text"
+            app:layout_constraintStart_toStartOf="@id/fbr236KEditText"
+            app:layout_constraintEnd_toEndOf="@id/fbr236KEditText"
+            />
+
+        <TextView
+            android:id="@+id/fbr236Cfiler_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="(236-C)\nNon-Filer"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:fontFamily="@font/sf_pro_display_medium"
+            android:textColor="@color/black"
+            android:layout_marginTop="40dp"
+            android:letterSpacing=".01"
+            app:layout_constraintTop_toBottomOf="@id/fbr236KfilerEditText"
+            app:layout_constraintEnd_toEndOf="@id/fbr236KfilerEditText"
+            app:layout_constraintStart_toStartOf="@id/fbr236KfilerEditText"
+            />
+
+        <!--    FBR EditText Row -->
+
+        <EditText
+            android:id="@+id/fbr236CEditText"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:hint="3%"
+            android:textAlignment="center"
+            android:inputType="number"
+            android:background="@drawable/email_input_background"
+            android:padding="15dp"
+            app:layout_constraintTop_toTopOf="@id/fbr236CfilerEditText"
+            app:layout_constraintBottom_toBottomOf="@+id/fbr236CfilerEditText"
+            app:layout_constraintStart_toStartOf="@id/fbr236C_text"
+            app:layout_constraintEnd_toEndOf="@id/fbr236C_text"
+            />
+
+        <EditText
+            android:id="@+id/fbr236CfilerEditText"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:hint="6%"
+            android:textAlignment="center"
+            android:inputType="number"
+            android:background="@drawable/email_input_background"
+            android:padding="15dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintTop_toBottomOf="@id/fbr236Cfiler_text"
+            app:layout_constraintEnd_toEndOf="@id/fbr236Cfiler_text"
+            app:layout_constraintStart_toStartOf="@id/fbr236Cfiler_text"
+            />
+
+        <!--    Regs Fee titile and EditText Row -->
+        <TextView
+            android:id="@+id/regsFee_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Registration"
+            android:textSize="16sp"
+            android:fontFamily="@font/sf_pro_display_medium"
+            android:textColor="@color/black"
+            android:layout_marginTop="40dp"
+            android:layout_marginEnd="20dp"
+            android:letterSpacing=".01"
+            app:layout_constraintTop_toBottomOf="@id/edit_btn"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+
+        <EditText
+            android:id="@+id/regsFeeEditText"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:hint="5500"
+            android:textAlignment="center"
+            android:inputType="number"
+            android:background="@drawable/email_input_background"
+            android:padding="15dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintTop_toBottomOf="@id/regsFee_text"
+            app:layout_constraintStart_toStartOf="@id/regsFee_text"
+            app:layout_constraintEnd_toEndOf="@id/regsFee_text"
+            />
+
+        <TextView
+            android:id="@+id/fbr236KLatefiler_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="(236-K)\nLate Filer"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:fontFamily="@font/sf_pro_display_medium"
+            android:textColor="@color/black"
+            android:layout_marginTop="40dp"
+            android:letterSpacing=".01"
+            app:layout_constraintTop_toBottomOf="@id/regsFeeEditText"
+            app:layout_constraintStart_toStartOf="@id/regsFeeEditText"
+            app:layout_constraintEnd_toEndOf="@id/regsFeeEditText"
+            />
+
+        <EditText
+            android:id="@+id/fbr236KLatefilerEditText"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:hint="10.5%"
+            android:textAlignment="center"
+            android:inputType="number"
+            android:background="@drawable/email_input_background"
+            android:padding="15dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintStart_toStartOf="@id/fbr236KLatefiler_text"
+            app:layout_constraintTop_toBottomOf="@id/fbr236KLatefiler_text"
+            app:layout_constraintEnd_toEndOf="@id/fbr236KLatefiler_text"
+            />
+
+        <TextView
+            android:id="@+id/fbr236CLatefiler_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="(236-C)\nLate Filer"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:fontFamily="@font/sf_pro_display_medium"
+            android:textColor="@color/black"
+            android:layout_marginTop="40dp"
+            android:letterSpacing=".01"
+            app:layout_constraintTop_toBottomOf="@id/fbr236KLatefilerEditText"
+            app:layout_constraintEnd_toEndOf="@id/fbr236KLatefilerEditText"
+            app:layout_constraintStart_toStartOf="@id/fbr236KLatefilerEditText"
+            />
+
+        <EditText
+            android:id="@+id/fbr236ClatefilerEditText"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:hint="10.5%"
+            android:textAlignment="center"
+            android:inputType="number"
+            android:background="@drawable/email_input_background"
+            android:padding="15dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintTop_toBottomOf="@id/fbr236CLatefiler_text"
+            app:layout_constraintEnd_toEndOf="@id/fbr236CLatefiler_text"
+            app:layout_constraintStart_toStartOf="@id/fbr236CLatefiler_text"
+            />
+
+        <!--    Office Name title and EditText -->
+
+        <TextView
+            android:id="@+id/officeName_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Office Name"
+            android:textSize="20sp"
+            android:fontFamily="@font/sf_pro_display_medium"
+            android:textColor="@color/black"
+            android:layout_marginTop="40dp"
+            android:letterSpacing=".01"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/fbr236CfilerEditText"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+
+        <EditText
+            android:id="@+id/officeNameEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Naqvi Stamp Frosh"
+            android:textAlignment="center"
+            android:inputType="text|textPersonName"
+            android:background="@drawable/email_input_background"
+            android:padding="15dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginHorizontal="60dp"
+            app:layout_constraintTop_toBottomOf="@id/officeName_text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+
+        <!--    Office Phone title and EditText -->
+
+        <TextView
+            android:id="@+id/officePhone_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Office Number"
+            android:textSize="20sp"
+            android:fontFamily="@font/sf_pro_display_medium"
+            android:textColor="@color/black"
+            android:layout_marginTop="40dp"
+            android:letterSpacing=".01"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/officeNameEditText"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+
+        <EditText
+            android:id="@+id/officePhoneEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="03XX-XXXXXXX"
+            android:textAlignment="center"
+            android:inputType="phone"
+            android:background="@drawable/email_input_background"
+            android:padding="15dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginHorizontal="60dp"
+            app:layout_constraintTop_toBottomOf="@id/officePhone_text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+
+        <!--    Bottom Buttons -->
+
+        <Button
+            android:id="@+id/clearAll_Btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="Clear All"
+            android:textSize="20sp"
+            android:textColor="@color/white"
+            android:fontFamily="@font/sf_pro_display_regular"
+            android:layout_marginTop="100dp"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="10dp"
+            android:layout_marginBottom="40dp"
+            android:gravity="center"
+            android:layout_marginStart="20dp"
+            android:background="@drawable/rounded_btn"
+            app:layout_constraintTop_toBottomOf="@id/officePhoneEditText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
+
+        <Button
+            android:id="@+id/save_Btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="Save"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:textColor="@color/white"
+            android:fontFamily="@font/sf_pro_display_regular"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="10dp"
+            android:layout_marginEnd="20sp"
+            android:background="@drawable/rounded_btn"
+            app:layout_constraintTop_toTopOf="@id/clearAll_Btn"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/clearAll_Btn"
+            />
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

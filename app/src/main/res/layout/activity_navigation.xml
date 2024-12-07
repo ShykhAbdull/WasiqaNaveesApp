@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    >
+
+    <ImageButton
+        android:id="@+id/nav_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/back"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="8sp"
+        />
+
+    <ImageView
+        android:id="@+id/nav_wasiqa_logo"
+        android:layout_width="140dp"
+        android:layout_height="70dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@drawable/letter_w_logo"
+        />
+
+    <ImageButton
+        android:id="@+id/nav_settings_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/settings"
+        android:layout_marginEnd="15dp"
+        android:contentDescription="TODO"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="end"
+        android:layout_marginEnd="13dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        >
+    <!-- Month and Day -->
+    <TextView
+        android:id="@+id/date_month_day"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nov 22"
+        android:textColor="#00008B"
+        android:textSize="16sp"
+        android:fontFamily="@font/sf_pro_display_medium"
+
+        />
+
+    <!-- Year -->
+    <TextView
+        android:id="@+id/date_year"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2024"
+        android:textColor="#00008B"
+        android:textSize="16sp"
+        android:fontFamily="@font/sf_pro_display_medium"
+        />
+    </LinearLayout>
+
+
+
+    <!--    Edit Button -->
+    <LinearLayout
+        android:id="@+id/profile_edit_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@drawable/rounded_btn"
+        android:gravity="center"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="5dp"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="12dp"
+        >
+        <View
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:background="@drawable/edit_btn"
+            android:layout_gravity="center"
+            android:layout_marginTop="2dp"
+            android:backgroundTint="@color/white"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Profile"
+            android:layout_gravity="center"
+            android:layout_marginStart="10dp"
+            android:textColor="@color/white"
+            android:fontFamily="@font/sf_pro_display_regular"
+            android:textSize="20sp"
+            />
+    </LinearLayout>
+
+
+
+
+
+
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
