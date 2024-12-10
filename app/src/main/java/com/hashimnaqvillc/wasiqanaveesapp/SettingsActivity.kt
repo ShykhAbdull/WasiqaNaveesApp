@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
@@ -22,11 +23,18 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.hashimnaqvillc.wasiqanaveesapp.R.layout.custom_dropdown_item
 import com.hashimnaqvillc.wasiqanaveesapp.databinding.ActivitySettingsBinding
 
 class SettingsActivity : AppCompatActivity() {
 
+    private lateinit var districtList: MutableList<String>
     private lateinit var binding: ActivitySettingsBinding
+    private lateinit var adapter: ArrayAdapter<String>
+
+
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,6 +73,14 @@ class SettingsActivity : AppCompatActivity() {
             finish()
         }
 
+//        binding.resetButton.setOnClickListener {
+//            resetDistrictList()
+//            Toast.makeText(this, "District List Reset", Toast.LENGTH_SHORT).show()
+//        }
+//        binding.saveButton.setOnClickListener {
+//            saveDistrictList()
+//            Toast.makeText(this, "District List Saved", Toast.LENGTH_SHORT).show()
+//        }
 
 
 //        Logic for District DropDown
@@ -74,9 +90,9 @@ class SettingsActivity : AppCompatActivity() {
 
 
         districtDropDown.setOnClickListener {
+            districtDropDown.dismissDropDown()
             districtDropDown.showDropDown()
             districtDropDown.requestFocus()
-            districtDropDown.requestFocusFromTouch()
         }
 
         binding.townDropdown.setOnClickListener {
@@ -169,22 +185,13 @@ class SettingsActivity : AppCompatActivity() {
 
         val districtAddIcon = binding.addDestrictIcon
 
-
-
-
-
-
-
-
-
-
-
 // Sample data for the dropdown
-        val districtList = mutableListOf("Lahore", "Islamabad", "Karachi", "Peshawar", "Quetta")
-        val adapter = ArrayAdapter(this, R.layout.custom_dropdown_item, districtList)
+        districtList = mutableListOf("Lahore", "Islamabad", "Karachi", "Peshawar", "Quetta")
+        adapter = ArrayAdapter(this, custom_dropdown_item, districtList)
 
 // Set adapter to AutoCompleteTextView
         districtDropDown.setAdapter(adapter)
+
 
         districtDropDown.threshold = 1 // Start searching after typing one character
 
@@ -195,7 +202,8 @@ class SettingsActivity : AppCompatActivity() {
             districtDropDown.dropDownHeight = ViewGroup.LayoutParams.WRAP_CONTENT
         } else {
             // Set a fixed height for more than 3 items
-            districtDropDown.dropDownHeight = (districtDropDown.context.resources.displayMetrics.density * 150).toInt()
+            districtDropDown.dropDownHeight =
+                (districtDropDown.context.resources.displayMetrics.density * 150).toInt()
         }
 
 
@@ -213,77 +221,82 @@ class SettingsActivity : AppCompatActivity() {
                         districtDropDown.dropDownHeight = ViewGroup.LayoutParams.WRAP_CONTENT
                     } else {
                         // Set a fixed height for more than 3 items
-                        districtDropDown.dropDownHeight = (districtDropDown.context.resources.displayMetrics.density * 150).toInt()
+                        districtDropDown.dropDownHeight =
+                            (districtDropDown.context.resources.displayMetrics.density * 150).toInt()
                     }
                 }
             }
         })
 
 
-
-
-
-
-
-
 //        Logic for Adding new district from the user and saving that in the adapter
 
         districtAddIcon.setOnClickListener {
 
-            if(districtDropDown.text.toString().trim().isEmpty()){
+            if (districtDropDown.text.toString().trim().isEmpty()) {
 
-            val newDistrictDialog = AlertDialog.Builder(this)
-            newDistrictDialog.setTitle("Add New District")
+                val newDistrictDialog = AlertDialog.Builder(this)
+                newDistrictDialog.setTitle("Add New District")
 
 
 //          Create an EditText for the new district name
 
-            val input = EditText(this).apply {
-                hint = "Enter district name"
-                inputType = InputType.TYPE_CLASS_TEXT
-                isFocusableInTouchMode = true
-            }
-            newDistrictDialog.setView(input)
-
-            newDistrictDialog.setPositiveButton("Add") { _, _ ->
-                val newDistrict = input.text.toString().trim()
-
-                if (newDistrict.isNotEmpty()) {
-                    val normalizedDistrict = newDistrict.lowercase()
-                    if (!districtList.map { it.lowercase() }.contains(normalizedDistrict)) {
-                        districtList.add(newDistrict)
-
-                        districtDropDown.setAdapter(adapter)
-                        adapter.notifyDataSetChanged()
-
-                        // Ensure dropdown shows updated data
-                        districtDropDown.requestFocus()
-                        districtDropDown.showDropDown()
-
-                        Toast.makeText(this, "District added", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(this, "District already exists", Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    Toast.makeText(this, "District name cannot be empty", Toast.LENGTH_SHORT).show()
+                val input = EditText(this).apply {
+                    hint = "Enter district name"
+                    inputType = InputType.TYPE_CLASS_TEXT
+                    isFocusableInTouchMode = true
                 }
-            }
+                newDistrictDialog.setView(input)
 
-            newDistrictDialog.setNegativeButton("Cancel") { _, _ -> }
+                newDistrictDialog.setPositiveButton("Add") { _, _ ->
+                    val newDistrict = input.text.toString().trim()
 
-            val dialog = newDistrictDialog.create()
+                    if (newDistrict.isNotEmpty()) {
+                        val normalizedDistrict = newDistrict.lowercase()
+                        if (!districtList.map { it.lowercase() }.contains(normalizedDistrict)) {
+                            Log.d("DistrictList", "Before adding: $districtList")
+                            districtList.add(newDistrict)
+                            Log.d("DistrictList", "After adding: $districtList")
 
-            // Show the dialog and then request focus for the EditText
-            dialog.setOnShowListener {
-                input.requestFocus()
-                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT)
-            }
+                            // Refresh adapter by recreating it
+                            adapter = ArrayAdapter(this, custom_dropdown_item, districtList)
+                            districtDropDown.setAdapter(adapter)
 
-            dialog.show()
-                }else {
+
+                            districtDropDown.setText("") // Clear dropdown text.
+                            districtDropDown.post {
+                                districtDropDown.dismissDropDown()
+                                districtDropDown.showDropDown()
+                            }
+
+                            Toast.makeText(this, "District added", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(this, "District already exists", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        Toast.makeText(this, "District name cannot be empty", Toast.LENGTH_SHORT).show()
+                    }
+//                    adapter.notifyDataSetChanged() // Notify adapter of changes.
+
+                }
+
+
+                newDistrictDialog.setNegativeButton("Cancel") { _, _ -> }
+
+                val dialog = newDistrictDialog.create()
+
+                // Show the dialog and then request focus for the EditText
+                dialog.setOnShowListener {
+                    input.requestFocus()
+                    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT)
+                }
+
+                dialog.show()
+            } else {
                 // If districtDropDown has text, show a Toast message
-                val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                val inputMethodManager =
+                    getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
                 Toast.makeText(this, "Remove District first", Toast.LENGTH_SHORT).show()
             }
@@ -298,143 +311,206 @@ class SettingsActivity : AppCompatActivity() {
         val districtEditIcon = binding.editDistrictIcon
 
         districtEditIcon.setOnClickListener {
-            // Create a dialog to edit an existing district
-            val editDistrictDialog = AlertDialog.Builder(this)
-            editDistrictDialog.setTitle("Edit District")
 
-            // Create a dropdown to let the user select the district to edit
-            val districtDropdown = AutoCompleteTextView(this).apply {
-                setAdapter(ArrayAdapter(this@SettingsActivity, R.layout.custom_dropdown_item, districtList))
-                threshold = 1
-                hint = "Select district to edit"
-            }
+            if (districtDropDown.text.toString().trim().isEmpty()) {
 
-            // Create an EditText for editing the district name
-            val input = EditText(this).apply {
-                hint = "Enter new district name"
-                inputType = InputType.TYPE_CLASS_TEXT
-                isFocusableInTouchMode = true
-            }
+                // Create a dialog to edit an existing district
+                val editDistrictDialog = AlertDialog.Builder(this)
+                editDistrictDialog.setTitle("Edit District")
 
-            // Use a vertical layout to hold both dropdown and input
-            val layout = LinearLayout(this).apply {
-                orientation = LinearLayout.VERTICAL
-                setPadding(50, 40, 50, 10) // Adjust padding for better UI
-                addView(districtDropdown)
-                addView(input)
-            }
-
-            editDistrictDialog.setView(layout)
-
-            editDistrictDialog.setPositiveButton("Save") { _, _ ->
-                val selectedDistrict = districtDropdown.text.toString().trim()
-                val newDistrictName = input.text.toString().trim()
-
-                if (selectedDistrict.isEmpty()) {
-                    Toast.makeText(this, "Please select a district to edit", Toast.LENGTH_SHORT).show()
-                } else if (newDistrictName.isEmpty()) {
-                    Toast.makeText(this, "New district name cannot be empty", Toast.LENGTH_SHORT).show()
-                } else if (!districtList.contains(selectedDistrict)) {
-                    Toast.makeText(this, "Selected district does not exist", Toast.LENGTH_SHORT).show()
-                } else if (districtList.contains(newDistrictName)) {
-                    Toast.makeText(this, "New district name already exists", Toast.LENGTH_SHORT).show()
-                } else {
-                    // Update the selected district with the new name
-                    val index = districtList.indexOf(selectedDistrict)
-                    districtList[index] = newDistrictName
-                    districtDropdown.setText(newDistrictName)
-                    adapter.clear()
-                    adapter.addAll(districtList)
-                    adapter.notifyDataSetChanged()
-                    districtDropDown.requestFocus() // Ensure dropdown gets focus
-                    districtDropDown.showDropDown() // Show updated dropdown
-                    Toast.makeText(this, "District updated successfully", Toast.LENGTH_SHORT).show()
+                // Create a dropdown to let the user select the district to edit
+                val districtDropdownforEdit = AutoCompleteTextView(this).apply {
+                    setAdapter(
+                        ArrayAdapter(
+                            this@SettingsActivity,
+                            custom_dropdown_item,
+                            districtList
+                        )
+                    )
+                    threshold = 1
+                    hint = "Select district to edit"
                 }
+
+                // Create an EditText for editing the district name
+                val input = EditText(this).apply {
+                    hint = "Enter new district name"
+                    inputType = InputType.TYPE_CLASS_TEXT
+                    isFocusableInTouchMode = true
+                }
+
+                // Use a vertical layout to hold both dropdown and input
+                val layout = LinearLayout(this).apply {
+                    orientation = LinearLayout.VERTICAL
+                    setPadding(50, 40, 50, 10) // Adjust padding for better UI
+                    addView(districtDropdownforEdit)
+                    addView(input)
+                }
+
+                editDistrictDialog.setView(layout)
+
+                editDistrictDialog.setPositiveButton("Save") { _, _ ->
+                    val selectedDistrict = districtDropdownforEdit.text.toString().trim()
+                    val newDistrictName = input.text.toString().trim()
+
+                    Log.d("selectedDistrict", "Selected edit: $selectedDistrict")
+                    Log.d("selectedDistrict", "New edit: $newDistrictName")
+
+                    if (selectedDistrict.isEmpty()) {
+                        Toast.makeText(this, "Please select a district to edit", Toast.LENGTH_SHORT).show()
+                    } else if (newDistrictName.isEmpty()) {
+                        Toast.makeText(this, "New district name cannot be empty", Toast.LENGTH_SHORT).show()
+                    } else if (!districtList.contains(selectedDistrict)) {
+                        Toast.makeText(this, "Selected district does not exist", Toast.LENGTH_SHORT).show()
+                    } else if (districtList.contains(newDistrictName)) {
+                        Toast.makeText(this, "New district name already exists", Toast.LENGTH_SHORT).show()
+                    } else {
+                        val index = districtList.indexOf(selectedDistrict)
+                        districtList[index] = newDistrictName
+
+                        // Refresh adapter by recreating it
+                        adapter = ArrayAdapter(this, custom_dropdown_item, districtList)
+                        districtDropDown.setAdapter(adapter)
+
+                        districtDropDown.setText("") // Clear dropdown text.
+
+
+                        Log.d("DistrictList", "Updated district list: $districtList")
+                        Toast.makeText(this, "District updated successfully", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                editDistrictDialog.setNegativeButton("Cancel") { _, _ -> }
+
+                val dialog = editDistrictDialog.create()
+
+                // Show the dialog and focus the dropdown initially
+                dialog.setOnShowListener {
+                    districtDropdownforEdit.requestFocus()
+                    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.showSoftInput(districtDropdownforEdit, InputMethodManager.SHOW_IMPLICIT)
+                }
+
+                dialog.show()
+            } else {
+                // If districtDropDown has text, show a Toast message
+                val inputMethodManager =
+                    getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+                Toast.makeText(this, "Remove District first", Toast.LENGTH_SHORT).show()
             }
-
-            editDistrictDialog.setNegativeButton("Cancel") { _, _ -> }
-
-            val dialog = editDistrictDialog.create()
-
-            // Show the dialog and focus the dropdown initially
-            dialog.setOnShowListener {
-                districtDropdown.requestFocus()
-                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.showSoftInput(districtDropdown, InputMethodManager.SHOW_IMPLICIT)
-            }
-
-            dialog.show()
-        }
 
 //        ============= Delete  district Logic Below ================
 
-        val districtDeleteIcon = binding.deleteDistrictIcon
+            val districtDeleteIcon = binding.deleteDistrictIcon
 
-        districtDeleteIcon.setOnClickListener {
-            // Create a dialog to delete an existing district
-            val deleteDistrictDialog = AlertDialog.Builder(this)
-            deleteDistrictDialog.setTitle("Delete District")
+            districtDeleteIcon.setOnClickListener {
 
-            // Create a dropdown to let the user select the district to delete
-            val districtDropdown = AutoCompleteTextView(this).apply {
-                setAdapter(ArrayAdapter(this@SettingsActivity, R.layout.custom_dropdown_item, districtList))
-                threshold = 1
-                hint = "Select district to delete"
-            }
+                if (districtDropDown.text.toString().trim().isEmpty()) {
 
-            // Use a layout to hold the dropdown
-            val layout = LinearLayout(this).apply {
-                orientation = LinearLayout.VERTICAL
-                setPadding(50, 40, 50, 10) // Adjust padding for better UI
-                addView(districtDropdown)
-            }
+                    // Create a dialog to delete an existing district
+                    val deleteDistrictDialog = AlertDialog.Builder(this)
+                    deleteDistrictDialog.setTitle("Delete District")
 
-            deleteDistrictDialog.setView(layout)
+                    // Create a dropdown to let the user select the district to delete
+                    val districtDropdownforDelete = AutoCompleteTextView(this).apply {
+                        setAdapter(
+                            ArrayAdapter(
+                                this@SettingsActivity,
+                                custom_dropdown_item,
+                                districtList
+                            )
+                        )
+                        threshold = 1
+                        hint = "Select district to delete"
+                    }
 
-            deleteDistrictDialog.setPositiveButton("Delete") { _, _ ->
-                val selectedDistrict = districtDropdown.text.toString().trim()
+                    // Use a layout to hold the dropdown
+                    val layout = LinearLayout(this).apply {
+                        orientation = LinearLayout.VERTICAL
+                        setPadding(50, 40, 50, 10) // Adjust padding for better UI
+                        addView(districtDropdownforDelete)
+                    }
 
-                if (selectedDistrict.isEmpty()) {
-                    Toast.makeText(this, "Please select a district to delete", Toast.LENGTH_SHORT).show()
-                } else if (!districtList.contains(selectedDistrict)) {
-                    Toast.makeText(this, "Selected district does not exist", Toast.LENGTH_SHORT).show()
+                    deleteDistrictDialog.setView(layout)
+
+                    deleteDistrictDialog.setPositiveButton("Delete") { _, _ ->
+                        val selectedDistrict = districtDropdownforDelete.text.toString().trim()
+
+                        if (selectedDistrict.isEmpty()) {
+                            Toast.makeText(this, "Please select a district to delete", Toast.LENGTH_SHORT).show()
+                        } else if (!districtList.contains(selectedDistrict)) {
+                            Toast.makeText(this, "Selected district does not exist", Toast.LENGTH_SHORT).show()
+                        } else {
+                            districtList.remove(selectedDistrict)
+
+                            // Refresh adapter by recreating it
+                            adapter = ArrayAdapter(this, custom_dropdown_item, districtList)
+                            districtDropDown.setAdapter(adapter)
+
+                            districtDropDown.setText("") // Clear dropdown text.
+
+
+                            Log.d("DistrictList", "Deleted district list: $districtList")
+                            Toast.makeText(this, "District deleted successfully", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+
+
+                    deleteDistrictDialog.setNegativeButton("Cancel") { _, _ -> }
+
+                    val dialog = deleteDistrictDialog.create()
+
+                    // Show the dialog and focus the dropdown initially
+                    dialog.setOnShowListener {
+                        districtDropdownforDelete.requestFocus()
+                        val imm =
+                            getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                        imm.showSoftInput(districtDropdownforDelete, InputMethodManager.SHOW_IMPLICIT)
+                    }
+
+                    dialog.show()
                 } else {
-                    // Remove the selected district from the list
-                    districtList.remove(selectedDistrict)
-                    adapter.clear()
-                    adapter.addAll(districtList)
-                    districtDropdown.setText("") // Clear the dropdown
-                    adapter.notifyDataSetChanged()
-                    districtDropDown.requestFocus() // Ensure dropdown gets focus
-
-                    Toast.makeText(this, "District deleted successfully", Toast.LENGTH_SHORT).show()
+                    // If districtDropDown has text, show a Toast message
+                    val inputMethodManager =
+                        getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+                    Toast.makeText(this, "Remove District first", Toast.LENGTH_SHORT).show()
                 }
-            }
-
-            deleteDistrictDialog.setNegativeButton("Cancel") { _, _ -> }
-
-            val dialog = deleteDistrictDialog.create()
-
-            // Show the dialog and focus the dropdown initially
-            dialog.setOnShowListener {
-                districtDropdown.requestFocus()
-                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.showSoftInput(districtDropdown, InputMethodManager.SHOW_IMPLICIT)
-            }
-
-            dialog.show()
-        }
-
 //        ============= Done with the District Add,Edit, Delete Logic ===============
 
 
-
-
-
-
-
-
-
-
+            }
+        }
     }
+
+
+    private fun saveDistrictList() {
+        val sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        val json = Gson().toJson(districtList)
+        editor.putString("districtList", json)
+        editor.apply()
+    }
+    private fun loadDistrictList() {
+        val sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE)
+        val json = sharedPreferences.getString("districtList", null)
+        if (json != null) {
+            val type = object : TypeToken<ArrayList<String>>() {}.type
+            districtList = Gson().fromJson(json, type)
+        } else {
+            districtList = ArrayList() // Default empty list
+        }
+    }
+
+    private fun resetDistrictList() {
+        val sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        val emptyListJson = Gson().toJson(ArrayList<String>())  // Empty list
+        editor.putString("districtList", emptyListJson)  // Save empty list
+        editor.apply()
+
+        districtList.clear()  // Clears the current districtList in memory
+    }
+
+
 }

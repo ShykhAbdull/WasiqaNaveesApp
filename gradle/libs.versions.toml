@@ -9,6 +9,7 @@ lifecycleRuntimeKtx = "2.6.1"
 activityCompose = "1.8.0"
 composeBom = "2024.04.01"
 constraintlayout = "2.2.0"
+gson = "2.8.9"
 appcompat = "1.7.0"
 googleGmsGoogleServices = "4.4.2"
 firebaseDatabase = "21.0.0"
@@ -18,7 +19,8 @@ material = "1.12.0"
 annotation = "1.9.1"
 lifecycleLivedataKtx = "2.8.7"
 lifecycleViewmodelKtx = "2.8.7"
-databindingRuntime = "8.7.2"  # Use the latest version
+databindingRuntime = "8.7.2"
+firebaseCrashlyticsBuildtools = "3.0.2"  # Use the latest version
 
 
 [libraries]
@@ -43,9 +45,11 @@ firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx",
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "google_play_services_auth" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "annotation" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycleLivedataKtx" }
 androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
 androidx-databinding-runtime = { group = "androidx.databinding", name = "databinding-runtime", version.ref = "databindingRuntime" }
+firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
 
 
 [plugins]
