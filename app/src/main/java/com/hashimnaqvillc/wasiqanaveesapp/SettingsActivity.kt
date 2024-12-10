@@ -229,29 +229,43 @@ class SettingsActivity : AppCompatActivity() {
 //        Logic for Adding new district from the user and saving that in the adapter
 
         districtAddIcon.setOnClickListener {
+
+            if(districtDropDown.text.toString().trim().isEmpty()){
+
             val newDistrictDialog = AlertDialog.Builder(this)
             newDistrictDialog.setTitle("Add New District")
 
-            // Create an EditText and set its properties
-            val input = EditText(this)
-            input.hint = "Enter district name"
-            input.inputType = InputType.TYPE_CLASS_TEXT
-            input.isFocusableInTouchMode = true
+
+//          Create an EditText for the new district name
+
+            val input = EditText(this).apply {
+                hint = "Enter district name"
+                inputType = InputType.TYPE_CLASS_TEXT
+                isFocusableInTouchMode = true
+            }
             newDistrictDialog.setView(input)
 
             newDistrictDialog.setPositiveButton("Add") { _, _ ->
                 val newDistrict = input.text.toString().trim()
-                if (newDistrict.isNotEmpty() && !districtList.contains(newDistrict)) {
 
-                    districtList.add(newDistrict)
-                    adapter.notifyDataSetChanged()
-                    districtDropDown.setAdapter(adapter)
-                    Toast.makeText(this, "District added", Toast.LENGTH_SHORT).show()
+                if (newDistrict.isNotEmpty()) {
+                    val normalizedDistrict = newDistrict.lowercase()
+                    if (!districtList.map { it.lowercase() }.contains(normalizedDistrict)) {
+                        districtList.add(newDistrict)
 
-                } else if (newDistrict.isEmpty()) {
+                        districtDropDown.setAdapter(adapter)
+                        adapter.notifyDataSetChanged()
+
+                        // Ensure dropdown shows updated data
+                        districtDropDown.requestFocus()
+                        districtDropDown.showDropDown()
+
+                        Toast.makeText(this, "District added", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this, "District already exists", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
                     Toast.makeText(this, "District name cannot be empty", Toast.LENGTH_SHORT).show()
-                } else if (districtList.contains(newDistrict)) {
-                    Toast.makeText(this, "District already exists", Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -267,6 +281,12 @@ class SettingsActivity : AppCompatActivity() {
             }
 
             dialog.show()
+                }else {
+                // If districtDropDown has text, show a Toast message
+                val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+                Toast.makeText(this, "Remove District first", Toast.LENGTH_SHORT).show()
+            }
         }
 
 
@@ -322,8 +342,12 @@ class SettingsActivity : AppCompatActivity() {
                     // Update the selected district with the new name
                     val index = districtList.indexOf(selectedDistrict)
                     districtList[index] = newDistrictName
+                    districtDropdown.setText(newDistrictName)
+                    adapter.clear()
+                    adapter.addAll(districtList)
                     adapter.notifyDataSetChanged()
-                    districtDropDown.setAdapter(adapter)
+                    districtDropDown.requestFocus() // Ensure dropdown gets focus
+                    districtDropDown.showDropDown() // Show updated dropdown
                     Toast.makeText(this, "District updated successfully", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -377,8 +401,12 @@ class SettingsActivity : AppCompatActivity() {
                 } else {
                     // Remove the selected district from the list
                     districtList.remove(selectedDistrict)
+                    adapter.clear()
+                    adapter.addAll(districtList)
+                    districtDropdown.setText("") // Clear the dropdown
                     adapter.notifyDataSetChanged()
-                    districtDropDown.setAdapter(adapter)
+                    districtDropDown.requestFocus() // Ensure dropdown gets focus
+
                     Toast.makeText(this, "District deleted successfully", Toast.LENGTH_SHORT).show()
                 }
             }
