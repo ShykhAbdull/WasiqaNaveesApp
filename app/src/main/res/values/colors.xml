@@ -5,9 +5,16 @@
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
+    <color name="wasiqa_dark_grey">#545454 </color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="wasiqa_dark">#00008B</color>
     <color name="wasiqa_light">#3871C1 </color>
     <color name="wasiqa_very_light">#00ADEF </color>
+    <color name="wasiqa_red">#FF0000 </color>
+    <color name="wasiqa_green">#FFC107 </color>
+    <color name="wasiqa_blue">#0000FF </color>
+    <color name="wasiqa_light_green">#4CAF50 </color>
+
+
 </resources>

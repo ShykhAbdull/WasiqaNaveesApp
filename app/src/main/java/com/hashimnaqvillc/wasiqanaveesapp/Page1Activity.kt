@@ -130,7 +130,7 @@ class Page1Activity : AppCompatActivity() {
 
 // Data for the dropdowns
         val propertyTypeOptions = listOf("Plot", "Building")
-        val landTypeOptions = listOf("Residential", "Commercial", "Agricultural")
+        val landTypeOptions = listOf("Residential", "Commercial", "Agricultural", "Industrial", "Apartment", "Shop")
 
 // Adapters for the dropdowns
         val propertyTypeAdapter = ArrayAdapter(this, com.hashimnaqvillc.wasiqanaveesapp.R.layout.custom_dropdown_item,
@@ -165,6 +165,15 @@ class Page1Activity : AppCompatActivity() {
                 }
                 "Agricultural" -> {
 //                    Action to perform for Agricultural
+                }
+                "Industrial" -> {
+//                    Action to perform for Industrial
+                }
+                "Apartment" -> {
+//                    Action to perform for Industrial
+                }
+                "Shop" -> {
+//                    Action to perform for Industrial
                 }
             }
         }

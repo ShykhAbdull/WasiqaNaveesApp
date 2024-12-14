@@ -69,6 +69,7 @@
 
     <!-- SVG Icons Container -->
     <LinearLayout
+        android:id="@+id/district_icon_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -82,12 +83,12 @@
             android:id="@+id/add_destrict_icon"
             android:layout_width="27dp"
             android:layout_height="27dp"
-            android:src="@drawable/add"
+            android:src="@drawable/add_icon"
             android:contentDescription="Icon Add"
             android:layout_marginStart="8dp"
             android:clickable="true"
             android:focusable="true"
-            app:tint="#4CAF50 " />
+            app:tint="@color/wasiqa_light_green" />
 
         <!-- Second SVG Icon -->
         <ImageView
@@ -104,13 +105,13 @@
         <!-- Third SVG Icon -->
         <ImageView
             android:id="@+id/delete_district_icon"
-            android:layout_width="27dp"
+            android:layout_width="wrap_content"
             android:layout_height="27dp"
-            android:src="@drawable/delete"
-            android:contentDescription="Icon Delete"
             android:layout_marginStart="18dp"
             android:clickable="true"
+            android:contentDescription="Icon Delete"
             android:focusable="true"
+            android:src="@drawable/delete"
             app:tint="#F44336 " />
     </LinearLayout>
 
@@ -120,6 +121,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
+        android:padding="0dp"
         android:layout_marginHorizontal="30dp"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:hint="Select Your District"
@@ -139,16 +141,17 @@
             android:layout_height="wrap_content"
             android:drawableStart="@drawable/map"
             android:drawableTint="#00ADEF"
+            android:textSize="18dp"
             android:layout_weight="1"
             android:drawablePadding="20dp"
+            android:fontFamily="@font/sf_pro_display_medium"
             android:background="@null"
             android:maxLines="1"
-            android:padding="12dp"
             android:focusable="true"
             android:clickable="true"
             android:dropDownHeight="150dp"
-        android:dropDownVerticalOffset="0dp"
-        tools:ignore="LabelFor"
+            android:dropDownVerticalOffset="0dp"
+            tools:ignore="LabelFor"
 
             />
 
@@ -177,6 +180,7 @@
 
     <!-- SVG Icons Container -->
     <LinearLayout
+        android:id="@+id/town_icon_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -190,7 +194,7 @@
             android:id="@+id/add_town_icon"
             android:layout_width="27dp"
             android:layout_height="27dp"
-            android:src="@drawable/add"
+            android:src="@drawable/add_icon"
             android:contentDescription="Icon Add"
             android:layout_marginStart="8dp"
             android:clickable="true"
@@ -280,20 +284,22 @@
 
     <!-- SVG Icons Container -->
     <LinearLayout
+        android:id="@+id/propertyArea_icon_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginEnd="40dp"
         app:layout_constraintTop_toTopOf="@id/propertyArea_text"
         app:layout_constraintBottom_toBottomOf="@id/propertyArea_text"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        >
 
         <!-- First SVG Icon -->
         <ImageView
             android:id="@+id/add_area_icon"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/add"
+            android:src="@drawable/add_icon"
             android:contentDescription="Icon Add"
             android:layout_marginStart="8dp"
             android:clickable="true"

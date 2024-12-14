@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-
 <TextView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@android:id/text1"
     android:singleLine="true"
     android:layout_width="match_parent"
     android:text="fdsdsfdfs"
-    android:padding="15dp"
-    android:layout_height="?attr/dropdownListPreferredItemHeight"
+    android:textSize="17dp"
+    android:fontFamily="@font/sf_pro_display_regular"
+    android:gravity="center_vertical"
+    android:layout_margin="0dp"
+    android:paddingStart="20dp"
+    android:paddingVertical="0dp"
+    android:layout_height="30dp"
     android:ellipsize="marquee"
-    tools:ignore="PrivateResource"
-    />
 
+    android:background="@drawable/custom_dropdown_line"
+    >
 
-
-
-
+</TextView>
