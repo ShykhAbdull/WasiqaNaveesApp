@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Adjust shadow offsets -->
+    <!-- Bottom line -->
     <item
-        android:left="0dp"
-        android:right="0dp"
-        android:bottom="1dp"
-        android:top="28.4444dp">
-        <shape android:shape="line">
-            <stroke android:width=".2dp" android:color="#009688" /> <!-- Border -->
+        android:gravity="bottom"
+        android:height=".1dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#000000" /> <!-- Line color -->
         </shape>
     </item>
+
 </layer-list>
