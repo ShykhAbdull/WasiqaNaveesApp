@@ -10,10 +10,10 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
@@ -34,9 +34,6 @@ class SettingsActivity : AppCompatActivity() {
 
 private lateinit var districtList: MutableList<String>
 private lateinit var binding: ActivitySettingsBinding
-private lateinit var adapter: ArrayAdapter<String>
-
-
 
 @SuppressLint("ClickableViewAccessibility")
 override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,8 +41,10 @@ super.onCreate(savedInstanceState)
 binding = ActivitySettingsBinding.inflate(layoutInflater)
 setContentView(binding.root)
 
+    window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
 
-//        Logic for showing and Hiding the Views on Settings Activity
+
+//   Logic for showing and Hiding the Views on Settings Activity
 
 val settingIcon = findViewById<ImageButton>(R.id.nav_settings_icon)
 settingIcon.visibility = View.GONE
@@ -137,6 +136,21 @@ binding.propertyAreaDropdown.setOnFocusChangeListener { _, hasFocus ->
         binding.propertyAreaIconContainer.visibility = View.VISIBLE
     }
 }
+    // Optional: Disable default focus stealing by the clear_text icon
+    binding.landTypeDropdown.setOnFocusChangeListener { _, hasFocus ->
+
+        if (hasFocus) {
+            binding.landTypeDropdown.showDropDown()
+        }
+    }
+
+//    // Optional: Disable default focus stealing by the clear_text icon
+//    binding.propertyTypeDropdown.setOnFocusChangeListener { _, hasFocus ->
+//
+//        if (hasFocus) {
+//            binding.propertyTypeDropdown.showDropDown()
+//        }
+//    }
 
 //        Focus from District ---> Town
 districtDropDown.setOnEditorActionListener { _, actionId, _ ->
@@ -173,23 +187,23 @@ binding.propertyAreaDropdown.setOnEditorActionListener { _, actionId, _ ->
     }
 }
 
-//        Focus from Land Type ---> Property Type
+////        Focus from Land Type ---> Property Type
+//
+//binding.landTypeDropdown.setOnEditorActionListener { _, actionId, _ ->
+//    if (actionId == EditorInfo.IME_ACTION_NEXT || actionId == EditorInfo.IME_ACTION_DONE) {
+//        // Move focus to the next view (e.g., another dropdown)
+//        binding.propertyTypeDropdown.requestFocus()
+//        true // Return true to consume the action
+//    } else {
+//        false
+//    }
+//}
 
-binding.landTypeDropdown.setOnEditorActionListener { _, actionId, _ ->
-    if (actionId == EditorInfo.IME_ACTION_NEXT || actionId == EditorInfo.IME_ACTION_DONE) {
-        // Move focus to the next view (e.g., another dropdown)
-        binding.propertyTypeDropdown.requestFocus()
-        true // Return true to consume the action
-    } else {
-        false
-    }
-}
-
-binding.propertyTypeDropdown.setOnEditorActionListener { _, actionId, _ ->
-    // Close the keyboard
-    // Return true to consume the action
-    actionId == EditorInfo.IME_ACTION_DONE
-}
+//binding.propertyTypeDropdown.setOnEditorActionListener { _, actionId, _ ->
+//    // Close the keyboard
+//    // Return true to consume the action
+//    actionId == EditorInfo.IME_ACTION_DONE
+//}
 
 
 // Optional: Customize the keyboard action to show "Next" instead of "Done"
@@ -206,8 +220,8 @@ binding.propertyAreaDropdown.setRawInputType(InputType.TYPE_CLASS_TEXT)
 binding.landTypeDropdown.imeOptions = EditorInfo.IME_ACTION_NEXT
 binding.landTypeDropdown.setRawInputType(InputType.TYPE_CLASS_TEXT)
 
-binding.propertyTypeDropdown.imeOptions = EditorInfo.IME_ACTION_DONE
-binding.propertyTypeDropdown.setRawInputType(InputType.TYPE_CLASS_TEXT)
+//binding.propertyTypeDropdown.imeOptions = EditorInfo.IME_ACTION_DONE
+//binding.propertyTypeDropdown.setRawInputType(InputType.TYPE_CLASS_TEXT)
 
 
 
@@ -221,20 +235,24 @@ val districtTownMap = mutableMapOf<String, MutableList<String>>()
 
 // Sample data for the dropdown
 districtList = mutableListOf("Lahore", "Islamabad", "Karachi", "Peshawar", "Quetta")
-adapter = ArrayAdapter(this, custom_dropdown_item, districtList)
+var districtAdapter = ArrayAdapter(this, custom_dropdown_item, districtList)
 // Set adapter to AutoCompleteTextView
-districtDropDown.setAdapter(adapter)
+districtDropDown.setAdapter(districtAdapter)
 // Start searching after typing one character
 districtDropDown.threshold = 1
 
 // Apply filter and count the visible items
-val itemCount = adapter.count // Gets the current filtered item count
+val itemCount = districtAdapter.count // Gets the current filtered item count
 if (itemCount <= 3) {
     districtDropDown.dropDownHeight = ViewGroup.LayoutParams.WRAP_CONTENT
+    Log.d("DistrictList", "Updated district list: $districtList")
 } else {
     // Set a fixed height for more than 3 items
     districtDropDown.dropDownHeight =
         (districtDropDown.context.resources.displayMetrics.density * 150).toInt()
+    Log.d("DistrictList", "Updated district list: $districtList")
+
+
 }
 
 
@@ -246,10 +264,10 @@ districtDropDown.addTextChangedListener(object : TextWatcher {
 
     override fun afterTextChanged(s: Editable?) {
         // Apply filter and count the visible items
-        adapter.filter.filter(s) {
-            val visibleItemCount = adapter.count // Gets the current filtered item count
+        districtAdapter.filter.filter(s) {
+            val districtVisibleItemCount = districtAdapter.count // Gets the current filtered item count
 
-            if (visibleItemCount <= 3) {
+            if (districtVisibleItemCount <= 3) {
                 districtDropDown.dropDownHeight = ViewGroup.LayoutParams.WRAP_CONTENT
             } else {
                 // Set a fixed height for more than 3 items
@@ -264,8 +282,8 @@ districtDropDown.addTextChangedListener(object : TextWatcher {
 val townDropDown = binding.townDropdown // ID of AutoCompleteTextView for towns
 val townAreaMap = mutableMapOf<String, MutableList<String>>()
 var townList = mutableListOf<String>() // Current list of towns displayed
-adapter = ArrayAdapter(this, custom_dropdown_item, townList)
-townDropDown.setAdapter(adapter)
+var townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
+townDropDown.setAdapter(townAdapter)
 townDropDown.threshold = 1
 // On District Selection
 districtDropDown.setOnItemClickListener { _, _, position, _ ->
@@ -274,20 +292,24 @@ districtDropDown.setOnItemClickListener { _, _, position, _ ->
 
     // Update the town adapter for the selected district
     townList = townsForDistrict
-    adapter = ArrayAdapter(this, custom_dropdown_item, townList)
-    townDropDown.setAdapter(adapter)
+    townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
+    townDropDown.setAdapter(townAdapter)
 
     Toast.makeText(this, "Selected District: $selectedDistrict", Toast.LENGTH_SHORT).show()
 }
 
 // Apply filter and count the visible items
-val townItemCount = adapter.count // Gets the current filtered item count
+val townItemCount = townAdapter.count // Gets the current filtered item count
 if (townItemCount <= 3) {
     townDropDown.dropDownHeight = ViewGroup.LayoutParams.WRAP_CONTENT
+    Log.d("TownList", "Updated town list: $townList")
+
 } else {
     // Set a fixed height for more than 3 items
-    townDropDown.dropDownHeight =
-        (townDropDown.context.resources.displayMetrics.density * 150).toInt()
+    townDropDown.dropDownHeight = (townDropDown.context.resources.displayMetrics.density * 150).toInt()
+    Log.d("TownList", "Updated town list: $townList")
+
+
 }
 
 
@@ -299,9 +321,9 @@ townDropDown.addTextChangedListener(object : TextWatcher {
 
     override fun afterTextChanged(s: Editable?) {
         // Apply filter and count the visible items
-        adapter.filter.filter(s) {
-            val visibleItemCount = adapter.count // Gets the current filtered item count
-            if (visibleItemCount <= 3) {
+        townAdapter.filter.filter(s) {
+            val townVisibleItemCount = townAdapter.count // Gets the current filtered item count
+            if (townVisibleItemCount <= 3) {
                 townDropDown.dropDownHeight = ViewGroup.LayoutParams.WRAP_CONTENT
             } else {
                 // Set a fixed height for more than 3 items
@@ -316,8 +338,8 @@ townDropDown.addTextChangedListener(object : TextWatcher {
     // Area Dropdown setup
     val areaDropDown = binding.propertyAreaDropdown // ID of AutoCompleteTextView for Area
     var areaList = mutableListOf<String>() // Current list of Area displayed
-    adapter = ArrayAdapter(this, custom_dropdown_item, areaList)
-    areaDropDown.setAdapter(adapter)
+    var areaAdapter = ArrayAdapter(this, custom_dropdown_item, areaList)
+    areaDropDown.setAdapter(areaAdapter)
     areaDropDown.threshold = 1
 // On Town Selection
     townDropDown.setOnItemClickListener { _, _, position, _ ->
@@ -326,20 +348,25 @@ townDropDown.addTextChangedListener(object : TextWatcher {
 
         // Update the town adapter for the selected district
         areaList = areasForTown
-        adapter = ArrayAdapter(this, custom_dropdown_item, areaList)
-        areaDropDown.setAdapter(adapter)
+        areaAdapter = ArrayAdapter(this, custom_dropdown_item, areaList)
+        areaDropDown.setAdapter(areaAdapter)
 
         Toast.makeText(this, "Selected Town: $selectedTown", Toast.LENGTH_SHORT).show()
     }
 
 // Apply filter and count the visible items
-    val areaItemCount = adapter.count // Gets the current filtered item count
+    val areaItemCount = areaAdapter.count // Gets the current filtered item count
     if (areaItemCount <= 3) {
         areaDropDown.dropDownHeight = ViewGroup.LayoutParams.WRAP_CONTENT
+        Log.d("AreaList", "Updated area list: $areaList")
+
     } else {
         // Set a fixed height for more than 3 items
         areaDropDown.dropDownHeight =
             (areaDropDown.context.resources.displayMetrics.density * 150).toInt()
+        Log.d("AreaList", "Updated area list: $areaList")
+
+
     }
 
 
@@ -351,9 +378,9 @@ townDropDown.addTextChangedListener(object : TextWatcher {
 
         override fun afterTextChanged(s: Editable?) {
             // Apply filter and count the visible items
-            adapter.filter.filter(s) {
-                val visibleItemCount = adapter.count // Gets the current filtered item count
-                if (visibleItemCount <= 3) {
+            areaAdapter.filter.filter(s) {
+                val areaVisibleItemCount = areaAdapter.count // Gets the current filtered item count
+                if (areaVisibleItemCount <= 3) {
                     areaDropDown.dropDownHeight = ViewGroup.LayoutParams.WRAP_CONTENT
                 } else {
                     // Set a fixed height for more than 3 items
@@ -401,8 +428,8 @@ districtAddIcon.setOnClickListener {
                     districtList.add(newDistrictName)
 
                     // Refresh adapter by recreating it
-                    adapter = ArrayAdapter(this, custom_dropdown_item, districtList)
-                    districtDropDown.setAdapter(adapter)
+                    districtAdapter = ArrayAdapter(this, custom_dropdown_item, districtList)
+                    districtDropDown.setAdapter(districtAdapter)
 
                     districtDropDown.setText("") // Clear dropdown text.
 
@@ -503,9 +530,8 @@ townAddIcon.setOnClickListener {
 
                         // Refresh the town dropdown for the selected district
                         townList = towns
-                        adapter =
-                            ArrayAdapter(this, custom_dropdown_item, townList)
-                        townDropDown.setAdapter(adapter)
+                        townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
+                        townDropDown.setAdapter(townAdapter)
 
                         Log.d(
                             "TownList",
@@ -568,9 +594,12 @@ townAddIcon.setOnClickListener {
 
             // Show Toast message
             Toast.makeText(this, "Select the Town first", Toast.LENGTH_SHORT).show()
-        } else {
-            // Set the message text
+        }
+        else
+        {
+// Set the message text
             addMessage.text = "Add Property Area for $selectedTown"
+
 
             // Create a confirmation dialog to add a new town
             val addAreaDialog = MaterialAlertDialogBuilder(this)
@@ -605,9 +634,8 @@ townAddIcon.setOnClickListener {
 
                             // Refresh the town dropdown for the selected district
                             areaList = area
-                            adapter =
-                                ArrayAdapter(this, custom_dropdown_item, areaList)
-                            areaDropDown.setAdapter(adapter)
+                            areaAdapter = ArrayAdapter(this, custom_dropdown_item, areaList)
+                            areaDropDown.setAdapter(areaAdapter)
 
                             Log.d(
                                 "AreaList",
@@ -705,8 +733,8 @@ districtEditIcon.setOnClickListener {
                         districtList[index] = newDistrictName
 
                         // Refresh adapter by recreating it
-                        adapter = ArrayAdapter(this, custom_dropdown_item, districtList)
-                        districtDropDown.setAdapter(adapter)
+                        districtAdapter = ArrayAdapter(this, custom_dropdown_item, districtList)
+                        districtDropDown.setAdapter(districtAdapter)
 
                         districtDropDown.setText("") // Clear dropdown text.
 
@@ -798,8 +826,8 @@ districtEditIcon.setOnClickListener {
                             townList[index] = newTownName
 
                             // Refresh adapter by recreating it
-                            adapter = ArrayAdapter(this, custom_dropdown_item, townList)
-                            townDropDown.setAdapter(adapter)
+                            townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
+                            townDropDown.setAdapter(townAdapter)
 
                             townDropDown.setText("") // Clear dropdown text.
 
@@ -893,8 +921,8 @@ districtEditIcon.setOnClickListener {
                             areaList[index] = newAreaName
 
                             // Refresh adapter by recreating it
-                            adapter = ArrayAdapter(this, custom_dropdown_item, areaList)
-                            areaDropDown.setAdapter(adapter)
+                            areaAdapter = ArrayAdapter(this, custom_dropdown_item, areaList)
+                            areaDropDown.setAdapter(areaAdapter)
 
                             areaDropDown.setText("") // Clear dropdown text.
 
@@ -978,8 +1006,8 @@ binding.deleteDistrictIcon.setOnClickListener {
                 districtList.remove(selectedDistrict)
 
                 // Refresh adapter by recreating it
-                adapter = ArrayAdapter(this, custom_dropdown_item, districtList)
-                districtDropDown.setAdapter(adapter)
+                districtAdapter = ArrayAdapter(this, custom_dropdown_item, districtList)
+                districtDropDown.setAdapter(districtAdapter)
 
                 // Clear the text in districtDropDown
                 districtDropDown.setText("")
@@ -1059,8 +1087,8 @@ binding.deleteDistrictIcon.setOnClickListener {
                     townList.remove(selectedTown)
 
                     // Refresh adapter by recreating it
-                    adapter = ArrayAdapter(this, custom_dropdown_item, townList)
-                    townDropDown.setAdapter(adapter)
+                    townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
+                    townDropDown.setAdapter(townAdapter)
 
                     // Clear the text in townDropDown
                     townDropDown.setText("")
@@ -1135,8 +1163,8 @@ binding.deleteDistrictIcon.setOnClickListener {
                     areaList.remove(selectedArea)
 
                     // Refresh adapter by recreating it
-                    adapter = ArrayAdapter(this, custom_dropdown_item, areaList)
-                    areaDropDown.setAdapter(adapter)
+                    areaAdapter = ArrayAdapter(this, custom_dropdown_item, areaList)
+                    areaDropDown.setAdapter(areaAdapter)
 
                     // Clear the text in townDropDown
                     areaDropDown.setText("")
@@ -1183,7 +1211,7 @@ binding.deleteDistrictIcon.setOnClickListener {
     val landList = listOf("Residential", "Commercial", "Agricultural", "Industrial")
 
 // Create an ArrayAdapter and set it on the AutoCompleteTextView
-    val landTypeDropdown = findViewById<AutoCompleteTextView>(R.id.landTypeDropdown)
+    val landTypeDropdown = binding.landTypeDropdown
     val landAdapter = ArrayAdapter(this, custom_dropdown_item, landList)
     landTypeDropdown.setAdapter(landAdapter)
 
@@ -1202,57 +1230,65 @@ binding.deleteDistrictIcon.setOnClickListener {
         // Perform your action based on the selected item
         when (selectedLand) {
             "Residential" -> {
-                // Perform action for Residential
-            }
+                binding.khasraText.visibility = View.VISIBLE
+                binding.khasraEditText.visibility = View.VISIBLE            }
             "Commercial" -> {
-                // Perform action for Commercial
+                binding.khasraText.visibility = View.VISIBLE
+                binding.khasraEditText.visibility = View.VISIBLE
             }
-            // ... and so on for other items
-        }
-    }
-
-
-
-    // Sample data for the property type dropdown
-    val propertyTypeList = listOf("House", "Apartment", "Villa", "Farmhouse")
-
-// Find the AutoCompleteTextView
-    val propertyTypeDropdown = findViewById<AutoCompleteTextView>(R.id.propertyTypeDropdown)
-
-// Create an ArrayAdapter using a custom layout or a built-in Android layout
-    val propertyTypeAdapter = ArrayAdapter(this, R.layout.custom_dropdown_item, propertyTypeList)
-
-// Set the adapter on the AutoCompleteTextView
-    propertyTypeDropdown.setAdapter(propertyTypeAdapter)
-
-    propertyTypeDropdown.setOnClickListener {
-        propertyTypeDropdown.showDropDown()
-    }
-
-// Optional: Set threshold if you want the dropdown to show after typing only 1 character
-    propertyTypeDropdown.threshold = 1
-
-// Handle selection events
-    propertyTypeDropdown.setOnItemClickListener { parent, _, position, _ ->
-        val selectedPropertyType = parent.getItemAtPosition(position) as String
-        Toast.makeText(this, "Selected: $selectedPropertyType", Toast.LENGTH_SHORT).show()
-
-        // Perform actions based on the selected property type
-        when (selectedPropertyType) {
-            "Plot" -> {
-                // Action for House
+            "Agricultural" -> {
+                binding.khasraText.visibility = View.VISIBLE
+                binding.khasraEditText.visibility = View.VISIBLE
             }
-            "Apartment" -> {
-                // Action for Apartment
-            }
-            "Building" -> {
-                // Action for Villa
-            }
-            "Farmhouse" -> {
-                // Action for Farmhouse
+            "Industrial" -> {
+                binding.khasraText.visibility = View.VISIBLE
+                binding.khasraEditText.visibility = View.VISIBLE
             }
         }
     }
+
+
+
+//    // Sample data for the property type dropdown
+//    val propertyTypeList = listOf("Plot","House", "Apartment", "Shop")
+//
+//// Find the AutoCompleteTextView
+//    val propertyTypeDropdown = findViewById<AutoCompleteTextView>(R.id.propertyTypeDropdown)
+//
+//// Create an ArrayAdapter using a custom layout or a built-in Android layout
+//    val propertyTypeAdapter = ArrayAdapter(this, custom_dropdown_item, propertyTypeList)
+//
+//// Set the adapter on the AutoCompleteTextView
+//    propertyTypeDropdown.setAdapter(propertyTypeAdapter)
+//
+//    propertyTypeDropdown.setOnClickListener {
+//        propertyTypeDropdown.showDropDown()
+//    }
+//
+//// Optional: Set threshold if you want the dropdown to show after typing only 1 character
+//    propertyTypeDropdown.threshold = 1
+//
+//// Handle selection events
+//    propertyTypeDropdown.setOnItemClickListener { parent, _, position, _ ->
+//        val selectedPropertyType = parent.getItemAtPosition(position) as String
+//        Toast.makeText(this, "Selected: $selectedPropertyType", Toast.LENGTH_SHORT).show()
+//
+//        // Perform actions based on the selected property type
+//        when (selectedPropertyType) {
+//            "Plot" -> {
+//                // Action for House
+//            }
+//            "Apartment" -> {
+//                // Action for Apartment
+//            }
+//            "Building" -> {
+//                // Action for Villa
+//            }
+//            "Farmhouse" -> {
+//                // Action for Farmhouse
+//            }
+//        }
+//    }
 
 
 

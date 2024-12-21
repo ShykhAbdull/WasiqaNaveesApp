@@ -376,6 +376,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Naqvi Stamp Frosh"
+            android:importantForAutofill="no"
             android:textAlignment="center"
             android:inputType="text|textPersonName"
             android:background="@drawable/email_input_background"

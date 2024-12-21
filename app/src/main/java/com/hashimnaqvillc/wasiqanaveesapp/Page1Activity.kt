@@ -1,6 +1,5 @@
 package com.hashimnaqvillc.wasiqanaveesapp
 
-import android.R
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -19,18 +18,18 @@ class Page1Activity : AppCompatActivity() {
         binding = ActivityPage1Binding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val settingButton = findViewById<ImageButton>(com.hashimnaqvillc.wasiqanaveesapp.R.id.nav_settings_icon)
+        val settingButton = findViewById<ImageButton>(R.id.nav_settings_icon)
         settingButton.setOnClickListener {
             val intent = Intent(this, SettingsActivity::class.java)
             startActivity(intent)
         }
 
-        val backButton = findViewById<ImageButton>(com.hashimnaqvillc.wasiqanaveesapp.R.id.nav_back)
+        val backButton = findViewById<ImageButton>(R.id.nav_back)
         backButton.visibility = View.GONE
 
-        val dateMonth = findViewById<TextView>(com.hashimnaqvillc.wasiqanaveesapp.R.id.date_month_day)
+        val dateMonth = findViewById<TextView>(R.id.date_month_day)
         dateMonth.visibility = View.GONE
-        val dateYear = findViewById<TextView>(com.hashimnaqvillc.wasiqanaveesapp.R.id.date_year)
+        val dateYear = findViewById<TextView>(R.id.date_year)
         dateYear.visibility = View.GONE
 
 
@@ -65,7 +64,7 @@ class Page1Activity : AppCompatActivity() {
         val districts = districtToTowns.keys.toList()
         val districtAdapter = ArrayAdapter(
             this,
-            com.hashimnaqvillc.wasiqanaveesapp.R.layout.custom_dropdown_item,
+            R.layout.custom_dropdown_item,
             districts
         )
         binding.districtDropdown.setAdapter(districtAdapter)
@@ -81,7 +80,7 @@ class Page1Activity : AppCompatActivity() {
             // Update Town Dropdown
             val townAdapter = ArrayAdapter(
                 this,
-                com.hashimnaqvillc.wasiqanaveesapp.R.layout.custom_dropdown_item,
+                R.layout.custom_dropdown_item,
                 towns
             )
             binding.townDropdown.setAdapter(townAdapter)
@@ -107,7 +106,7 @@ class Page1Activity : AppCompatActivity() {
             // Update Property Area Dropdown
             val propertyAreaAdapter = ArrayAdapter(
                 this,
-                com.hashimnaqvillc.wasiqanaveesapp.R.layout.custom_dropdown_item,
+                R.layout.custom_dropdown_item,
                 propertyAreas
             )
             binding.propertyAreaDropdown.setAdapter(propertyAreaAdapter)
@@ -125,17 +124,17 @@ class Page1Activity : AppCompatActivity() {
             println("Selected Property Area: $selectedPropertyArea")
         }
 
-        val propertyTypeAutoComplete: AutoCompleteTextView = findViewById(com.hashimnaqvillc.wasiqanaveesapp.R.id.propertyTypeDropdown)
-        val landTypeAutoComplete: AutoCompleteTextView = findViewById(com.hashimnaqvillc.wasiqanaveesapp.R.id.landTypeDropdown)
+        val propertyTypeAutoComplete: AutoCompleteTextView = findViewById(R.id.propertyTypeDropdown)
+        val landTypeAutoComplete: AutoCompleteTextView = findViewById(R.id.landTypeDropdown)
 
 // Data for the dropdowns
         val propertyTypeOptions = listOf("Plot", "Building")
         val landTypeOptions = listOf("Residential", "Commercial", "Agricultural", "Industrial", "Apartment", "Shop")
 
 // Adapters for the dropdowns
-        val propertyTypeAdapter = ArrayAdapter(this, com.hashimnaqvillc.wasiqanaveesapp.R.layout.custom_dropdown_item,
+        val propertyTypeAdapter = ArrayAdapter(this, R.layout.custom_dropdown_item,
             propertyTypeOptions)
-        val landTypeAdapter = ArrayAdapter(this, com.hashimnaqvillc.wasiqanaveesapp.R.layout.custom_dropdown_item,
+        val landTypeAdapter = ArrayAdapter(this, R.layout.custom_dropdown_item,
             landTypeOptions)
 
 // Set adapters to AutoCompleteTextViews
@@ -185,7 +184,7 @@ class Page1Activity : AppCompatActivity() {
 // Handle selection actions for "Property Type"
         propertyTypeAutoComplete.setOnItemClickListener { _, _, position, _ ->
             val selectedPropertyType = propertyTypeOptions[position]
-            val coveredArea = findViewById<TextView>(com.hashimnaqvillc.wasiqanaveesapp.R.id.coveredArea_text)
+            val coveredArea = findViewById<TextView>(R.id.coveredArea_text)
             val coveredAreaEditText = findViewById<TextView>(com.hashimnaqvillc.wasiqanaveesapp.R.id.coveredAreaEditText)
 
             // Save the selected property type in SharedPreferences
