@@ -91,18 +91,21 @@ districtDropDown.setOnClickListener {
     binding.districtDropdown.showDropDown()
     binding.districtDropdown.requestFocus()
 }
-//        Logic for Town DropDownClick
-binding.townDropdown.setOnClickListener {
-    binding.townDropdown.dismissDropDown()
-    binding.townDropdown.showDropDown()
-    binding.townDropdown.requestFocus()
-}
-//        Logic for Area DropDownClick
-binding.propertyAreaDropdown.setOnClickListener {
-    binding.propertyAreaDropdown.dismissDropDown()
-    binding.propertyAreaDropdown.showDropDown()
-    binding.propertyAreaDropdown.requestFocus()
-}
+
+    //        Logic for Town DropDownClick
+    binding.townDropdown.setOnClickListener {
+        binding.townDropdown.dismissDropDown()
+        binding.townDropdown.showDropDown()
+        binding.townDropdown.requestFocus()
+    }
+
+
+    //        Logic for Area DropDownClick
+    binding.propertyAreaDropdown.setOnClickListener {
+        binding.propertyAreaDropdown.dismissDropDown()
+        binding.propertyAreaDropdown.showDropDown()
+        binding.propertyAreaDropdown.requestFocus()
+    }
 
 // Optional: Disable default focus stealing by the clear_text icon
 districtDropDown.setOnFocusChangeListener { _, hasFocus ->
@@ -116,15 +119,15 @@ districtDropDown.setOnFocusChangeListener { _, hasFocus ->
 }
 
 // Optional: Disable default focus stealing by the clear_text icon
-binding.townDropdown.setOnFocusChangeListener { _, hasFocus ->
-
-    if (hasFocus) {
-        binding.townDropdown.showDropDown()
-        binding.districtIconContainer.visibility = View.GONE
-        binding.townIconContainer.visibility = View.VISIBLE
-        binding.propertyAreaIconContainer.visibility = View.GONE
+    binding.townDropdown.setOnFocusChangeListener { _, hasFocus ->
+        if (hasFocus) {
+            binding.townDropdown.showDropDown()
+            binding.districtIconContainer.visibility = View.GONE
+            binding.townIconContainer.visibility = View.VISIBLE
+            binding.propertyAreaIconContainer.visibility = View.GONE
+        }
     }
-}
+
 
 // Optional: Disable default focus stealing by the clear_text icon
 binding.propertyAreaDropdown.setOnFocusChangeListener { _, hasFocus ->
@@ -288,6 +291,9 @@ townDropDown.threshold = 1
 // On District Selection
 districtDropDown.setOnItemClickListener { _, _, position, _ ->
     val selectedDistrict = districtList[position]
+
+
+
     val townsForDistrict = districtTownMap.getOrDefault(selectedDistrict, mutableListOf())
 
     // Update the town adapter for the selected district
@@ -392,6 +398,19 @@ townDropDown.addTextChangedListener(object : TextWatcher {
     })
 
 
+//    When the district text clears all other field text clear as well
+    binding.districtInputLayout.setEndIconOnClickListener {
+        // Also clear dependent dropdown fields for Town and Area
+        districtDropDown.text.clear()
+        townDropDown.text.clear()
+        areaDropDown.text.clear()
+
+        // Request focus back to the district dropdown
+        districtDropDown.requestFocus()
+
+    }
+
+
 
 
 
@@ -476,14 +495,15 @@ districtAddIcon.setOnClickListener {
 // Logic for Adding New Town
 
 val townAddIcon = binding.addTownIcon // Assuming town add icon ID
-townAddIcon.setOnClickListener {
+
+    townAddIcon.setOnClickListener {
     val dialogView = layoutInflater.inflate(R.layout.custom_add_alert, null)
     val addMessage = dialogView.findViewById<TextView>(R.id.addMessage)
     val addInputEditText = dialogView.findViewById<EditText>(R.id.AddinputEditText)
+    val selectedDistrict = districtDropDown.text.toString().trim()
     // Set the Edit Text Hint
     addInputEditText.hint = "Enter new Town Name"
 
-    val selectedDistrict = districtDropDown.text.toString().trim()
     if (selectedDistrict.isEmpty()) {
         // Close the keyboard
         val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -597,6 +617,7 @@ townAddIcon.setOnClickListener {
         }
         else
         {
+
 // Set the message text
             addMessage.text = "Add Property Area for $selectedTown"
 
@@ -730,19 +751,50 @@ districtEditIcon.setOnClickListener {
                     else -> {
                         // Update the district name in the list
                         val index = districtList.indexOf(selectedDistrict)
+                        val oldDistrictName = districtList[index]
+                        Log.d("newDistrictList", "Old district name : $oldDistrictName")
+
                         districtList[index] = newDistrictName
 
                         // Refresh adapter by recreating it
                         districtAdapter = ArrayAdapter(this, custom_dropdown_item, districtList)
                         districtDropDown.setAdapter(districtAdapter)
 
-                        districtDropDown.setText("") // Clear dropdown text.
+                        districtDropDown.text.clear() // Clear dropdown text.
+                        townDropDown.text.clear() // Clear dropdown text.
+                        areaDropDown.text.clear() // Clear dropdown text.
 
-                        Log.d("DistrictList", "Updated district list: $districtList")
+
+                        Log.d("newDistrictList", "After district list: $newDistrictName")
+                        Log.d("townList", "After town list: $townList")
                         Toast.makeText(this, "District updated successfully", Toast.LENGTH_SHORT).show()
+
+
+                        if (oldDistrictName != newDistrictName && districtTownMap.containsKey(oldDistrictName))
+                        {
+                            // Retrieve towns associated with the old district name
+                            val towns = districtTownMap.remove(oldDistrictName)
+
+                            // Update the map with the new district name and its towns
+                            if (towns != null) {
+                                districtTownMap[newDistrictName] = towns
+                            }
+
+                            // Optionally, update the selected district in the UI if this is the currently selected district
+                            if (districtDropDown.text.toString() == oldDistrictName) {
+                                districtDropDown.setText(newDistrictName, false)
+                            }
+
+                        }
+
+
+
+
                     }
                 }
             }
+
+
             .setNegativeButton("Cancel") { _, _ -> }
             .create() // Call create() here only once
 
