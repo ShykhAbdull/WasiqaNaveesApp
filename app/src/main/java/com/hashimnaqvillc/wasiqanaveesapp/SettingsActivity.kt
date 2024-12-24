@@ -18,6 +18,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.TableLayout
+import android.widget.TableRow
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -35,7 +37,7 @@ class SettingsActivity : AppCompatActivity() {
 private lateinit var districtList: MutableList<String>
 private lateinit var binding: ActivitySettingsBinding
 
-@SuppressLint("ClickableViewAccessibility")
+@SuppressLint("ClickableViewAccessibility", "InflateParams")
 override fun onCreate(savedInstanceState: Bundle?) {
 super.onCreate(savedInstanceState)
 binding = ActivitySettingsBinding.inflate(layoutInflater)
@@ -86,59 +88,65 @@ backBtn.setOnClickListener {
 
 //        Logic for District DropDownClick
 val districtDropDown = binding.districtDropdown
-districtDropDown.setOnClickListener {
-    binding.districtDropdown.dismissDropDown()
-    binding.districtDropdown.showDropDown()
-    binding.districtDropdown.requestFocus()
-}
-
-    //        Logic for Town DropDownClick
-    binding.townDropdown.setOnClickListener {
-        binding.townDropdown.dismissDropDown()
-        binding.townDropdown.showDropDown()
-        binding.townDropdown.requestFocus()
+    districtDropDown.setOnClickListener {
+        binding.districtDropdown.dismissDropDown()
+        binding.districtDropdown.showDropDown()
+        binding.districtDropdown.requestFocus()
     }
 
-
-    //        Logic for Area DropDownClick
-    binding.propertyAreaDropdown.setOnClickListener {
-        binding.propertyAreaDropdown.dismissDropDown()
-        binding.propertyAreaDropdown.showDropDown()
-        binding.propertyAreaDropdown.requestFocus()
-    }
-
-// Optional: Disable default focus stealing by the clear_text icon
-districtDropDown.setOnFocusChangeListener { _, hasFocus ->
-
-    if (hasFocus) {
-        districtDropDown.showDropDown()
-        binding.districtIconContainer.visibility = View.VISIBLE
-        binding.townIconContainer.visibility = View.GONE
-        binding.propertyAreaIconContainer.visibility = View.GONE
-    }
-}
-
-// Optional: Disable default focus stealing by the clear_text icon
-    binding.townDropdown.setOnFocusChangeListener { _, hasFocus ->
+    districtDropDown.setOnFocusChangeListener { _, hasFocus ->
         if (hasFocus) {
-            binding.townDropdown.showDropDown()
-            binding.districtIconContainer.visibility = View.GONE
-            binding.townIconContainer.visibility = View.VISIBLE
+            binding.districtDropdown.showDropDown()
+            binding.districtIconContainer.visibility = View.VISIBLE
+            binding.townIconContainer.visibility = View.GONE
             binding.propertyAreaIconContainer.visibility = View.GONE
         }
     }
 
-
-// Optional: Disable default focus stealing by the clear_text icon
-binding.propertyAreaDropdown.setOnFocusChangeListener { _, hasFocus ->
-
-    if (hasFocus) {
-        binding.propertyAreaDropdown.showDropDown()
-        binding.townIconContainer.visibility = View.GONE
-        binding.districtIconContainer.visibility = View.GONE
-        binding.propertyAreaIconContainer.visibility = View.VISIBLE
+    binding.townDropdown.setOnClickListener {
+        if (binding.districtDropdown.text.toString().isNotEmpty()) {
+            // Show the dropdown only if a district is selected
+            binding.townDropdown.dismissDropDown()
+            binding.townDropdown.showDropDown()
+            binding.townDropdown.requestFocus()
+        } else {
+            Toast.makeText(this, "Please select a district first", Toast.LENGTH_SHORT).show()
+        }
     }
-}
+
+    binding.townDropdown.setOnFocusChangeListener { _, hasFocus ->
+        if (hasFocus && binding.districtDropdown.text.toString().isNotEmpty()) {
+            binding.townDropdown.showDropDown()
+            binding.districtIconContainer.visibility = View.GONE
+            binding.townIconContainer.visibility = View.VISIBLE
+            binding.propertyAreaIconContainer.visibility = View.GONE
+        } else if (hasFocus) {
+            binding.townDropdown.clearFocus() // Prevent focus if no district is selected
+            Toast.makeText(this, "Please select a district first", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    binding.propertyAreaDropdown.setOnFocusChangeListener { _, hasFocus ->
+        if (hasFocus && binding.townDropdown.text.toString().isNotEmpty()) {
+            binding.propertyAreaDropdown.showDropDown()
+            binding.townIconContainer.visibility = View.GONE
+            binding.districtIconContainer.visibility = View.GONE
+            binding.propertyAreaIconContainer.visibility = View.VISIBLE
+        } else if (hasFocus) {
+            binding.propertyAreaDropdown.clearFocus() // Prevent focus if no town is selected
+            Toast.makeText(this, "Please select a town first", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+
+
+
+
+
+
+
+
     // Optional: Disable default focus stealing by the clear_text icon
     binding.landTypeDropdown.setOnFocusChangeListener { _, hasFocus ->
 
@@ -223,6 +231,9 @@ binding.propertyAreaDropdown.setRawInputType(InputType.TYPE_CLASS_TEXT)
 binding.landTypeDropdown.imeOptions = EditorInfo.IME_ACTION_NEXT
 binding.landTypeDropdown.setRawInputType(InputType.TYPE_CLASS_TEXT)
 
+binding.khasraEditText.imeOptions = EditorInfo.IME_ACTION_DONE
+binding.khasraEditText.setRawInputType(InputType.TYPE_CLASS_TEXT)
+
 //binding.propertyTypeDropdown.imeOptions = EditorInfo.IME_ACTION_DONE
 //binding.propertyTypeDropdown.setRawInputType(InputType.TYPE_CLASS_TEXT)
 
@@ -254,9 +265,10 @@ if (itemCount <= 3) {
     districtDropDown.dropDownHeight =
         (districtDropDown.context.resources.displayMetrics.density * 150).toInt()
     Log.d("DistrictList", "Updated district list: $districtList")
-
-
 }
+
+
+
 
 
 // Set up a listener to track the filtered results and dynamically set the dropdown height
@@ -288,21 +300,7 @@ var townList = mutableListOf<String>() // Current list of towns displayed
 var townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
 townDropDown.setAdapter(townAdapter)
 townDropDown.threshold = 1
-// On District Selection
-districtDropDown.setOnItemClickListener { _, _, position, _ ->
-    val selectedDistrict = districtList[position]
 
-
-
-    val townsForDistrict = districtTownMap.getOrDefault(selectedDistrict, mutableListOf())
-
-    // Update the town adapter for the selected district
-    townList = townsForDistrict
-    townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
-    townDropDown.setAdapter(townAdapter)
-
-    Toast.makeText(this, "Selected District: $selectedDistrict", Toast.LENGTH_SHORT).show()
-}
 
 // Apply filter and count the visible items
 val townItemCount = townAdapter.count // Gets the current filtered item count
@@ -348,17 +346,20 @@ townDropDown.addTextChangedListener(object : TextWatcher {
     areaDropDown.setAdapter(areaAdapter)
     areaDropDown.threshold = 1
 // On Town Selection
-    townDropDown.setOnItemClickListener { _, _, position, _ ->
-        val selectedTown = townList[position]
-        val areasForTown = townAreaMap.getOrDefault(selectedTown, mutableListOf())
 
-        // Update the town adapter for the selected district
-        areaList = areasForTown
+    townDropDown.setOnItemClickListener { _, _, _, _ ->
+        val selectedTown = townDropDown.text.toString()
+
+        // Clear and reset areas
+        val areas = townAreaMap[selectedTown] ?: mutableListOf()
+        areaList = areas
         areaAdapter = ArrayAdapter(this, custom_dropdown_item, areaList)
         areaDropDown.setAdapter(areaAdapter)
+        areaDropDown.text.clear() // Clear selected area
 
-        Toast.makeText(this, "Selected Town: $selectedTown", Toast.LENGTH_SHORT).show()
+        Log.d("TownSelection", "Selected town: $selectedTown, areas: $areas")
     }
+
 
 // Apply filter and count the visible items
     val areaItemCount = areaAdapter.count // Gets the current filtered item count
@@ -398,15 +399,42 @@ townDropDown.addTextChangedListener(object : TextWatcher {
     })
 
 
+    districtDropDown.setOnItemClickListener { _, _, _, _ ->
+        val selectedDistrict = districtDropDown.text.toString()
+
+        // Clear and reset towns and areas
+        val towns = districtTownMap[selectedDistrict] ?: mutableListOf()
+        townList = towns
+        townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
+        townDropDown.setAdapter(townAdapter)
+        townDropDown.text.clear() // Clear selected town
+        areaDropDown.text.clear() // Clear selected area
+
+        Log.d("DistrictSelection", "Selected district: $selectedDistrict, towns: $towns, areas cleared.")
+    }
+
+
+
+
+
+
 //    When the district text clears all other field text clear as well
     binding.districtInputLayout.setEndIconOnClickListener {
         // Also clear dependent dropdown fields for Town and Area
         districtDropDown.text.clear()
         townDropDown.text.clear()
         areaDropDown.text.clear()
-
         // Request focus back to the district dropdown
         districtDropDown.requestFocus()
+    }
+
+    //    When the town text clears all other field text clear as well
+    binding.townInputLayout.setEndIconOnClickListener {
+        // Also clear dependent dropdown fields for Town and Area
+        townDropDown.text.clear()
+        areaDropDown.text.clear()
+        // Request focus back to the district dropdown
+        townDropDown.requestFocus()
 
     }
 
@@ -444,13 +472,26 @@ districtAddIcon.setOnClickListener {
                 }
                 else -> {
                     // Add the new district to the list
+                    districtDropDown.setText(newDistrictName, false)
+                    districtDropDown.setSelection(newDistrictName.length) // Move cursor to the end
+
+
                     districtList.add(newDistrictName)
+
+                    townDropDown.text.clear() // Clear dropdown text.
+                    areaDropDown.text.clear() // Clear dropdown text.
 
                     // Refresh adapter by recreating it
                     districtAdapter = ArrayAdapter(this, custom_dropdown_item, districtList)
                     districtDropDown.setAdapter(districtAdapter)
 
-                    districtDropDown.setText("") // Clear dropdown text.
+                    // Clear and reset towns and areas
+                    val towns = districtTownMap[newDistrictName] ?: mutableListOf()
+                    townList = towns
+                    townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
+                    townDropDown.setAdapter(townAdapter)
+                    townDropDown.text.clear() // Clear selected town
+
 
                     Log.d("DistrictList", "Updated district list: $districtList")
                     Toast.makeText(this, "District added successfully", Toast.LENGTH_SHORT).show()
@@ -501,6 +542,7 @@ val townAddIcon = binding.addTownIcon // Assuming town add icon ID
     val addMessage = dialogView.findViewById<TextView>(R.id.addMessage)
     val addInputEditText = dialogView.findViewById<EditText>(R.id.AddinputEditText)
     val selectedDistrict = districtDropDown.text.toString().trim()
+
     // Set the Edit Text Hint
     addInputEditText.hint = "Enter new Town Name"
 
@@ -540,19 +582,28 @@ val townAddIcon = binding.addTownIcon // Assuming town add icon ID
                             Toast.makeText(this, "Town already exists", Toast.LENGTH_SHORT)
                                 .show()
                         } else {
+                            townDropDown.setText(newTownName, false)
+                            townDropDown.setSelection(newTownName.length) // Move cursor to the end
                             towns.add(newTownName)
+                            // Update the town list and adapter for the current district
+                            townList = towns
+                            townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
+                            townDropDown.setAdapter(townAdapter)
+
+                            // Clear and reset areas
+                            val areas = townAreaMap[newTownName] ?: mutableListOf()
+                            areaList = areas
+                            areaAdapter = ArrayAdapter(this, custom_dropdown_item, areaList)
+                            areaDropDown.setAdapter(areaAdapter)
+                            areaDropDown.text.clear() // Clear area dropdown
+
+
                             Toast.makeText(
                                 this,
                                 "Town added successfully",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
-
-                        // Refresh the town dropdown for the selected district
-                        townList = towns
-                        townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
-                        townDropDown.setAdapter(townAdapter)
-
                         Log.d(
                             "TownList",
                             "Updated town list for $selectedDistrict: $townList"
@@ -595,7 +646,6 @@ val townAddIcon = binding.addTownIcon // Assuming town add icon ID
 }
 
 
-
     // Logic for Adding New Property Area
 
     val areaAddIcon = binding.addAreaIcon // Assuming town add icon ID
@@ -628,7 +678,6 @@ val townAddIcon = binding.addTownIcon // Assuming town add icon ID
                 .setPositiveButton("Add") { _, _ ->
                     val newAreaName = addInputEditText.text.toString().trim()
                     when {
-
                         newAreaName.isEmpty() -> {
                             Toast.makeText(
                                 this,
@@ -638,14 +687,22 @@ val townAddIcon = binding.addTownIcon // Assuming town add icon ID
                         }
 
                         else -> {
-                            // Add the new town to the district's list in the map
-                            val area =
-                                townAreaMap.getOrPut(selectedTown) { mutableListOf() }
+                            // Add the new area to the town's list in the map
+                            val area = townAreaMap.getOrPut(selectedTown) { mutableListOf() }
                             if (area.contains(newAreaName)) {
-                                Toast.makeText(this, "Area already exists", Toast.LENGTH_SHORT)
-                                    .show()
+                                Toast.makeText(this, "Area already exists", Toast.LENGTH_SHORT).show()
                             } else {
-                                area.add(newAreaName)
+                                area.add(newAreaName) // Add the new area to the list
+
+                                // Update the area list and adapter for the current town
+                                areaList = area
+                                areaAdapter = ArrayAdapter(this, custom_dropdown_item, areaList)
+                                areaDropDown.setAdapter(areaAdapter)
+
+                                // Set the new area as the selected text
+                                areaDropDown.setText(newAreaName, false)
+                                areaDropDown.setSelection(newAreaName.length)
+
                                 Toast.makeText(
                                     this,
                                     "Property Area added successfully",
@@ -653,18 +710,11 @@ val townAddIcon = binding.addTownIcon // Assuming town add icon ID
                                 ).show()
                             }
 
-                            // Refresh the town dropdown for the selected district
-                            areaList = area
-                            areaAdapter = ArrayAdapter(this, custom_dropdown_item, areaList)
-                            areaDropDown.setAdapter(areaAdapter)
-
-                            Log.d(
-                                "AreaList",
-                                "Updated town list for $selectedTown: $areaList"
-                            )
+                            Log.d("AreaList", "Updated area list for $selectedTown: $areaList")
                         }
                     }
                 }
+
                 .setNegativeButton("Cancel") { _, _ -> }
                 .create()
 
@@ -756,13 +806,16 @@ districtEditIcon.setOnClickListener {
 
                         districtList[index] = newDistrictName
 
+                        districtDropDown.setText(newDistrictName, false)
+                        districtDropDown.setSelection(newDistrictName.length) // Move cursor to the end
+
+                        townDropDown.text.clear() // Clear dropdown text.
+                        areaDropDown.text.clear() // Clear dropdown text.
+
                         // Refresh adapter by recreating it
                         districtAdapter = ArrayAdapter(this, custom_dropdown_item, districtList)
                         districtDropDown.setAdapter(districtAdapter)
 
-                        districtDropDown.text.clear() // Clear dropdown text.
-                        townDropDown.text.clear() // Clear dropdown text.
-                        areaDropDown.text.clear() // Clear dropdown text.
 
 
                         Log.d("newDistrictList", "After district list: $newDistrictName")
@@ -875,16 +928,42 @@ districtEditIcon.setOnClickListener {
                         else -> {
                             // Update the district name in the list
                             val index = townList.indexOf(selectedTown)
+                            val oldTownName = townList[index]
                             townList[index] = newTownName
+
+                            // Set the new town name as the selected text
+                            townDropDown.setText(newTownName, false)
+                            townDropDown.setSelection(newTownName.length) // Move cursor to the end
+
+
+                            areaDropDown.text.clear() // Clear dropdown text.
 
                             // Refresh adapter by recreating it
                             townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
                             townDropDown.setAdapter(townAdapter)
 
-                            townDropDown.setText("") // Clear dropdown text.
+
 
                             Log.d("TownList", "Updated Town list: $townList")
                             Toast.makeText(this, "Town updated successfully", Toast.LENGTH_SHORT).show()
+
+
+                            if (oldTownName != newTownName && townAreaMap.containsKey(oldTownName)) {
+                                // Retrieve towns associated with the old district name
+                                val areas = townAreaMap.remove(oldTownName)
+
+                                // Update the map with the new district name and its towns
+                                if (areas != null) {
+                                    townAreaMap[newTownName] = areas
+                                }
+
+                                // Optionally, update the selected district in the UI if this is the currently selected district
+                                if (townDropDown.text.toString() == oldTownName) {
+                                    townDropDown.setText(newTownName, false)
+                                }
+                            }
+
+
                         }
                     }
                 }
@@ -968,15 +1047,16 @@ districtEditIcon.setOnClickListener {
                             Toast.makeText(this, "New Town name already exists", Toast.LENGTH_SHORT).show()
                         }
                         else -> {
-                            // Update the district name in the list
+                            // Update the area name in the list
                             val index = areaList.indexOf(selectedArea)
                             areaList[index] = newAreaName
+
+                            areaDropDown.setText(newAreaName, false)
+                            areaDropDown.setSelection(newAreaName.length) // Move cursor to the end
 
                             // Refresh adapter by recreating it
                             areaAdapter = ArrayAdapter(this, custom_dropdown_item, areaList)
                             areaDropDown.setAdapter(areaAdapter)
-
-                            areaDropDown.setText("") // Clear dropdown text.
 
                             Log.d("AreaList", "Updated Area list: $areaList")
                             Toast.makeText(this, "Area updated successfully", Toast.LENGTH_SHORT).show()
@@ -1032,12 +1112,12 @@ binding.deleteDistrictIcon.setOnClickListener {
         // Inflate the custom alert view for the dialog
         val dialogView = layoutInflater.inflate(R.layout.custom_delete_alert, null)
         val alertMessage = dialogView.findViewById<TextView>(R.id.alertMessage)
-        alertMessage.text = "Are you sure you want to delete this district?"
+        alertMessage.text = "Warning deleting ''$selectedDistrict'' will delete all towns and areas associated with it as well!"
 
         // Create a new title view for the dialog
         val titleView = layoutInflater.inflate(R.layout.dialog_title_centered, null)
         val centeredTitle = titleView.findViewById<TextView>(R.id.centeredTitle)
-        centeredTitle.text = "District   ''$selectedDistrict''"
+        centeredTitle.text = "Do you still want to delete this district?"
 
         // Ensure that the titleView is not attached to any parent
         if (titleView.parent != null) {
@@ -1057,12 +1137,24 @@ binding.deleteDistrictIcon.setOnClickListener {
             if (districtList.contains(selectedDistrict)) {
                 districtList.remove(selectedDistrict)
 
+                // Remove all associated towns
+                val towns = districtTownMap.remove(selectedDistrict)
+
+                // Remove all areas for the removed towns
+                towns?.forEach { town ->
+                    townAreaMap.remove(town)
+                }
+
+                districtDropDown.text.clear() // Clear dropdown text.
+                townDropDown.text.clear() // Clear dropdown text.
+                areaDropDown.text.clear() // Clear dropdown text.
+
+                townAdapter.clear()
+                areaAdapter.clear()
+
                 // Refresh adapter by recreating it
                 districtAdapter = ArrayAdapter(this, custom_dropdown_item, districtList)
                 districtDropDown.setAdapter(districtAdapter)
-
-                // Clear the text in districtDropDown
-                districtDropDown.setText("")
 
                 Log.d("DistrictList", "Deleted district list: $districtList")
                 Toast.makeText(this, "District deleted successfully", Toast.LENGTH_SHORT).show()
@@ -1113,12 +1205,12 @@ binding.deleteDistrictIcon.setOnClickListener {
             // Inflate the custom alert view for the dialog
             val dialogView = layoutInflater.inflate(R.layout.custom_delete_alert, null)
             val alertMessage = dialogView.findViewById<TextView>(R.id.alertMessage)
-            alertMessage.text = "Are you sure you want to delete this Town?"
+            alertMessage.text = "Warning deleting ''$selectedTown'' will delete all property areas associated with it as well!"
 
             // Create a new title view for the dialog
             val titleView = layoutInflater.inflate(R.layout.dialog_title_centered, null)
             val centeredTitle = titleView.findViewById<TextView>(R.id.centeredTitle)
-            centeredTitle.text = "Town   ''$selectedTown''"
+            centeredTitle.text = "Are you sure you want to delete this town?"
 
             // Ensure that the titleView is not attached to any parent
             if (titleView.parent != null) {
@@ -1134,23 +1226,33 @@ binding.deleteDistrictIcon.setOnClickListener {
                 .setCustomTitle(dialogView)
 
             deleteConfirmationDialog.setPositiveButton("Delete") { _, _ ->
-                // Check if the district exists in the list
+                // Check if the town exists in the list
                 if (townList.contains(selectedTown)) {
+                    // Remove the town from the list
                     townList.remove(selectedTown)
 
-                    // Refresh adapter by recreating it
+                    // Remove all associated areas
+                    val areas = townAreaMap.remove(selectedTown)
+
+                    townDropDown.text.clear()
+                    areaDropDown.text.clear()
+                    areaAdapter.clear()
+
+                    // Refresh the town adapter
                     townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
                     townDropDown.setAdapter(townAdapter)
+                    // Clear the area dropdown and its adapter since the town was deleted
 
-                    // Clear the text in townDropDown
-                    townDropDown.setText("")
+                    Log.d("TownList", "Deleted town: $selectedTown")
+                    Log.d("AreaList", "Deleted areas for town $selectedTown: $areas")
+                    Log.d("TownAreaMap", "Updated townAreaMap: $townAreaMap")
 
-                    Log.d("TownList", "Deleted town list: $townList")
-                    Toast.makeText(this, "Town deleted successfully", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Town and its associated areas deleted successfully", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(this, "Selected Town does not exist", Toast.LENGTH_SHORT).show()
                 }
             }
+
 
             deleteConfirmationDialog.setNegativeButton("Cancel") { _, _ -> }
 
@@ -1213,13 +1315,12 @@ binding.deleteDistrictIcon.setOnClickListener {
                 // Check if the district exists in the list
                 if (areaList.contains(selectedArea)) {
                     areaList.remove(selectedArea)
+                    areaDropDown.setText("")
 
                     // Refresh adapter by recreating it
                     areaAdapter = ArrayAdapter(this, custom_dropdown_item, areaList)
                     areaDropDown.setAdapter(areaAdapter)
 
-                    // Clear the text in townDropDown
-                    areaDropDown.setText("")
 
                     Log.d("AreaList", "Deleted town list: $areaList")
                     Toast.makeText(this, "Area deleted successfully", Toast.LENGTH_SHORT).show()
@@ -1259,8 +1360,11 @@ binding.deleteDistrictIcon.setOnClickListener {
         }
     }
 
-    // Sample data for the dropdown (Land Type)
-    val landList = listOf("Residential", "Commercial", "Agricultural", "Industrial")
+
+
+
+// Sample data for the dropdown (Land Type)
+val landList = listOf("Residential", "Commercial", "Agricultural", "Industrial")
 
 // Create an ArrayAdapter and set it on the AutoCompleteTextView
     val landTypeDropdown = binding.landTypeDropdown
@@ -1298,6 +1402,39 @@ binding.deleteDistrictIcon.setOnClickListener {
             }
         }
     }
+
+
+
+//    When add icon of Land clicked then new values would be added to the list
+
+    binding.addLandIcon.setOnClickListener {
+        val tableLayout = findViewById<TableLayout>(R.id.tableLayoutSettings) // Replace with your actual TableLayout ID
+
+        // Iterate through each child (rows in this case) of the TableLayout
+        for (i in 0 until tableLayout.childCount) {
+            val row = tableLayout.getChildAt(i)
+            if (row is TableRow) {
+                // Iterate through each child of the TableRow
+                for (j in 0 until row.childCount) {
+                    val view = row.getChildAt(j)
+                    if (view is EditText) {
+                        // Clear the current value
+                        view.text.clear()
+
+                        // Optionally, set a new value
+                        // view.setText("New Value") // Uncomment and replace "New Value" with your value
+                    }
+                }
+            }
+        }
+
+        // Optionally, clear the Khasra EditText
+        binding.khasraEditText.text.clear()
+
+        // Optionally, clear or reset the AutoCompleteTextView
+        binding.landTypeDropdown.text.clear()
+    }
+
 
 
 
