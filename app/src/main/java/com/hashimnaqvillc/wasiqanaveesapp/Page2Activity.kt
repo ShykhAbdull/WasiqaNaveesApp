@@ -18,6 +18,54 @@ class Page2Activity : AppCompatActivity() {
         binding = ActivityPage2Binding.inflate(layoutInflater)
         setContentView(binding.root)
 
+
+
+        // Retrieve the values from the Intent
+        val selectedDistrict = intent.getStringExtra("selectedDistrict")
+        val selectedTown = intent.getStringExtra("selectedTown")
+        val selectedPropertyArea = intent.getStringExtra("selectedPropertyArea")
+        val selectedLandType = intent.getStringExtra("selectedLandType")
+        val selectedPropertyType = intent.getStringExtra("selectedPropertyType")
+        val kanalValue = intent.getDoubleExtra("kanalValue", 0.0)
+        val marlaValue = intent.getDoubleExtra("marlaValue", 0.0)
+        val sqftValue = intent.getDoubleExtra("sqftValue", 0.0)
+        val coveredArea = intent.getDoubleExtra("coveredArea", 0.0)
+
+
+
+//        Displaying selected values on Pg2 Views
+        binding.districtDisplayPg2.text = selectedDistrict
+        binding.townDisplayPg2.text = selectedTown
+        binding.propertyAreaDisplayPg2.text = selectedPropertyArea
+        binding.landTypeDisplayPg2.text = selectedLandType
+        binding.coveredAreaDisplayPg2.text = coveredArea.toString()
+
+// Create a string to display land area
+        val landAreaStringBuilder = StringBuilder()
+
+        if (kanalValue != 0.0) {
+            landAreaStringBuilder.append("${kanalValue.toInt()} Kanal, ")
+        }
+        if (marlaValue != 0.0) {
+            landAreaStringBuilder.append("${marlaValue.toInt()} Marla, ")
+        }
+        if (sqftValue != 0.0) {
+            landAreaStringBuilder.append("${sqftValue.toInt()} Sqft")
+        }
+
+// Remove the trailing comma and space, if any
+        val landAreaDisplayText = landAreaStringBuilder.toString().trimEnd(',', ' ')
+
+// Set the text if there's any value, otherwise show a placeholder
+        binding.landAreaDisplayPg2.text = if (landAreaDisplayText.isNotEmpty()) {
+            landAreaDisplayText
+        } else {
+            "No land area specified"
+        }
+
+
+
+
         val settingButton = findViewById<ImageButton>(R.id.nav_settings_icon)
         settingButton.setOnClickListener {
             val intent = Intent(this, SettingsActivity::class.java)
@@ -40,17 +88,11 @@ class Page2Activity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // Retrieve the property type from SharedPreferences
-        val sharedPref = getSharedPreferences("MyAppPrefs", MODE_PRIVATE)
-        val propertyType = sharedPref.getString("PROPERTY_TYPE", "Plot") // Default is "Plot"
-        val landType = sharedPref.getString("LAND_TYPE", "Residential") // Default is "Residential"
-        val town = sharedPref.getString("TOWN", "Bahria Town Lhr") // Default is "Bahria Town Lhr"
-
-        binding.propertyAreaDisplayPg2.text = town
-        binding.landTypeDisplayPg2.text = landType
+        binding.propertyAreaDisplayPg2.text = selectedTown
+        binding.landTypeDisplayPg2.text = selectedLandType
 
 
-        if(propertyType == "Building"){
+        if(selectedPropertyType == "Building"){
             binding.coveredAreaRowPg2Separator.visibility = View.VISIBLE
             binding.coveredAreaRowPg2.visibility = View.VISIBLE
             binding.buildingValuePg2Separator.visibility = View.VISIBLE

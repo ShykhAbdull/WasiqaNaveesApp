@@ -1,19 +1,31 @@
 package com.hashimnaqvillc.wasiqanaveesapp
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
 import android.widget.ImageButton
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.hashimnaqvillc.wasiqanaveesapp.databinding.ActivityPage1Binding
 
 class Page1Activity : AppCompatActivity() {
     private lateinit var binding: ActivityPage1Binding
+    private var selectedDistrict: String? = null
+    private var selectedTown: String? = null
+    private var selectedPropertyArea: String? = null
+    private var selectedLandType: String? = null
+    private var selectedPropertyType: String? = null
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+//        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
+
 
         binding = ActivityPage1Binding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -31,14 +43,6 @@ class Page1Activity : AppCompatActivity() {
         dateMonth.visibility = View.GONE
         val dateYear = findViewById<TextView>(R.id.date_year)
         dateYear.visibility = View.GONE
-
-
-
-
-        binding.findButton.setOnClickListener {
-            val intent = Intent(this, Page2Activity::class.java)
-            startActivity(intent)
-        }
 
 
 
@@ -74,7 +78,7 @@ class Page1Activity : AppCompatActivity() {
             binding.districtDropdown.showDropDown()
         }
         binding.districtDropdown.setOnItemClickListener { parent, _, position, _ ->
-            val selectedDistrict = parent.getItemAtPosition(position) as String
+            selectedDistrict = parent.getItemAtPosition(position) as String
             val towns = districtToTowns[selectedDistrict] ?: emptyList()
 
             // Update Town Dropdown
@@ -94,14 +98,8 @@ class Page1Activity : AppCompatActivity() {
             binding.townDropdown.showDropDown()
         }
         binding.townDropdown.setOnItemClickListener { parent, _, position, _ ->
-            val selectedTown = parent.getItemAtPosition(position) as String
+            selectedTown = parent.getItemAtPosition(position) as String
             val propertyAreas = townsToPropertyAreas[selectedTown] ?: emptyList()
-
-            val sharedPref = getSharedPreferences("MyAppPrefs", MODE_PRIVATE)
-            with(sharedPref.edit()) {
-                putString("TOWN", selectedTown)
-                apply()
-            }
 
             // Update Property Area Dropdown
             val propertyAreaAdapter = ArrayAdapter(
@@ -120,12 +118,12 @@ class Page1Activity : AppCompatActivity() {
             binding.propertyAreaDropdown.showDropDown()
         }
         binding.propertyAreaDropdown.setOnItemClickListener { parent, _, position, _ ->
-            val selectedPropertyArea = parent.getItemAtPosition(position) as String
+            selectedPropertyArea = parent.getItemAtPosition(position) as String
             println("Selected Property Area: $selectedPropertyArea")
         }
 
-        val propertyTypeAutoComplete: AutoCompleteTextView = findViewById(R.id.propertyTypeDropdown)
-        val landTypeAutoComplete: AutoCompleteTextView = findViewById(R.id.landTypeDropdown)
+        val propertyTypeAutoComplete = binding.propertyTypeDropdown
+        val landTypeAutoComplete = binding.landTypeDropdown
 
 // Data for the dropdowns
         val propertyTypeOptions = listOf("Plot", "Building")
@@ -141,20 +139,15 @@ class Page1Activity : AppCompatActivity() {
         propertyTypeAutoComplete.setAdapter(propertyTypeAdapter)
         landTypeAutoComplete.setAdapter(landTypeAdapter)
 
-        binding.landTypeDropdown.setOnClickListener {
+        landTypeAutoComplete.setOnClickListener {
+            // Close the keyboard
+            val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
             landTypeAutoComplete.showDropDown()
         }
 // Handle selection actions for "Land Type"
         landTypeAutoComplete.setOnItemClickListener { _, _, position, _ ->
-            val selectedLandType = landTypeOptions[position]
-
-
-            val sharedPref = getSharedPreferences("MyAppPrefs", MODE_PRIVATE)
-            with(sharedPref.edit()) {
-                putString("LAND_TYPE", selectedLandType)
-                apply()
-            }
-
+            selectedLandType = landTypeOptions[position]
             // Take actions based on the selected land type
             when (selectedLandType) {
                 "Residential" -> {
@@ -183,16 +176,11 @@ class Page1Activity : AppCompatActivity() {
         }
 // Handle selection actions for "Property Type"
         propertyTypeAutoComplete.setOnItemClickListener { _, _, position, _ ->
-            val selectedPropertyType = propertyTypeOptions[position]
-            val coveredArea = findViewById<TextView>(R.id.coveredArea_text)
-            val coveredAreaEditText = findViewById<TextView>(com.hashimnaqvillc.wasiqanaveesapp.R.id.coveredAreaEditText)
+            selectedPropertyType = propertyTypeOptions[position]
+            val coveredArea = binding.coveredAreaText
+            val coveredAreaEditText = binding.coveredAreaEditText
 
-            // Save the selected property type in SharedPreferences
-            val sharedPref = getSharedPreferences("MyAppPrefs", MODE_PRIVATE)
-            with(sharedPref.edit()) {
-                putString("PROPERTY_TYPE", selectedPropertyType)
-                apply()
-            }
+
 
             // Take actions based on the selected property type
             when (selectedPropertyType) {
@@ -204,6 +192,61 @@ class Page1Activity : AppCompatActivity() {
                     coveredAreaEditText.visibility = View.VISIBLE                }
             }
         }
+
+
+        binding.findButton.setOnClickListener {
+            // Retrieve numeric values
+            val kanalValue = binding.kanalEditText.text.toString().toDoubleOrNull()
+            val marlaValue = binding.marlaEditText.text.toString().toDoubleOrNull()
+            val sqftValue = binding.sqftEditText.text.toString().toDoubleOrNull()
+
+            val coveredAreaValue = binding.coveredAreaEditText.text.toString().toDoubleOrNull()
+
+
+            // Validate dropdown selections and numeric inputs
+            when {
+                selectedDistrict.isNullOrEmpty() -> {
+                    Toast.makeText(this, "Please select a district", Toast.LENGTH_SHORT).show()
+                }
+                selectedTown.isNullOrEmpty() -> {
+                    Toast.makeText(this, "Please select a town", Toast.LENGTH_SHORT).show()
+                }
+                selectedPropertyArea.isNullOrEmpty() -> {
+                    Toast.makeText(this, "Please select a property area", Toast.LENGTH_SHORT).show()
+                }
+                selectedLandType.isNullOrEmpty() -> {
+                    Toast.makeText(this, "Please select an option in Land Type", Toast.LENGTH_SHORT).show()
+                }
+                selectedPropertyType.isNullOrEmpty() -> {
+                    Toast.makeText(this, "Please select an option in Property Type", Toast.LENGTH_SHORT).show()
+                }
+                kanalValue == null && marlaValue == null && sqftValue == null -> {
+                    Toast.makeText(this, "Please enter a valid Land Area", Toast.LENGTH_SHORT).show()
+                }
+                selectedPropertyType == "Building" && coveredAreaValue == null -> {
+                    Toast.makeText(this, "Please enter a valid Covered Area for Building", Toast.LENGTH_SHORT).show()
+                }
+                else -> {
+                    // All inputs are valid; proceed to the next activity
+                    val intent = Intent(this, Page2Activity::class.java)
+                    intent.putExtra("selectedDistrict", selectedDistrict)
+                    intent.putExtra("selectedTown", selectedTown)
+                    intent.putExtra("selectedPropertyArea", selectedPropertyArea)
+                    intent.putExtra("selectedLandType", selectedLandType)
+                    intent.putExtra("selectedPropertyType", selectedPropertyType)
+                    if (selectedPropertyType == "Building"){
+                        intent.putExtra("coveredArea", coveredAreaValue)
+                    }
+                    intent.putExtra("kanalValue", kanalValue)
+                    intent.putExtra("marlaValue", marlaValue)
+                    intent.putExtra("sqftValue", sqftValue)
+                    startActivity(intent)
+                }
+            }
+        }
+
+
+
 
 
 

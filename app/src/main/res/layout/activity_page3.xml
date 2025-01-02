@@ -242,45 +242,43 @@
 
 <!--    Office Name and Office Phone Number -->
 
+
     <LinearLayout
         android:id="@+id/office_name_phone_layout_pg3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="16dp"
         android:background="@drawable/email_input_background"
         android:backgroundTint="#00008B"
-        android:paddingVertical="1dp"
-        android:paddingHorizontal="10dp"
         android:gravity="center"
-        android:layout_marginTop="10dp"
-        android:layout_marginHorizontal="20dp"
-        app:layout_constraintTop_toBottomOf="@id/propertyArea_text_pg3"
-        app:layout_constraintStart_toStartOf="parent"
+        android:orientation="horizontal"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="2dp"
         app:layout_constraintEnd_toEndOf="parent"
-        >
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/propertyArea_text_pg3">
+
         <TextView
             android:id="@+id/office_name_pg3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Syed Associates :"
             android:layout_marginVertical="5dp"
-            android:textSize="15sp"
-            android:textColor="@color/white"
             android:fontFamily="@font/sf_pro_display_bold"
-            />
+            android:text="Syed Associates :"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
 
         <TextView
             android:id="@+id/office_phone_pg3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=" 0312-4789012"
             android:layout_marginVertical="5dp"
-            android:textSize="15sp"
-            android:textColor="@color/white"
             android:fontFamily="@font/sf_pro_display_regular"
-            />
+            android:text=" 0312-4789012"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
     </LinearLayout>
-
 
     <TextView
         android:id="@+id/propertyTaxInfo_text_pg3"
@@ -339,7 +337,10 @@
                     android:layout_width="25dp"
                     android:layout_height="25dp"
                     android:tooltipText="Click to select all"
-                    />
+                    android:buttonTint="@color/teal_700"
+                    android:backgroundTint="@color/material_on_surface_stroke"
+                />
+
 
                 <TextView
                     android:layout_width="0dp"
@@ -387,6 +388,8 @@
                     android:layout_height="25dp"
                     android:layout_gravity="bottom"
                     android:tooltipText="Click to include Tax"
+                    android:buttonTint="@color/teal_700"
+
                     />
 
                 <TextView
@@ -439,6 +442,7 @@
                     android:layout_height="25dp"
                     android:layout_gravity="center"
                     android:tooltipText="Click to include Tax"
+                    android:buttonTint="@color/teal_700"
                     />
 
                 <TextView
@@ -493,6 +497,7 @@
                     android:layout_height="25dp"
                     android:layout_gravity="center"
                     android:tooltipText="Click to include Tax"
+                    android:buttonTint="@color/teal_700"
                     />
 
                 <TextView
@@ -548,6 +553,7 @@
                     android:layout_height="25dp"
                     android:layout_gravity="center"
                     android:tooltipText="Click to include Tax"
+                    android:buttonTint="@color/teal_700"
                     />
 
                 <TextView
@@ -601,6 +607,7 @@
                     android:layout_height="25dp"
                     android:layout_gravity="center"
                     android:tooltipText="Click to include Tax"
+                    android:buttonTint="@color/teal_700"
                     />
 
                 <TextView
@@ -657,6 +664,7 @@
                     android:layout_height="25dp"
                     android:layout_gravity="center"
                     android:tooltipText="Click to include Fee"
+                    android:buttonTint="@color/teal_700"
                     />
 
                 <TextView
@@ -714,7 +722,7 @@
                     android:layout_height="25dp"
                     android:layout_gravity="center"
                     android:tooltipText="Click to include Fee"
-
+                    android:buttonTint="@color/teal_700"
                     />
 
                 <TextView

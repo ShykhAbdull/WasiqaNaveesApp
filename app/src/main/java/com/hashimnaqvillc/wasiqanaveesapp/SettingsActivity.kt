@@ -43,7 +43,8 @@ super.onCreate(savedInstanceState)
 binding = ActivitySettingsBinding.inflate(layoutInflater)
 setContentView(binding.root)
 
-    window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
+//    window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
+
 
 
 //   Logic for showing and Hiding the Views on Settings Activity
@@ -198,23 +199,23 @@ binding.propertyAreaDropdown.setOnEditorActionListener { _, actionId, _ ->
     }
 }
 
-////        Focus from Land Type ---> Property Type
+////        Focus from Land Type ---> Khasra Number
 //
-//binding.landTypeDropdown.setOnEditorActionListener { _, actionId, _ ->
-//    if (actionId == EditorInfo.IME_ACTION_NEXT || actionId == EditorInfo.IME_ACTION_DONE) {
-//        // Move focus to the next view (e.g., another dropdown)
-//        binding.propertyTypeDropdown.requestFocus()
-//        true // Return true to consume the action
-//    } else {
-//        false
-//    }
-//}
+binding.landTypeDropdown.setOnEditorActionListener { _, actionId, _ ->
+    if (actionId == EditorInfo.IME_ACTION_NEXT || actionId == EditorInfo.IME_ACTION_DONE) {
+        // Move focus to the next view (e.g., another dropdown)
+        binding.khasraEditText.requestFocus()
+        true // Return true to consume the action
+    } else {
+        false
+    }
+}
 
-//binding.propertyTypeDropdown.setOnEditorActionListener { _, actionId, _ ->
-//    // Close the keyboard
-//    // Return true to consume the action
-//    actionId == EditorInfo.IME_ACTION_DONE
-//}
+binding.khasraEditText.setOnEditorActionListener { _, actionId, _ ->
+    // Close the keyboard
+    // Return true to consume the action
+    actionId == EditorInfo.IME_ACTION_DONE
+}
 
 
 // Optional: Customize the keyboard action to show "Next" instead of "Done"
@@ -234,15 +235,19 @@ binding.landTypeDropdown.setRawInputType(InputType.TYPE_CLASS_TEXT)
 binding.khasraEditText.imeOptions = EditorInfo.IME_ACTION_DONE
 binding.khasraEditText.setRawInputType(InputType.TYPE_CLASS_TEXT)
 
-//binding.propertyTypeDropdown.imeOptions = EditorInfo.IME_ACTION_DONE
-//binding.propertyTypeDropdown.setRawInputType(InputType.TYPE_CLASS_TEXT)
+binding.khasraEditText.imeOptions = EditorInfo.IME_ACTION_DONE
+binding.khasraEditText.setRawInputType(InputType.TYPE_CLASS_TEXT)
 
 
 
 
 
 
-val districtAddIcon = binding.addDestrictIcon
+
+
+
+
+    val districtAddIcon = binding.addDestrictIcon
 
 // Map to hold district-to-town associations
 val districtTownMap = mutableMapOf<String, MutableList<String>>()
@@ -1374,6 +1379,7 @@ val landList = listOf("Residential", "Commercial", "Agricultural", "Industrial")
     landTypeDropdown.setOnClickListener {
         landTypeDropdown.showDropDown()
     }
+
 
 // Optional: Set threshold to start showing dropdown from first character
     landTypeDropdown.threshold = 1

@@ -52,17 +52,17 @@ class Page3Activity : AppCompatActivity() {
             when (selectedOption) {
                 "Filer" -> {
                     // Perform actions for Filer
-                    Toast.makeText(this, "Filer selected", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Seller is Filer", Toast.LENGTH_SHORT).show()
                     // Add your specific actions here
                 }
                 "Late Filer" -> {
                     // Perform actions for Late Filer
-                    Toast.makeText(this, "Late Filer selected", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Seller is Late Filer", Toast.LENGTH_SHORT).show()
                     // Add your specific actions here
                 }
                 "Non-Filer" -> {
                     // Perform actions for Non-Filer
-                    Toast.makeText(this, "Non-Filer selected", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Seller Non-Filer", Toast.LENGTH_SHORT).show()
                     // Add your specific actions here
                 }
             }
