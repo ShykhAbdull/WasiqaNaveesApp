@@ -1,17 +1,14 @@
 package com.hashimnaqvillc.wasiqanaveesapp
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.hashimnaqvillc.wasiqanaveesapp.databinding.ActivityPage1Binding
 
@@ -27,30 +24,6 @@ class Page1Activity : AppCompatActivity() {
     private lateinit var districtList: List<String>
     private lateinit var townList: List<String>
     private lateinit var areaList: List<String>
-
-
-//    Getting the data back from SettingsActivity
-private val settingsLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-    if (result.resultCode == Activity.RESULT_OK) {
-        // Retrieve the updated data from the result intent
-        districtList = result.data?.getStringArrayListExtra("updatedDistrictList") ?: listOf()
-        townList = result.data?.getStringArrayListExtra("updatedTownList") ?: listOf()
-        areaList = result.data?.getStringArrayListExtra("updatedAreaList") ?: listOf()
-
-        // Log the updated data
-        Log.d("updatedData", "Districts: $districtList")
-        Log.d("updatedData", "Towns: $townList")
-        Log.d("updatedData", "Areas: $areaList")
-
-
-//        // Update dropdown adapters here if needed
-//        updateDropdownAdapters()
-    }
-}
-
-
-
-
 
 
     // Variables for dynamically updated data
@@ -71,7 +44,7 @@ private val settingsLauncher = registerForActivityResult(ActivityResultContracts
         // Launch SettingsActivity
         settingButton.setOnClickListener {
             val intent = Intent(this, SettingsActivity::class.java)
-            settingsLauncher.launch(intent)
+            startActivity(intent)
         }
 
         val backButton = findViewById<ImageButton>(R.id.nav_back)
@@ -292,27 +265,5 @@ private val settingsLauncher = registerForActivityResult(ActivityResultContracts
 
 
 
-
-
-//    // Function to construct mappings
-//    private fun constructMappings(
-//        updatedDistrictList: List<String>,
-//        updatedTownList: List<String>,
-//        updatedAreaList: List<String>
-//    ) {
-//        // Example logic to dynamically populate districtToTowns and townsToPropertyAreas
-//        districtToTowns.clear()
-//        townsToPropertyAreas.clear()
-//
-//        updatedDistrictList.forEach { district ->
-//            // Example: Map each district to a subset of towns
-//            districtToTowns[district] = updatedTownList.filter { it.startsWith(district.first()) }
-//        }
-//
-//        updatedTownList.forEach { town ->
-//            // Example: Map each town to a subset of areas
-//            townsToPropertyAreas[town] = updatedAreaList.filter { it.startsWith(town.first()) }
-//        }
-//    }
 
     }

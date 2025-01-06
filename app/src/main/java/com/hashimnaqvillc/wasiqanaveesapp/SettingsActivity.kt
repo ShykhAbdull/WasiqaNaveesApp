@@ -1,7 +1,6 @@
 package com.hashimnaqvillc.wasiqanaveesapp
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -52,29 +51,6 @@ binding = ActivitySettingsBinding.inflate(layoutInflater)
 setContentView(binding.root)
 
 //    window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
-
-
-    var sharedPreferences = getSharedPreferences("DropdownData", MODE_PRIVATE)
-
-    // Restore the lists from SharedPreferences
-    val gson = Gson()
-    val districtJson = sharedPreferences.getString("districtList", "[]")
-    val townJson = sharedPreferences.getString("townList", "[]")
-    val areaJson = sharedPreferences.getString("areaList", "[]")
-
-    districtList = gson.fromJson(districtJson, object : TypeToken<MutableList<String>>() {}.type)
-    townList = gson.fromJson(townJson, object : TypeToken<MutableList<String>>() {}.type)
-    areaList = gson.fromJson(areaJson, object : TypeToken<MutableList<String>>() {}.type)
-
-    // Bind restored lists to dropdown adapters
-    districtAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, districtList)
-    binding.districtDropdown.setAdapter(districtAdapter)
-
-    townAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, townList)
-    binding.townDropdown.setAdapter(townAdapter)
-
-    areaAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, areaList)
-    binding.propertyAreaDropdown.setAdapter(areaAdapter)
 
 
 
@@ -277,8 +253,9 @@ binding.khasraEditText.setRawInputType(InputType.TYPE_CLASS_TEXT)
 val districtTownMap = mutableMapOf<String, MutableList<String>>()
 
 // Sample data for the dropdown
-districtList = mutableListOf("Lahore", "Islamabad", "Karachi", "Peshawar", "Quetta")
-districtAdapter = ArrayAdapter(this, custom_dropdown_item, districtList)
+districtList = PreferencesManager.getDropdownList().toMutableList()
+
+    districtAdapter = ArrayAdapter(this, custom_dropdown_item, districtList)
 // Set adapter to AutoCompleteTextView
 districtDropDown.setAdapter(districtAdapter)
 // Start searching after typing one character
@@ -521,6 +498,8 @@ districtAddIcon.setOnClickListener {
                     townDropDown.setAdapter(townAdapter)
                     townDropDown.text.clear() // Clear selected town
 
+//                    Adding in as SharedPreference
+                    PreferencesManager.saveDropdownList(districtList)
 
                     Log.d("DistrictList", "Updated district list: $districtList")
                     Toast.makeText(this, "District added successfully", Toast.LENGTH_SHORT).show()
@@ -611,6 +590,7 @@ val townAddIcon = binding.addTownIcon // Assuming town add icon ID
                             Toast.makeText(this, "Town already exists", Toast.LENGTH_SHORT)
                                 .show()
                         } else {
+
                             townDropDown.setText(newTownName, false)
                             townDropDown.setSelection(newTownName.length) // Move cursor to the end
                             towns.add(newTownName)
@@ -632,6 +612,9 @@ val townAddIcon = binding.addTownIcon // Assuming town add icon ID
                                 "Town added successfully",
                                 Toast.LENGTH_SHORT
                             ).show()
+
+                            // Save the updated districtTownMap
+                            PreferencesManager.saveDistrictTownMap(districtTownMap)
                         }
                         Log.d(
                             "TownList",
@@ -841,6 +824,7 @@ districtEditIcon.setOnClickListener {
                         townDropDown.text.clear() // Clear dropdown text.
                         areaDropDown.text.clear() // Clear dropdown text.
 
+
                         // Refresh adapter by recreating it
                         districtAdapter = ArrayAdapter(this, custom_dropdown_item, districtList)
                         districtDropDown.setAdapter(districtAdapter)
@@ -870,7 +854,8 @@ districtEditIcon.setOnClickListener {
                         }
 
 
-
+//                    Adding in as SharedPreference
+                        PreferencesManager.saveDropdownList(districtList)
 
                     }
                 }
@@ -1162,6 +1147,7 @@ binding.deleteDistrictIcon.setOnClickListener {
             .setCustomTitle(dialogView)
 
         deleteConfirmationDialog.setPositiveButton("Delete") { _, _ ->
+
             // Check if the district exists in the list
             if (districtList.contains(selectedDistrict)) {
                 districtList.remove(selectedDistrict)
@@ -1181,9 +1167,14 @@ binding.deleteDistrictIcon.setOnClickListener {
                 townAdapter.clear()
                 areaAdapter.clear()
 
+
                 // Refresh adapter by recreating it
                 districtAdapter = ArrayAdapter(this, custom_dropdown_item, districtList)
                 districtDropDown.setAdapter(districtAdapter)
+
+
+//              Adding in as SharedPreference
+                    PreferencesManager.saveDropdownList(districtList)
 
                 Log.d("DistrictList", "Deleted district list: $districtList")
                 Toast.makeText(this, "District deleted successfully", Toast.LENGTH_SHORT).show()
@@ -1523,27 +1514,7 @@ val landList = listOf("Residential", "Commercial", "Agricultural", "Industrial")
             )
             .setPositiveButton("Save") { _, _ ->
 
-                sharedPreferences = getSharedPreferences("DropdownData", MODE_PRIVATE)
-                val editor = sharedPreferences.edit()
 
-                // Save the lists as JSON strings or a delimited string
-                editor.putString("districtList", Gson().toJson(districtList))
-                editor.putString("townList", Gson().toJson(townList))
-                editor.putString("areaList", Gson().toJson(areaList))
-                editor.apply()
-
-
-                // Pass data back to FirstPageActivity
-                val intent = Intent(this, Page1Activity::class.java)
-                intent.putStringArrayListExtra("updatedDistrictList", ArrayList(districtList))
-                intent.putStringArrayListExtra("updatedTownList", ArrayList(townList))
-                intent.putStringArrayListExtra("updatedAreaList", ArrayList(areaList))
-
-                // Set the result to indicate success
-                setResult(Activity.RESULT_OK, intent)
-
-                // Close SettingsActivity
-                finish()
             }
             .setNegativeButton("Cancel") { dialog, _ ->
                 dialog.dismiss() // Close the dialog without saving
@@ -1552,43 +1523,6 @@ val landList = listOf("Residential", "Commercial", "Agricultural", "Industrial")
     }
 
 
-
-
-
-
-
-
-
-
-}
-
-
-private fun saveDistrictList() {
-val sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE)
-val editor = sharedPreferences.edit()
-val json = Gson().toJson(districtList)
-editor.putString("districtList", json)
-editor.apply()
-}
-private fun loadDistrictList() {
-val sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE)
-val json = sharedPreferences.getString("districtList", null)
-if (json != null) {
-    val type = object : TypeToken<ArrayList<String>>() {}.type
-    districtList = Gson().fromJson(json, type)
-} else {
-    districtList = ArrayList() // Default empty list
-}
-}
-
-private fun resetDistrictList() {
-val sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE)
-val editor = sharedPreferences.edit()
-val emptyListJson = Gson().toJson(ArrayList<String>())  // Empty list
-editor.putString("districtList", emptyListJson)  // Save empty list
-editor.apply()
-
-districtList.clear()  // Clears the current districtList in memory
 }
 
 
