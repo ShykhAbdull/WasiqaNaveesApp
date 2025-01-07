@@ -35,16 +35,19 @@ object PreferencesManager {
 
 
 
-    // District to Town (SAVE&GET)
-    fun saveDistrictTownMap(districtTownMap: Map<String, List<String>>) {
+    // Saving the MutableMap with MutableList
+    fun saveDistrictTownMap(districtTownMap: MutableMap<String, MutableList<String>>) {
         val json = gson.toJson(districtTownMap) // Serialize the map to JSON
         sharedPreferences.edit().putString("DistrictTownMap", json).apply()
     }
+
+    // Getting the MutableMap with MutableList
     fun getDistrictTownMap(): MutableMap<String, MutableList<String>> {
         val json = sharedPreferences.getString("DistrictTownMap", null)
-        val type = object : TypeToken<MutableMap<String, MutableList<String>>>() {}.type
+        val type = object : TypeToken<MutableMap<String, MutableList<String>>>() {}.type // Match the type
         return gson.fromJson(json, type) ?: mutableMapOf() // Deserialize or return an empty map
     }
+
 
 
 

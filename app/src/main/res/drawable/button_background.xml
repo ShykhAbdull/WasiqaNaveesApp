@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- When the button is pressed -->
+    <item android:drawable="@color/teal_200" android:state_pressed="true" />
+    <!-- When the button is focused -->
+    <item android:drawable="@color/teal_200" android:state_focused="true" />
+    <!-- Default state (no background) -->
+    <item android:drawable="@android:color/transparent" />
+
+</selector>
+

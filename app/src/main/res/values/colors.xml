@@ -15,6 +15,7 @@
     <color name="wasiqa_green">#FFC107 </color>
     <color name="wasiqa_blue">#0000FF </color>
     <color name="wasiqa_light_green">#4CAF50 </color>
+    <color name="wasiqa_transparent">#00FFFFFF</color>
 
 
 </resources>

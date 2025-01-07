@@ -17,7 +17,6 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
 import android.widget.Toast
@@ -26,8 +25,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.hashimnaqvillc.wasiqanaveesapp.R.layout.custom_dropdown_item
 import com.hashimnaqvillc.wasiqanaveesapp.databinding.ActivitySettingsBinding
 
@@ -243,19 +240,16 @@ binding.khasraEditText.setRawInputType(InputType.TYPE_CLASS_TEXT)
 
 
 
-
-
-
-
-    val districtAddIcon = binding.addDestrictIcon
+val districtAddIcon = binding.addDestrictIcon
 
 // Map to hold district-to-town associations
 val districtTownMap = mutableMapOf<String, MutableList<String>>()
 
 // Sample data for the dropdown
 districtList = PreferencesManager.getDropdownList().toMutableList()
+districtAdapter = ArrayAdapter(this, custom_dropdown_item, districtList)
 
-    districtAdapter = ArrayAdapter(this, custom_dropdown_item, districtList)
+
 // Set adapter to AutoCompleteTextView
 districtDropDown.setAdapter(districtAdapter)
 // Start searching after typing one character
@@ -302,7 +296,7 @@ districtDropDown.addTextChangedListener(object : TextWatcher {
 // TownDropdown setup
 val townDropDown = binding.townDropdown // ID of AutoCompleteTextView for towns
 val townAreaMap = mutableMapOf<String, MutableList<String>>()
-    townList = mutableListOf()
+townList = mutableListOf()
 townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
 townDropDown.setAdapter(townAdapter)
 townDropDown.threshold = 1
@@ -444,296 +438,67 @@ townDropDown.addTextChangedListener(object : TextWatcher {
 
     }
 
+//--------------------------------------------------------------
 
-
-
-
-
-//        Logic for Adding new district/town from the user and saving that in their adapter
-
-districtAddIcon.setOnClickListener {
-
-        // Inflate the custom add alert view for the dialog
-        val dialogView = layoutInflater.inflate(R.layout.custom_add_alert, null)
-        val addMessage = dialogView.findViewById<TextView>(R.id.addMessage)
-        val addInputEditText = dialogView.findViewById<EditText>(R.id.AddinputEditText)
-
-        // Set the message text
-        addMessage.text = "Add a New District"
-        // Set the Edit Text Hint
-    addInputEditText.hint = "Enter new District Name"
-
-    // Create a confirmation dialog to add a new district
-    val addDistrictDialog = MaterialAlertDialogBuilder(this)
-        .setView(dialogView)
-        .setPositiveButton("Add") { _, _ ->
-            val newDistrictName = addInputEditText.text.toString().trim()
-
-            when {
-                newDistrictName.isEmpty() -> {
-                    Toast.makeText(this, "District name cannot be empty", Toast.LENGTH_SHORT).show()
-                }
-                districtList.contains(newDistrictName) -> {
-                    Toast.makeText(this, "District already exists", Toast.LENGTH_SHORT).show()
-                }
-                else -> {
-                    // Add the new district to the list
-                    districtDropDown.setText(newDistrictName, false)
-                    districtDropDown.setSelection(newDistrictName.length) // Move cursor to the end
-
-
-                    districtList.add(newDistrictName)
-
-                    townDropDown.text.clear() // Clear dropdown text.
-                    areaDropDown.text.clear() // Clear dropdown text.
-
-                    // Refresh adapter by recreating it
-                    districtAdapter = ArrayAdapter(this, custom_dropdown_item, districtList)
-                    districtDropDown.setAdapter(districtAdapter)
-
-                    // Clear and reset towns and areas
-                    val towns = districtTownMap[newDistrictName] ?: mutableListOf()
-                    townList = towns
-                    townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
-                    townDropDown.setAdapter(townAdapter)
-                    townDropDown.text.clear() // Clear selected town
-
-//                    Adding in as SharedPreference
-                    PreferencesManager.saveDropdownList(districtList)
-
-                    Log.d("DistrictList", "Updated district list: $districtList")
-                    Toast.makeText(this, "District added successfully", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-        .setNegativeButton("Cancel") { _, _ -> }
-        .create() // Call create() here only once
-
-// Show the dialog
-    addDistrictDialog.setOnShowListener {
-        val positiveButtonAdd = addDistrictDialog.getButton(AlertDialog.BUTTON_POSITIVE)
-        val negativeButtonAdd = addDistrictDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
-
-        // Load the custom font
-        val customFont = ResourcesCompat.getFont(this, R.font.sf_pro_display_bold)
-
-        // Apply the font to the buttons
-        positiveButtonAdd.typeface = customFont
-        negativeButtonAdd.typeface = customFont
-
-        // Optional: Set text color or style
-        positiveButtonAdd.setTextColor(ContextCompat.getColor(this, R.color.wasiqa_light_green)) // For "Add"
-        positiveButtonAdd.textSize = 16f
-        negativeButtonAdd.setTextColor(ContextCompat.getColor(this, R.color.wasiqa_dark_grey)) // For "Cancel"
-        negativeButtonAdd.textSize = 16f
-    }
-    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-    addInputEditText.requestFocus()
-
-    // Use a Handler to ensure the keyboard opens after the dialog is fully visible
-    addInputEditText.postDelayed({
-        imm.showSoftInput(addInputEditText, InputMethodManager.SHOW_IMPLICIT)
-    }, 100) // Delay by 100ms
-
-    addDistrictDialog.show()
-}
-
-
-
-
-// Logic for Adding New Town
-
-val townAddIcon = binding.addTownIcon // Assuming town add icon ID
-
-    townAddIcon.setOnClickListener {
-    val dialogView = layoutInflater.inflate(R.layout.custom_add_alert, null)
-    val addMessage = dialogView.findViewById<TextView>(R.id.addMessage)
-    val addInputEditText = dialogView.findViewById<EditText>(R.id.AddinputEditText)
-    val selectedDistrict = districtDropDown.text.toString().trim()
-
-    // Set the Edit Text Hint
-    addInputEditText.hint = "Enter new Town Name"
-
-    if (selectedDistrict.isEmpty()) {
+    districtAddIcon.setOnClickListener {
         // Close the keyboard
         val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
 
-        // Show Toast message
-        Toast.makeText(this, "Select the district first", Toast.LENGTH_SHORT).show()
-    } else {
+        // Check if the dropdown has text written
+        val currentDistrictName = districtDropDown.text.toString().trim()
 
+        if (currentDistrictName.isEmpty()) {
+            // Show a message if the dropdown is empty
+            Toast.makeText(this, "Please enter a district name in the dropdown before adding", Toast.LENGTH_SHORT).show()
+        } else {
+            // Proceed with the dialog to confirm adding the district
+            val dialogView = layoutInflater.inflate(R.layout.custom_add_alert, null)
+            val addMessage = dialogView.findViewById<TextView>(R.id.addMessage)
 
-        // Set the message text
-        addMessage.text = "Add a Town for $selectedDistrict"
+            // Set the message text
+            addMessage.text = "Add '$currentDistrictName' to the District List?"
 
-        // Create a confirmation dialog to add a new town
-        val addTownDialog = MaterialAlertDialogBuilder(this)
-            .setView(dialogView)
-            .setPositiveButton("Add") { _, _ ->
-                val newTownName = addInputEditText.text.toString().trim()
+            // Create a confirmation dialog
+            val addDistrictDialog = MaterialAlertDialogBuilder(this)
+                .setView(dialogView)
+                .setPositiveButton("Add") { _, _ ->
                     when {
+                        districtList.contains(currentDistrictName) -> {
+                            Toast.makeText(this, "District already exists", Toast.LENGTH_SHORT).show()
+                        }
+                        else -> {
+                            // Add the new district to the list
+                            districtList.add(currentDistrictName)
 
-                    newTownName.isEmpty() -> {
-                        Toast.makeText(
-                            this,
-                            "Town name cannot be empty",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                            // Refresh adapter by recreating it
+                            districtAdapter = ArrayAdapter(this, custom_dropdown_item, districtList)
+                            districtDropDown.setAdapter(districtAdapter)
 
-                    else -> {
-                        // Add the new town to the district's list in the map
-                        val towns =
-                            districtTownMap.getOrPut(selectedDistrict) { mutableListOf() }
-                        if (towns.contains(newTownName)) {
-                            Toast.makeText(this, "Town already exists", Toast.LENGTH_SHORT)
-                                .show()
-                        } else {
+                            townDropDown.text.clear() // Clear towns dropdown
+                            areaDropDown.text.clear() // Clear areas dropdown
 
-                            townDropDown.setText(newTownName, false)
-                            townDropDown.setSelection(newTownName.length) // Move cursor to the end
-                            towns.add(newTownName)
-                            // Update the town list and adapter for the current district
+                            // Clear and reset towns and areas
+                            val towns = districtTownMap[currentDistrictName] ?: mutableListOf()
                             townList = towns
                             townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
                             townDropDown.setAdapter(townAdapter)
 
-                            // Clear and reset areas
-                            val areas = townAreaMap[newTownName] ?: mutableListOf()
-                            areaList = areas
-                            areaAdapter = ArrayAdapter(this, custom_dropdown_item, areaList)
-                            areaDropDown.setAdapter(areaAdapter)
-                            areaDropDown.text.clear() // Clear area dropdown
+                            // Save the updated list in SharedPreferences
+                            PreferencesManager.saveDropdownList(districtList)
 
-
-                            Toast.makeText(
-                                this,
-                                "Town added successfully",
-                                Toast.LENGTH_SHORT
-                            ).show()
-
-                            // Save the updated districtTownMap
-                            PreferencesManager.saveDistrictTownMap(districtTownMap)
-                        }
-                        Log.d(
-                            "TownList",
-                            "Updated town list for $selectedDistrict: $townList"
-                        )
-                    }
-                }
-            }
-        .setNegativeButton("Cancel") { _, _ -> }
-        .create()
-
-        // Change font style and color
-        addTownDialog.setOnShowListener {
-            val positiveButtonAdd = addTownDialog.getButton(AlertDialog.BUTTON_POSITIVE)
-            val negativeButtonAdd = addTownDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
-
-            // Load the custom font
-            val customFont = ResourcesCompat.getFont(this, R.font.sf_pro_display_bold)
-
-            // Apply the font to the buttons
-            positiveButtonAdd.typeface = customFont
-            negativeButtonAdd.typeface = customFont
-
-            // Optional: Set text color or style
-            positiveButtonAdd.setTextColor(ContextCompat.getColor(this, R.color.wasiqa_light_green)) // For "Add"
-            positiveButtonAdd.textSize = 16f
-            negativeButtonAdd.setTextColor(ContextCompat.getColor(this, R.color.wasiqa_dark_grey)) // For "Cancel"
-            negativeButtonAdd.textSize = 16f
-        }
-
-        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        addInputEditText.requestFocus()
-
-        // Use a Handler to ensure the keyboard opens after the dialog is fully visible
-        addInputEditText.postDelayed({
-            imm.showSoftInput(addInputEditText, InputMethodManager.SHOW_IMPLICIT)
-        }, 100) // Delay by 100ms
-
-    addTownDialog.show()
-    }
-}
-
-
-    // Logic for Adding New Property Area
-
-    val areaAddIcon = binding.addAreaIcon // Assuming town add icon ID
-    areaAddIcon.setOnClickListener {
-        val dialogView = layoutInflater.inflate(R.layout.custom_add_alert, null)
-        val addMessage = dialogView.findViewById<TextView>(R.id.addMessage)
-        val addInputEditText = dialogView.findViewById<EditText>(R.id.AddinputEditText)
-        // Set the Edit Text Hint
-        addInputEditText.hint = "Enter new Property Area"
-
-        val selectedTown = townDropDown.text.toString().trim()
-        if (selectedTown.isEmpty()) {
-            // Close the keyboard
-            val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
-
-            // Show Toast message
-            Toast.makeText(this, "Select the Town first", Toast.LENGTH_SHORT).show()
-        }
-        else
-        {
-
-// Set the message text
-            addMessage.text = "Add Property Area for $selectedTown"
-
-
-            // Create a confirmation dialog to add a new town
-            val addAreaDialog = MaterialAlertDialogBuilder(this)
-                .setView(dialogView)
-                .setPositiveButton("Add") { _, _ ->
-                    val newAreaName = addInputEditText.text.toString().trim()
-                    when {
-                        newAreaName.isEmpty() -> {
-                            Toast.makeText(
-                                this,
-                                "Property Area cannot be empty",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-
-                        else -> {
-                            // Add the new area to the town's list in the map
-                            val area = townAreaMap.getOrPut(selectedTown) { mutableListOf() }
-                            if (area.contains(newAreaName)) {
-                                Toast.makeText(this, "Area already exists", Toast.LENGTH_SHORT).show()
-                            } else {
-                                area.add(newAreaName) // Add the new area to the list
-
-                                // Update the area list and adapter for the current town
-                                areaList = area
-                                areaAdapter = ArrayAdapter(this, custom_dropdown_item, areaList)
-                                areaDropDown.setAdapter(areaAdapter)
-
-                                // Set the new area as the selected text
-                                areaDropDown.setText(newAreaName, false)
-                                areaDropDown.setSelection(newAreaName.length)
-
-                                Toast.makeText(
-                                    this,
-                                    "Property Area added successfully",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-
-                            Log.d("AreaList", "Updated area list for $selectedTown: $areaList")
+                            Log.d("DistrictList", "Updated district list: $districtList")
+                            Toast.makeText(this, "District added successfully", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
-
                 .setNegativeButton("Cancel") { _, _ -> }
                 .create()
 
-            // Change font style and color
-            addAreaDialog.setOnShowListener {
-                val positiveButtonAdd = addAreaDialog.getButton(AlertDialog.BUTTON_POSITIVE)
-                val negativeButtonAdd = addAreaDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+            // Show the dialog
+            addDistrictDialog.setOnShowListener {
+                val positiveButtonAdd = addDistrictDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                val negativeButtonAdd = addDistrictDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
 
                 // Load the custom font
                 val customFont = ResourcesCompat.getFont(this, R.font.sf_pro_display_bold)
@@ -749,13 +514,209 @@ val townAddIcon = binding.addTownIcon // Assuming town add icon ID
                 negativeButtonAdd.textSize = 16f
             }
 
-            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            addInputEditText.requestFocus()
+            addDistrictDialog.show()
+        }
+    }
 
-            // Use a Handler to ensure the keyboard opens after the dialog is fully visible
-            addInputEditText.postDelayed({
-                imm.showSoftInput(addInputEditText, InputMethodManager.SHOW_IMPLICIT)
-            }, 100) // Delay by 100ms
+
+
+
+
+
+    val townAddIcon = binding.addTownIcon // Assuming town add icon ID
+
+    townAddIcon.setOnClickListener {
+        // Close the keyboard
+        val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+
+        val selectedDistrict = districtDropDown.text.toString().trim()
+        val selectedTown = townDropDown.text.toString().trim()
+
+        if (selectedDistrict.isEmpty()) {
+            // Show a Toast message prompting the user to select a district
+            Toast.makeText(this, "Please select a district first", Toast.LENGTH_SHORT).show()
+        } else if (selectedTown.isEmpty()) {
+            // Show a Toast message prompting the user to enter a town name
+            Toast.makeText(this, "Please enter a town name in the dropdown", Toast.LENGTH_SHORT).show()
+        } else {
+            // Inflate the custom add alert view for the dialog
+            val dialogView = layoutInflater.inflate(R.layout.custom_add_alert, null)
+            val addMessage = dialogView.findViewById<TextView>(R.id.addMessage)
+
+            // Set the message text and pre-fill the input field with the dropdown text
+            addMessage.text = "Add $selectedTown for $selectedDistrict District?"
+
+            // Create a confirmation dialog to add a new town
+            val addTownDialog = MaterialAlertDialogBuilder(this)
+                .setView(dialogView)
+                .setPositiveButton("Add") { _, _ ->
+                    val newTownName = selectedTown // Get the text from the dropdown
+
+                    when {
+                        newTownName.isEmpty() -> {
+                            Toast.makeText(
+                                this,
+                                "Town name cannot be empty",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+
+                        else -> {
+                            // Add the new town to the district's list in the map
+                            val towns = districtTownMap.getOrPut(selectedDistrict) { mutableListOf() }
+                            if (towns.contains(newTownName)) {
+                                Toast.makeText(this, "Town already exists", Toast.LENGTH_SHORT)
+                                    .show()
+                            } else {
+                                townDropDown.setText(newTownName, false)
+                                townDropDown.setSelection(newTownName.length) // Move cursor to the end
+                                towns.add(newTownName)
+
+                                // Save updated district-town map in SharedPreference
+                                PreferencesManager.saveDistrictTownMap(districtTownMap)
+
+                                // Update the town list and adapter for the current district
+                                townList = towns
+                                townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
+                                townDropDown.setAdapter(townAdapter)
+
+                                // Clear and reset areas
+                                val areas = townAreaMap[newTownName] ?: mutableListOf()
+                                areaList = areas
+                                areaAdapter = ArrayAdapter(this, custom_dropdown_item, areaList)
+                                areaDropDown.setAdapter(areaAdapter)
+                                areaDropDown.text.clear() // Clear area dropdown
+
+                                Toast.makeText(
+                                    this,
+                                    "Town added successfully",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                            Log.d(
+                                "TownList",
+                                "Updated town list for $selectedDistrict: $townList"
+                            )
+                        }
+                    }
+                }
+                .setNegativeButton("Cancel") { _, _ -> }
+                .create()
+
+            // Customize dialog button styles
+            addTownDialog.setOnShowListener {
+                val positiveButtonAdd = addTownDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                val negativeButtonAdd = addTownDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+
+                val customFont = ResourcesCompat.getFont(this, R.font.sf_pro_display_bold)
+
+                positiveButtonAdd.typeface = customFont
+                negativeButtonAdd.typeface = customFont
+
+                positiveButtonAdd.setTextColor(ContextCompat.getColor(this, R.color.wasiqa_light_green))
+                positiveButtonAdd.textSize = 16f
+                negativeButtonAdd.setTextColor(ContextCompat.getColor(this, R.color.wasiqa_dark_grey))
+                negativeButtonAdd.textSize = 16f
+            }
+
+            addTownDialog.show()
+        }
+    }
+
+
+
+
+
+
+    // Logic for Adding New Property Area
+
+    val areaAddIcon = binding.addAreaIcon // Assuming area add icon ID
+    areaAddIcon.setOnClickListener {
+        // Close the keyboard
+        val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+
+        val dialogView = layoutInflater.inflate(R.layout.custom_add_alert, null)
+        val addMessage = dialogView.findViewById<TextView>(R.id.addMessage)
+
+        val selectedTown = townDropDown.text.toString().trim()
+
+        val selectedArea = areaDropDown.text.toString().trim()
+
+        if (selectedArea.isEmpty()) {
+            // Close the keyboard
+            inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+
+            // Show Toast message
+            Toast.makeText(this, "Please select a Town first", Toast.LENGTH_SHORT).show()
+        } else {
+            // Set the message text
+            addMessage.text = "Add $selectedArea for $selectedTown Town?"
+
+            // Create a confirmation dialog to add a new property area
+            val addAreaDialog = MaterialAlertDialogBuilder(this)
+                .setView(dialogView)
+                .setPositiveButton("Add") { _, _ ->
+                    when {
+                        selectedArea.isEmpty() -> {
+                            Toast.makeText(
+                                this,
+                                "Property Area cannot be empty",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+
+                        else -> {
+                            // Add the new area to the town's list in the map
+                            val area = townAreaMap.getOrPut(selectedTown) { mutableListOf() }
+                            if (area.contains(selectedArea)) {
+                                Toast.makeText(this, "Area already exists", Toast.LENGTH_SHORT).show()
+                            } else {
+                                area.add(selectedArea) // Add the new area to the list
+
+                                // Update the area list and adapter for the current town
+                                areaList = area
+                                areaAdapter = ArrayAdapter(this, custom_dropdown_item, areaList)
+                                areaDropDown.setAdapter(areaAdapter)
+
+                                // Set the new area as the selected text
+                                areaDropDown.setText(selectedArea, false)
+                                areaDropDown.setSelection(selectedArea.length)
+
+                                // Provide feedback
+                                Toast.makeText(
+                                    this,
+                                    "Property Area added successfully",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+
+                                Log.d("AreaList", "Updated area list for $selectedTown: $areaList")
+                            }
+                        }
+                    }
+                }
+                .setNegativeButton("Cancel") { _, _ -> }
+                .create()
+
+            // Customize dialog button styles
+            addAreaDialog.setOnShowListener {
+                val positiveButtonAdd = addAreaDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                val negativeButtonAdd = addAreaDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+
+                // Load the custom font
+                val customFont = ResourcesCompat.getFont(this, R.font.sf_pro_display_bold)
+
+                // Apply the font to the buttons
+                positiveButtonAdd.typeface = customFont
+                negativeButtonAdd.typeface = customFont
+
+                // Set text color and size
+                positiveButtonAdd.setTextColor(ContextCompat.getColor(this, R.color.wasiqa_light_green))
+                positiveButtonAdd.textSize = 16f
+                negativeButtonAdd.setTextColor(ContextCompat.getColor(this, R.color.wasiqa_dark_grey))
+                negativeButtonAdd.textSize = 16f
+            }
 
             addAreaDialog.show()
         }
@@ -773,6 +734,8 @@ val districtEditIcon = binding.editDistrictIcon
 
 districtEditIcon.setOnClickListener {
     val selectedDistrict = districtDropDown.text.toString().trim()
+    val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
 
     if (selectedDistrict.isNotEmpty() && districtList.contains(selectedDistrict)) {
         // Inflate the custom edit alert view for the dialog
@@ -859,6 +822,8 @@ districtEditIcon.setOnClickListener {
 
                     }
                 }
+                // Close the keyboard
+                inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
             }
 
 
@@ -883,18 +848,16 @@ districtEditIcon.setOnClickListener {
             negativeButtonEdit.setTextColor(ContextCompat.getColor(this, R.color.teal_700)) // For "Cancel"
             negativeButtonEdit.textSize = 16f
 
-            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             inputEditText.requestFocus()
 
             // Use a Handler to ensure the keyboard opens after the dialog is fully visible
             inputEditText.postDelayed({
-                imm.showSoftInput(inputEditText, InputMethodManager.SHOW_IMPLICIT)
+                inputMethodManager.showSoftInput(inputEditText, InputMethodManager.SHOW_IMPLICIT)
             }, 100) // Delay by 100ms
 
         }
         editDistrictDialog.show()
     } else {
-        val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
         Toast.makeText(this, "Please select a district to edit", Toast.LENGTH_SHORT).show()
     }
@@ -904,6 +867,7 @@ districtEditIcon.setOnClickListener {
     val townEditIcon = binding.editTownIcon
     townEditIcon.setOnClickListener {
         val selectedTown = townDropDown.text.toString().trim()
+        val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
         if (selectedTown.isNotEmpty() && townList.contains(selectedTown)) {
             // Inflate the custom edit alert view for the dialog
@@ -940,6 +904,10 @@ districtEditIcon.setOnClickListener {
                             Toast.makeText(this, "New Town name already exists", Toast.LENGTH_SHORT).show()
                         }
                         else -> {
+
+                            // Close the keyboard
+                            inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+
                             // Update the district name in the list
                             val index = townList.indexOf(selectedTown)
                             val oldTownName = townList[index]
@@ -1002,17 +970,15 @@ districtEditIcon.setOnClickListener {
                 negativeButtonEdit.setTextColor(ContextCompat.getColor(this, R.color.teal_700)) // For "Cancel"
                 negativeButtonEdit.textSize = 16f
 
-                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 inputEditText.requestFocus()
 
                 // Use a Handler to ensure the keyboard opens after the dialog is fully visible
                 inputEditText.postDelayed({
-                    imm.showSoftInput(inputEditText, InputMethodManager.SHOW_IMPLICIT)
+                    inputMethodManager.showSoftInput(inputEditText, InputMethodManager.SHOW_IMPLICIT)
                 }, 100) // Delay by 100ms
             }
             editTownDialog.show()
         } else {
-            val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
             Toast.makeText(this, "Please select a town to edit", Toast.LENGTH_SHORT).show()
         }
@@ -1025,6 +991,7 @@ districtEditIcon.setOnClickListener {
 
     areaEditIcon.setOnClickListener {
         val selectedArea = areaDropDown.text.toString().trim()
+        val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
         if (selectedArea.isNotEmpty() && areaList.contains(selectedArea)) {
             // Inflate the custom edit alert view for the dialog
@@ -1061,6 +1028,9 @@ districtEditIcon.setOnClickListener {
                             Toast.makeText(this, "New Town name already exists", Toast.LENGTH_SHORT).show()
                         }
                         else -> {
+                            // Close the keyboard
+                            inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+
                             // Update the area name in the list
                             val index = areaList.indexOf(selectedArea)
                             areaList[index] = newAreaName
@@ -1099,17 +1069,16 @@ districtEditIcon.setOnClickListener {
                 negativeButtonEdit.setTextColor(ContextCompat.getColor(this, R.color.teal_700)) // For "Cancel"
                 negativeButtonEdit.textSize = 16f
 
-                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 inputEditText.requestFocus()
 
                 // Use a Handler to ensure the keyboard opens after the dialog is fully visible
                 inputEditText.postDelayed({
-                    imm.showSoftInput(inputEditText, InputMethodManager.SHOW_IMPLICIT)
+                    inputMethodManager.showSoftInput(inputEditText, InputMethodManager.SHOW_IMPLICIT)
                 }, 100) // Delay by 100ms
             }
             editAreaDialog.show()
         } else {
-            val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
             Toast.makeText(this, "Please select property area to edit", Toast.LENGTH_SHORT).show()
         }
@@ -1122,6 +1091,8 @@ districtEditIcon.setOnClickListener {
 binding.deleteDistrictIcon.setOnClickListener {
 
     val selectedDistrict = districtDropDown.text.toString().trim()
+    val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+
     if (selectedDistrict.isNotEmpty()) {
         // Inflate the custom alert view for the dialog
         val dialogView = layoutInflater.inflate(R.layout.custom_delete_alert, null)
@@ -1138,7 +1109,6 @@ binding.deleteDistrictIcon.setOnClickListener {
             (titleView.parent as ViewGroup).removeView(titleView)
         }
 
-        val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
 
         // Create a confirmation dialog to delete the selected district
@@ -1206,8 +1176,7 @@ binding.deleteDistrictIcon.setOnClickListener {
         negativeButton.textSize = 16f
 
     } else {
-        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(districtDropDown.windowToken, 0)
+        inputMethodManager.hideSoftInputFromWindow(districtDropDown.windowToken, 0)
 
         // Show a Toast message if no district is selected
         Toast.makeText(this, "Please select a district first", Toast.LENGTH_SHORT).show()
@@ -1221,6 +1190,8 @@ binding.deleteDistrictIcon.setOnClickListener {
     binding.deleteTownIcon.setOnClickListener {
 
         val selectedTown = townDropDown.text.toString().trim()
+        val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
         if (selectedTown.isNotEmpty()) {
             // Inflate the custom alert view for the dialog
             val dialogView = layoutInflater.inflate(R.layout.custom_delete_alert, null)
@@ -1237,7 +1208,6 @@ binding.deleteDistrictIcon.setOnClickListener {
                 (titleView.parent as ViewGroup).removeView(titleView)
             }
 
-            val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
 
             // Create a confirmation dialog to delete the selected district
@@ -1297,8 +1267,7 @@ binding.deleteDistrictIcon.setOnClickListener {
             negativeButton.textSize = 16f
 
         } else {
-            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(townDropDown.windowToken, 0)
+            inputMethodManager.hideSoftInputFromWindow(townDropDown.windowToken, 0)
 
             // Show a Toast message if no district is selected
             Toast.makeText(this, "Please select a town first", Toast.LENGTH_SHORT).show()
@@ -1429,7 +1398,7 @@ val landList = listOf("Residential", "Commercial", "Agricultural", "Industrial")
 //    When add icon of Land clicked then new values would be added to the list
 
     binding.addLandIcon.setOnClickListener {
-        val tableLayout = findViewById<TableLayout>(R.id.tableLayoutSettings) // Replace with your actual TableLayout ID
+        val tableLayout = binding.tableLayoutSettings
 
         // Iterate through each child (rows in this case) of the TableLayout
         for (i in 0 until tableLayout.childCount) {
