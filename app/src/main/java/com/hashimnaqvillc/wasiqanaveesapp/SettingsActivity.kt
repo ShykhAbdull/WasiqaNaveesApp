@@ -296,7 +296,7 @@ districtDropDown.addTextChangedListener(object : TextWatcher {
 // TownDropdown setup
 val townDropDown = binding.townDropdown // ID of AutoCompleteTextView for towns
 val townAreaMap = mutableMapOf<String, MutableList<String>>()
-townList = mutableListOf()
+townList = mutableListOf() //PreferenceManager.getDistrictTownMap()[selectedDistrict] ?: mutableListOf()
 townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
 townDropDown.setAdapter(townAdapter)
 townDropDown.threshold = 1
@@ -341,12 +341,35 @@ townDropDown.addTextChangedListener(object : TextWatcher {
 
     // Area Dropdown setup
     val areaDropDown = binding.propertyAreaDropdown // ID of AutoCompleteTextView for Area
-    areaList = mutableListOf()
+    areaList = mutableListOf() //PreferenceManager.getTownAreaMap()[selectedTown] ?: mutableListOf()
     areaAdapter = ArrayAdapter(this, custom_dropdown_item, areaList)
     areaDropDown.setAdapter(areaAdapter)
     areaDropDown.threshold = 1
-// On Town Selection
 
+
+
+
+    districtDropDown.setOnItemClickListener { _, _, _, _ ->
+        val selectedDistrict = districtDropDown.text.toString()
+
+        // Clear and reset towns and areas
+        val towns = districtTownMap[selectedDistrict] ?: mutableListOf()
+        townList = towns
+        townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
+        townDropDown.setAdapter(townAdapter)
+        townDropDown.text.clear() // Clear selected town
+        areaDropDown.text.clear() // Clear selected area
+
+        Log.d("DistrictSelection", "Selected district: $selectedDistrict, towns: $towns, areas cleared.")
+
+    }
+
+
+
+
+
+
+// On Town Selection
     townDropDown.setOnItemClickListener { _, _, _, _ ->
         val selectedTown = townDropDown.text.toString()
 
@@ -397,36 +420,6 @@ townDropDown.addTextChangedListener(object : TextWatcher {
             }
         }
     })
-
-
-    districtDropDown.setOnItemClickListener { _, _, _, _ ->
-        val selectedDistrict = districtDropDown.text.toString()
-
-        // Clear and reset towns and areas
-        val towns = districtTownMap[selectedDistrict] ?: mutableListOf()
-        townList = towns
-        townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
-        townDropDown.setAdapter(townAdapter)
-        townDropDown.text.clear() // Clear selected town
-        areaDropDown.text.clear() // Clear selected area
-
-        Log.d("DistrictSelection", "Selected district: $selectedDistrict, towns: $towns, areas cleared.")
-    }
-
-
-
-
-
-
-//    When the district text clears all other field text clear as well
-    binding.districtInputLayout.setEndIconOnClickListener {
-        // Also clear dependent dropdown fields for Town and Area
-        districtDropDown.text.clear()
-        townDropDown.text.clear()
-        areaDropDown.text.clear()
-        // Request focus back to the district dropdown
-        districtDropDown.requestFocus()
-    }
 
     //    When the town text clears all other field text clear as well
     binding.townInputLayout.setEndIconOnClickListener {
@@ -512,6 +505,10 @@ townDropDown.addTextChangedListener(object : TextWatcher {
                 positiveButtonAdd.textSize = 16f
                 negativeButtonAdd.setTextColor(ContextCompat.getColor(this, R.color.wasiqa_dark_grey)) // For "Cancel"
                 negativeButtonAdd.textSize = 16f
+                // Make the background dim darker
+                val window = addDistrictDialog.window
+                window?.setDimAmount(0.8f) // Adjust the dim level (default is 0.5f)
+
             }
 
             addDistrictDialog.show()
@@ -576,6 +573,11 @@ townDropDown.addTextChangedListener(object : TextWatcher {
                                 // Save updated district-town map in SharedPreference
                                 PreferencesManager.saveDistrictTownMap(districtTownMap)
 
+                                // Retrieve and log the saved map
+                                val savedMap = PreferencesManager.getDistrictTownMap()
+                                val town = savedMap[selectedDistrict] ?: mutableListOf()
+                                Log.d("SavedDistrictTownMap", "Saved data: $town")
+
                                 // Update the town list and adapter for the current district
                                 townList = towns
                                 townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
@@ -618,11 +620,16 @@ townDropDown.addTextChangedListener(object : TextWatcher {
                 positiveButtonAdd.textSize = 16f
                 negativeButtonAdd.setTextColor(ContextCompat.getColor(this, R.color.wasiqa_dark_grey))
                 negativeButtonAdd.textSize = 16f
+                // Make the background dim darker
+                val window = addTownDialog.window
+                window?.setDimAmount(0.8f) // Adjust the dim level (default is 0.5f)
             }
 
             addTownDialog.show()
         }
     }
+
+
 
 
 
@@ -716,6 +723,9 @@ townDropDown.addTextChangedListener(object : TextWatcher {
                 positiveButtonAdd.textSize = 16f
                 negativeButtonAdd.setTextColor(ContextCompat.getColor(this, R.color.wasiqa_dark_grey))
                 negativeButtonAdd.textSize = 16f
+                // Make the background dim darker
+                val window = addAreaDialog.window
+                window?.setDimAmount(0.8f) // Adjust the dim level (default is 0.5f)
             }
 
             addAreaDialog.show()
@@ -847,6 +857,9 @@ districtEditIcon.setOnClickListener {
             positiveButtonEdit.textSize = 16f
             negativeButtonEdit.setTextColor(ContextCompat.getColor(this, R.color.teal_700)) // For "Cancel"
             negativeButtonEdit.textSize = 16f
+            // Make the background dim darker
+            val window = editDistrictDialog.window
+            window?.setDimAmount(0.8f) // Adjust the dim level (default is 0.5f)
 
             inputEditText.requestFocus()
 
@@ -969,6 +982,9 @@ districtEditIcon.setOnClickListener {
                 positiveButtonEdit.textSize = 16f
                 negativeButtonEdit.setTextColor(ContextCompat.getColor(this, R.color.teal_700)) // For "Cancel"
                 negativeButtonEdit.textSize = 16f
+                // Make the background dim darker
+                val window = editTownDialog.window
+                window?.setDimAmount(0.8f) // Adjust the dim level (default is 0.5f)
 
                 inputEditText.requestFocus()
 
@@ -1068,8 +1084,10 @@ districtEditIcon.setOnClickListener {
                 positiveButtonEdit.textSize = 16f
                 negativeButtonEdit.setTextColor(ContextCompat.getColor(this, R.color.teal_700)) // For "Cancel"
                 negativeButtonEdit.textSize = 16f
+                // Make the background dim darker
+                val window = editAreaDialog.window
+                window?.setDimAmount(0.8f) // Adjust the dim level (default is 0.5f)
 
-                val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 inputEditText.requestFocus()
 
                 // Use a Handler to ensure the keyboard opens after the dialog is fully visible
@@ -1174,6 +1192,9 @@ binding.deleteDistrictIcon.setOnClickListener {
         positiveButton.textSize = 16f // For "Delete")
         negativeButton.setTextColor(ContextCompat.getColor(this, R.color.teal_700)) // For "Cancel"
         negativeButton.textSize = 16f
+        // Make the background dim darker
+        val window = dialog.window
+        window?.setDimAmount(0.8f) // Adjust the dim level (default is 0.5f)
 
     } else {
         inputMethodManager.hideSoftInputFromWindow(districtDropDown.windowToken, 0)
@@ -1265,6 +1286,9 @@ binding.deleteDistrictIcon.setOnClickListener {
             positiveButton.textSize = 16f // For "Delete")
             negativeButton.setTextColor(ContextCompat.getColor(this, R.color.teal_700)) // For "Cancel"
             negativeButton.textSize = 16f
+            // Make the background dim darker
+            val window = dialog.window
+            window?.setDimAmount(0.8f) // Adjust the dim level (default is 0.5f)
 
         } else {
             inputMethodManager.hideSoftInputFromWindow(townDropDown.windowToken, 0)
@@ -1339,6 +1363,9 @@ binding.deleteDistrictIcon.setOnClickListener {
             positiveButton.textSize = 16f // For "Delete")
             negativeButton.setTextColor(ContextCompat.getColor(this, R.color.teal_700)) // For "Cancel"
             negativeButton.textSize = 16f
+            // Make the background dim darker
+            val window = dialog.window
+            window?.setDimAmount(0.8f) // Adjust the dim level (default is 0.5f)
 
         } else {
             val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
