@@ -1,15 +1,24 @@
 package com.hashimnaqvillc.wasiqanaveesapp
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
+import android.view.animation.ScaleAnimation
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
@@ -38,6 +47,8 @@ private lateinit var districtAdapter: ArrayAdapter<String>
 private lateinit var townAdapter: ArrayAdapter<String>
 private lateinit var areaAdapter: ArrayAdapter<String>
 
+private lateinit var selectedDistrict: String
+
 
 private lateinit var binding: ActivitySettingsBinding
 
@@ -47,29 +58,56 @@ super.onCreate(savedInstanceState)
 binding = ActivitySettingsBinding.inflate(layoutInflater)
 setContentView(binding.root)
 
-//    window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
+//    ------------------------------------------------------ UI CHANGES -------------------------------------------------------------------
+
+
+    val headingText = findViewById<TextView>(R.id.heading_text_settings)
+
+// Add ripple-like effect using a circular gradient
+    val rippleAnimator = ObjectAnimator.ofFloat(headingText, "scaleX", 1.0f, 1.1f).apply {
+        duration = 1000 // 1 second
+        repeatMode = ValueAnimator.REVERSE
+        repeatCount = ValueAnimator.INFINITE
+    }
+
+    val rippleAnimatorY = ObjectAnimator.ofFloat(headingText, "scaleY", 1.0f, 1.1f).apply {
+        duration = 1000
+        repeatMode = ValueAnimator.REVERSE
+        repeatCount = ValueAnimator.INFINITE
+    }
+
+    val animatorSet = AnimatorSet()
+    animatorSet.playTogether(rippleAnimator, rippleAnimatorY)
+    animatorSet.start()
+
+
 
 
 
 //   Logic for showing and Hiding the Views on Settings Activity
 
-val settingIcon = findViewById<ImageButton>(R.id.nav_settings_icon)
-settingIcon.visibility = View.GONE
+    val settingIcon = findViewById<ImageButton>(R.id.nav_settings_icon)
+    settingIcon.visibility = View.GONE
 
-val dateMonth = findViewById<TextView>(R.id.date_month_day)
-dateMonth.visibility = View.GONE
+    val dateMonth = findViewById<TextView>(R.id.date_month_day)
+    dateMonth.visibility = View.GONE
 
-val dateYear = findViewById<TextView>(R.id.date_year)
-dateYear.visibility = View.GONE
+    val dateYear = findViewById<TextView>(R.id.date_year)
+    dateYear.visibility = View.GONE
 
-val wasiqaLogo = findViewById<ImageView>(R.id.nav_wasiqa_logo)
-wasiqaLogo.visibility = View.GONE
+    val wasiqaLogo = findViewById<ImageView>(R.id.nav_wasiqa_logo)
+    wasiqaLogo.visibility = View.GONE
 
-val settingText = findViewById<TextView>(R.id.nav_settings_text)
-settingText.visibility = View.VISIBLE
+    val settingText = findViewById<TextView>(R.id.nav_settings_text)
+    settingText.visibility = View.VISIBLE
 
-val profileEditBtn = findViewById<Button>(R.id.profile_edit_btn)
-profileEditBtn.visibility = View.VISIBLE
+    val profileEditBtn = findViewById<Button>(R.id.profile_edit_btn)
+    profileEditBtn.visibility = View.VISIBLE
+
+//    ------------------------------------------UI CHANGES ----------------------------------------------------------
+
+
+//    window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
 
 profileEditBtn.setOnClickListener {
     val intent = Intent(this, ProfileActivtySettings::class.java)
@@ -196,23 +234,23 @@ binding.propertyAreaDropdown.setOnEditorActionListener { _, actionId, _ ->
     }
 }
 
-////        Focus from Land Type ---> Khasra Number
-//
-binding.landTypeDropdown.setOnEditorActionListener { _, actionId, _ ->
-    if (actionId == EditorInfo.IME_ACTION_NEXT || actionId == EditorInfo.IME_ACTION_DONE) {
-        // Move focus to the next view (e.g., another dropdown)
-        binding.khasraEditText.requestFocus()
-        true // Return true to consume the action
-    } else {
-        false
-    }
-}
+//////        Focus from Land Type ---> Khasra Number
+////
+//binding.landTypeDropdown.setOnEditorActionListener { _, actionId, _ ->
+//    if (actionId == EditorInfo.IME_ACTION_NEXT || actionId == EditorInfo.IME_ACTION_DONE) {
+//        // Move focus to the next view (e.g., another dropdown)
+//        binding. khasraEditText.requestFocus()
+//        true // Return true to consume the action
+//    } else {
+//        false
+//    }
+//}
 
-binding.khasraEditText.setOnEditorActionListener { _, actionId, _ ->
-    // Close the keyboard
-    // Return true to consume the action
-    actionId == EditorInfo.IME_ACTION_DONE
-}
+//binding.khasraEditText.setOnEditorActionListener { _, actionId, _ ->
+//    // Close the keyboard
+//    // Return true to consume the action
+//    actionId == EditorInfo.IME_ACTION_DONE
+//}
 
 
 // Optional: Customize the keyboard action to show "Next" instead of "Done"
@@ -229,11 +267,11 @@ binding.propertyAreaDropdown.setRawInputType(InputType.TYPE_CLASS_TEXT)
 binding.landTypeDropdown.imeOptions = EditorInfo.IME_ACTION_NEXT
 binding.landTypeDropdown.setRawInputType(InputType.TYPE_CLASS_TEXT)
 
-binding.khasraEditText.imeOptions = EditorInfo.IME_ACTION_DONE
-binding.khasraEditText.setRawInputType(InputType.TYPE_CLASS_TEXT)
-
-binding.khasraEditText.imeOptions = EditorInfo.IME_ACTION_DONE
-binding.khasraEditText.setRawInputType(InputType.TYPE_CLASS_TEXT)
+//binding.khasraEditText.imeOptions = EditorInfo.IME_ACTION_DONE
+//binding.khasraEditText.setRawInputType(InputType.TYPE_CLASS_TEXT)
+//
+//binding.khasraEditText.imeOptions = EditorInfo.IME_ACTION_DONE
+//binding.khasraEditText.setRawInputType(InputType.TYPE_CLASS_TEXT)
 
 
 
@@ -243,12 +281,10 @@ binding.khasraEditText.setRawInputType(InputType.TYPE_CLASS_TEXT)
 val districtAddIcon = binding.addDestrictIcon
 
 // Map to hold district-to-town associations
-val districtTownMap = mutableMapOf<String, MutableList<String>>()
 
 // Sample data for the dropdown
 districtList = PreferencesManager.getDropdownList().toMutableList()
 districtAdapter = ArrayAdapter(this, custom_dropdown_item, districtList)
-
 
 // Set adapter to AutoCompleteTextView
 districtDropDown.setAdapter(districtAdapter)
@@ -348,20 +384,33 @@ townDropDown.addTextChangedListener(object : TextWatcher {
 
 
 
+    // Fetch the districtTownMap once when the activity starts
+    val districtTownMap: MutableMap<String, MutableList<String>> by lazy {
+        PreferencesManager.getDistrictTownMap()
+    }
 
+// Dropdown item selection logic
     districtDropDown.setOnItemClickListener { _, _, _, _ ->
-        val selectedDistrict = districtDropDown.text.toString()
+        // Normalize the selected district to avoid formatting issues
+        selectedDistrict = districtDropDown.text.toString().trim()
 
-        // Clear and reset towns and areas
+        // Retrieve the towns for the selected district
         val towns = districtTownMap[selectedDistrict] ?: mutableListOf()
+
+        // Log the retrieved data
+        Log.d("DistrictSelection", "Selected district: $selectedDistrict, towns: $towns")
+
+        // Update the town dropdown
         townList = towns
         townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
         townDropDown.setAdapter(townAdapter)
-        townDropDown.text.clear() // Clear selected town
-        areaDropDown.text.clear() // Clear selected area
 
-        Log.d("DistrictSelection", "Selected district: $selectedDistrict, towns: $towns, areas cleared.")
+        // Clear previously selected town and area
+        townDropDown.text.clear()
+        areaDropDown.text.clear()
 
+        // Log the cleared selections
+        Log.d("DistrictSelection", "Cleared previous town and area selections.")
     }
 
 
@@ -527,7 +576,7 @@ townDropDown.addTextChangedListener(object : TextWatcher {
         val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
 
-        val selectedDistrict = districtDropDown.text.toString().trim()
+        selectedDistrict = districtDropDown.text.toString().trim()
         val selectedTown = townDropDown.text.toString().trim()
 
         if (selectedDistrict.isEmpty()) {
@@ -566,6 +615,7 @@ townDropDown.addTextChangedListener(object : TextWatcher {
                                 Toast.makeText(this, "Town already exists", Toast.LENGTH_SHORT)
                                     .show()
                             } else {
+
                                 townDropDown.setText(newTownName, false)
                                 townDropDown.setSelection(newTownName.length) // Move cursor to the end
                                 towns.add(newTownName)
@@ -573,15 +623,10 @@ townDropDown.addTextChangedListener(object : TextWatcher {
                                 // Save updated district-town map in SharedPreference
                                 PreferencesManager.saveDistrictTownMap(districtTownMap)
 
-                                // Retrieve and log the saved map
-                                val savedMap = PreferencesManager.getDistrictTownMap()
-                                val town = savedMap[selectedDistrict] ?: mutableListOf()
-                                Log.d("SavedDistrictTownMap", "Saved data: $town")
-
-                                // Update the town list and adapter for the current district
-                                townList = towns
-                                townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
-                                townDropDown.setAdapter(townAdapter)
+//                                // Update the town list and adapter for the current district
+//                                townList = towns
+//                                townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
+//                                townDropDown.setAdapter(townAdapter)
 
                                 // Clear and reset areas
                                 val areas = townAreaMap[newTownName] ?: mutableListOf()
@@ -743,7 +788,7 @@ townDropDown.addTextChangedListener(object : TextWatcher {
 val districtEditIcon = binding.editDistrictIcon
 
 districtEditIcon.setOnClickListener {
-    val selectedDistrict = districtDropDown.text.toString().trim()
+    selectedDistrict = districtDropDown.text.toString().trim()
     val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
 
@@ -925,6 +970,9 @@ districtEditIcon.setOnClickListener {
                             val index = townList.indexOf(selectedTown)
                             val oldTownName = townList[index]
                             townList[index] = newTownName
+
+                            // Save updated district-town map in SharedPreference
+                            PreferencesManager.saveDistrictTownMap(districtTownMap)
 
                             // Set the new town name as the selected text
                             townDropDown.setText(newTownName, false)
@@ -1108,7 +1156,7 @@ districtEditIcon.setOnClickListener {
 
 binding.deleteDistrictIcon.setOnClickListener {
 
-    val selectedDistrict = districtDropDown.text.toString().trim()
+    selectedDistrict = districtDropDown.text.toString().trim()
     val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
 
     if (selectedDistrict.isNotEmpty()) {
@@ -1253,6 +1301,9 @@ binding.deleteDistrictIcon.setOnClickListener {
                     townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
                     townDropDown.setAdapter(townAdapter)
                     // Clear the area dropdown and its adapter since the town was deleted
+
+                    // Save updated district-town map in SharedPreference
+                    PreferencesManager.saveDistrictTownMap(districtTownMap)
 
                     Log.d("TownList", "Deleted town: $selectedTown")
                     Log.d("AreaList", "Deleted areas for town $selectedTown: $areas")
@@ -1403,54 +1454,38 @@ val landList = listOf("Residential", "Commercial", "Agricultural", "Industrial")
         // Perform your action based on the selected item
         when (selectedLand) {
             "Residential" -> {
-                binding.khasraText.visibility = View.VISIBLE
-                binding.khasraEditText.visibility = View.VISIBLE            }
+
+            }
             "Commercial" -> {
-                binding.khasraText.visibility = View.VISIBLE
-                binding.khasraEditText.visibility = View.VISIBLE
+
             }
             "Agricultural" -> {
-                binding.khasraText.visibility = View.VISIBLE
-                binding.khasraEditText.visibility = View.VISIBLE
+
             }
             "Industrial" -> {
-                binding.khasraText.visibility = View.VISIBLE
-                binding.khasraEditText.visibility = View.VISIBLE
+
             }
         }
     }
 
 
+    val landAddIcon = binding.addLandIcon // Replace with your actual Add Icon ID
+    landAddIcon.setOnClickListener {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_add_rates, null)
 
-//    When add icon of Land clicked then new values would be added to the list
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setView(dialogView)
+            .setPositiveButton("Save") { _, _ ->
 
-    binding.addLandIcon.setOnClickListener {
-        val tableLayout = binding.tableLayoutSettings
-
-        // Iterate through each child (rows in this case) of the TableLayout
-        for (i in 0 until tableLayout.childCount) {
-            val row = tableLayout.getChildAt(i)
-            if (row is TableRow) {
-                // Iterate through each child of the TableRow
-                for (j in 0 until row.childCount) {
-                    val view = row.getChildAt(j)
-                    if (view is EditText) {
-                        // Clear the current value
-                        view.text.clear()
-
-                        // Optionally, set a new value
-                        // view.setText("New Value") // Uncomment and replace "New Value" with your value
-                    }
-                }
             }
-        }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
 
-        // Optionally, clear the Khasra EditText
-        binding.khasraEditText.text.clear()
-
-        // Optionally, clear or reset the AutoCompleteTextView
-        binding.landTypeDropdown.text.clear()
+        dialog.show()
     }
+
 
 
 

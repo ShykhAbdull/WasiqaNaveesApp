@@ -3,6 +3,7 @@ package com.hashimnaqvillc.wasiqanaveesapp
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
@@ -58,8 +59,10 @@ class Page1Activity : AppCompatActivity() {
 //        // Construct districtToTowns and townsToPropertyAreas mappings
 //        constructMappings(updatedDistrictList, updatedTownList, updatedAreaList)
 
+        districtList = PreferencesManager.getDropdownList().toMutableList()
+
 // District Dropdown
-        val districts = districtToTowns.keys.toList()
+        val districts = districtList
         val districtAdapter = ArrayAdapter(
             this,
             R.layout.custom_dropdown_item,
@@ -70,11 +73,16 @@ class Page1Activity : AppCompatActivity() {
 // Handle District selection
         binding.districtDropdown.setOnClickListener {
             binding.districtDropdown.showDropDown()
+            Log.d("District", "Updated district list: $districts")
+        }
+
+        // Fetch the districtTownMap once when the activity starts
+        val districtTownMap: MutableMap<String, MutableList<String>> by lazy {
+            PreferencesManager.getDistrictTownMap()
         }
         binding.districtDropdown.setOnItemClickListener { parent, _, position, _ ->
             selectedDistrict = parent.getItemAtPosition(position) as String
-            val towns = districtToTowns[selectedDistrict] ?: emptyList()
-
+            val towns = districtTownMap[selectedDistrict] ?: mutableListOf()
             // Update Town Dropdown
             val townAdapter = ArrayAdapter(
                 this,
@@ -245,23 +253,46 @@ class Page1Activity : AppCompatActivity() {
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
+
+    // Refresh logic in onResume()
+    override fun onResume() {
+        super.onResume()
+
+        val selectedDistrictPg1 = binding.districtDropdown.text.toString()
+
+        // Fetch the latest district list
+        districtList = PreferencesManager.getDropdownList().toMutableList()
+
+        // Update the district dropdown adapter
+        val districtAdapter = ArrayAdapter(
+            this,
+            R.layout.custom_dropdown_item,
+            districtList
+        )
+        binding.districtDropdown.setAdapter(districtAdapter)
+
+
+        if (selectedDistrictPg1.isNotEmpty()){
+            val districtTownMap = PreferencesManager.getDistrictTownMap()
+            val towns = districtTownMap[selectedDistrictPg1] ?: mutableListOf()
+
+            // Update the town dropdown adapter
+            val townAdapter = ArrayAdapter(
+                this,
+                R.layout.custom_dropdown_item,
+                towns
+            )
+            binding.townDropdown.setAdapter(townAdapter)
+
+            // Clear previous selections
+            binding.townDropdown.text.clear()
+            binding.propertyAreaDropdown.text.clear()
+
+            Log.d("TownDropdown", "Updated towns for district '$selectedDistrictPg1': $towns")        }
+    }
+
+
 
 
 

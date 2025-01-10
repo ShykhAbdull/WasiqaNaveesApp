@@ -1,0 +1,139 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fillViewport="true"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Khasra Number Section -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Khasra Number"
+            android:textSize="20sp"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/sf_pro_display_medium"
+            android:textColor="@color/black" />
+
+        <EditText
+            android:id="@+id/khasraEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="(Optional)"
+            android:drawableStart="@drawable/khasra_icon"
+            android:drawablePadding="20dp"
+            android:background="@drawable/email_input_background"
+            android:fontFamily="@font/sf_pro_display_medium"
+            android:maxLines="1"
+            android:padding="12dp"
+            android:layout_marginTop="8dp" />
+
+        <!-- CardView Section -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardViewSettings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Title -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Property Rate"
+                    android:textSize="26sp"
+                    android:fontFamily="@font/sf_pro_display_bold"
+                    android:textColor="#000"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:paddingBottom="8dp" />
+
+                <!-- Table Layout -->
+                <TableLayout
+                    android:id="@+id/tableLayoutSettings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <!-- Table Header -->
+                    <TableRow>
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Plot"
+                            android:textSize="22sp"
+                            android:fontFamily="@font/sf_pro_display_medium"
+                            android:textColor="#000" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="DC"
+                            android:textSize="22sp"
+                            android:fontFamily="@font/sf_pro_display_medium"
+                            android:textColor="#000"
+                            android:gravity="center" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="FBR"
+                            android:textSize="22sp"
+                            android:fontFamily="@font/sf_pro_display_medium"
+                            android:textColor="#000"
+                            android:gravity="end" />
+                    </TableRow>
+
+                    <!-- Table Rows -->
+                    <TableRow>
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Marla / Price"
+                            android:textSize="15sp"
+                            android:fontFamily="@font/sf_pro_display_regular"
+                            android:textColor="#000" />
+
+                        <EditText
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:hint="100000"
+                            android:textSize="15sp"
+                            android:inputType="number"
+                            android:background="@null"
+                            android:gravity="center"
+                            android:fontFamily="@font/sf_pro_display_medium" />
+
+                        <EditText
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:hint="150000"
+                            android:textSize="15sp"
+                            android:inputType="numberDecimal"
+                            android:background="@null"
+                            android:gravity="end"
+                            android:fontFamily="@font/sf_pro_display_regular" />
+                    </TableRow>
+
+                    <!-- Additional rows here as needed -->
+                </TableLayout>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+    </LinearLayout>
+</ScrollView>

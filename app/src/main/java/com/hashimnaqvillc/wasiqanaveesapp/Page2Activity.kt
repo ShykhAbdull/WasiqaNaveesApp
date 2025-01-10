@@ -93,14 +93,14 @@ class Page2Activity : AppCompatActivity() {
 
 
         if(selectedPropertyType == "Building"){
-            binding.coveredAreaRowPg2Separator.visibility = View.VISIBLE
+//            binding.coveredAreaRowPg2Separator.visibility = View.VISIBLE
             binding.coveredAreaRowPg2.visibility = View.VISIBLE
-            binding.buildingValuePg2Separator.visibility = View.VISIBLE
+//            binding.buildingValuePg2Separator.visibility = View.VISIBLE
             binding.buildingValuePg2.visibility = View.VISIBLE
         } else{
-            binding.coveredAreaRowPg2Separator.visibility = View.GONE
+//            binding.coveredAreaRowPg2Separator.visibility = View.GONE
             binding.coveredAreaRowPg2.visibility = View.GONE
-            binding.buildingValuePg2Separator.visibility = View.GONE
+//            binding.buildingValuePg2Separator.visibility = View.GONE
             binding.buildingValuePg2.visibility = View.GONE
         }
 
