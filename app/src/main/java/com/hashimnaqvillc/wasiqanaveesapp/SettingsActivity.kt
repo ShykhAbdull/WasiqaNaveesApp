@@ -122,10 +122,9 @@ val districtDropDown = binding.districtDropdown
 
     districtDropDown.setOnFocusChangeListener { _, hasFocus ->
         if (hasFocus) {
+            binding.districtDropdown.dismissDropDown()
             binding.districtDropdown.showDropDown()
-            binding.districtIconContainer.visibility = View.VISIBLE
-            binding.townIconContainer.visibility = View.GONE
-            binding.propertyAreaIconContainer.visibility = View.GONE
+
         }
     }
 
@@ -149,10 +148,10 @@ val districtDropDown = binding.districtDropdown
 
     binding.townDropdown.setOnFocusChangeListener { _, hasFocus ->
         if (hasFocus && binding.districtDropdown.text.toString().isNotEmpty()) {
+            binding.townDropdown.dismissDropDown()
             binding.townDropdown.showDropDown()
-            binding.districtIconContainer.visibility = View.GONE
-            binding.townIconContainer.visibility = View.VISIBLE
-            binding.propertyAreaIconContainer.visibility = View.GONE
+
+
         } else if (hasFocus) {
             binding.townDropdown.clearFocus() // Prevent focus if no district is selected
             Toast.makeText(this, "Please select a district first", Toast.LENGTH_SHORT).show()
@@ -166,26 +165,19 @@ val districtDropDown = binding.districtDropdown
 
     binding.propertyAreaDropdown.setOnFocusChangeListener { _, hasFocus ->
         if (hasFocus && binding.townDropdown.text.toString().isNotEmpty()) {
+            binding.propertyAreaDropdown.dismissDropDown()
             binding.propertyAreaDropdown.showDropDown()
-            binding.townIconContainer.visibility = View.GONE
-            binding.districtIconContainer.visibility = View.GONE
-            binding.propertyAreaIconContainer.visibility = View.VISIBLE
+
+
         } else if (hasFocus) {
             binding.propertyAreaDropdown.clearFocus() // Prevent focus if no town is selected
             Toast.makeText(this, "Please select a town first", Toast.LENGTH_SHORT).show()
         }
     }
     binding.propertyAreaDropdown.setOnClickListener {
+        binding.propertyAreaDropdown.dismissDropDown()
     binding.propertyAreaDropdown.showDropDown()
 }
-
-
-
-
-
-
-
-
 
 
     // Optional: Disable default focus stealing by the clear_text icon
@@ -195,14 +187,6 @@ val districtDropDown = binding.districtDropdown
             binding.landTypeDropdown.showDropDown()
         }
     }
-
-//    // Optional: Disable default focus stealing by the clear_text icon
-//    binding.propertyTypeDropdown.setOnFocusChangeListener { _, hasFocus ->
-//
-//        if (hasFocus) {
-//            binding.propertyTypeDropdown.showDropDown()
-//        }
-//    }
 
 //        Focus from District ---> Town
 districtDropDown.setOnEditorActionListener { _, actionId, _ ->
@@ -239,24 +223,6 @@ binding.propertyAreaDropdown.setOnEditorActionListener { _, actionId, _ ->
     }
 }
 
-//////        Focus from Land Type ---> Khasra Number
-////
-//binding.landTypeDropdown.setOnEditorActionListener { _, actionId, _ ->
-//    if (actionId == EditorInfo.IME_ACTION_NEXT || actionId == EditorInfo.IME_ACTION_DONE) {
-//        // Move focus to the next view (e.g., another dropdown)
-//        binding. khasraEditText.requestFocus()
-//        true // Return true to consume the action
-//    } else {
-//        false
-//    }
-//}
-
-//binding.khasraEditText.setOnEditorActionListener { _, actionId, _ ->
-//    // Close the keyboard
-//    // Return true to consume the action
-//    actionId == EditorInfo.IME_ACTION_DONE
-//}
-
 
 // Optional: Customize the keyboard action to show "Next" instead of "Done"
 
@@ -269,23 +235,13 @@ binding.townDropdown.setRawInputType(InputType.TYPE_CLASS_TEXT)
 binding.propertyAreaDropdown.imeOptions = EditorInfo.IME_ACTION_NEXT
 binding.propertyAreaDropdown.setRawInputType(InputType.TYPE_CLASS_TEXT)
 
-binding.landTypeDropdown.imeOptions = EditorInfo.IME_ACTION_NEXT
+binding.landTypeDropdown.imeOptions = EditorInfo.IME_ACTION_DONE
 binding.landTypeDropdown.setRawInputType(InputType.TYPE_CLASS_TEXT)
-
-//binding.khasraEditText.imeOptions = EditorInfo.IME_ACTION_DONE
-//binding.khasraEditText.setRawInputType(InputType.TYPE_CLASS_TEXT)
-//
-//binding.khasraEditText.imeOptions = EditorInfo.IME_ACTION_DONE
-//binding.khasraEditText.setRawInputType(InputType.TYPE_CLASS_TEXT)
-
-
-
 
 
 
 val districtAddIcon = binding.addDestrictIcon
 
-// Map to hold district-to-town associations
 
 // Sample data for the dropdown
 districtList = PreferencesManager.getDropdownList()
@@ -313,27 +269,33 @@ if (itemCount <= 3) {
 
 
 
-// Set up a listener to track the filtered results and dynamically set the dropdown height
-districtDropDown.addTextChangedListener(object : TextWatcher {
-    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+    districtDropDown.addTextChangedListener(object : TextWatcher {
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
-    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 
-    override fun afterTextChanged(s: Editable?) {
-        // Apply filter and count the visible items
-        districtAdapter.filter.filter(s) {
-            val districtVisibleItemCount = districtAdapter.count // Gets the current filtered item count
+        override fun afterTextChanged(s: Editable?) {
+            // Apply filter and count the visible items
+            districtAdapter.filter.filter(s) {
+                val districtVisibleItemCount = districtAdapter.count // Gets the current filtered item count
 
-            if (districtVisibleItemCount <= 3) {
-                districtDropDown.dropDownHeight = ViewGroup.LayoutParams.WRAP_CONTENT
-            } else {
-                // Set a fixed height for more than 3 items
-                districtDropDown.dropDownHeight =
-                    (districtDropDown.context.resources.displayMetrics.density * 150).toInt()
+                if (districtVisibleItemCount <= 3) {
+                    districtDropDown.dropDownHeight = ViewGroup.LayoutParams.WRAP_CONTENT
+                } else {
+                    // Set a fixed height for more than 3 items
+                    districtDropDown.dropDownHeight =
+                        (districtDropDown.context.resources.displayMetrics.density * 150).toInt()
+                }
+
+//                // Show or hide the add icon based on input text length
+//                if (s.isNullOrEmpty()) {
+//                    binding.districtIconContainer.visibility = View.GONE // Hide the add icon if no text
+//                } else {
+//                    binding.districtIconContainer.visibility  = View.VISIBLE // Show the add icon if text is entered
+//                }
             }
         }
-    }
-})
+    })
 
 
     // Fetch the districtTownMap once when the activity starts
@@ -361,6 +323,8 @@ districtDropDown.addTextChangedListener(object : TextWatcher {
         // Clear previously selected town and area
         townDropDown.text.clear()
         areaDropDown.text.clear()
+
+        binding.townDropdown.requestFocus()
 
         // Log the cleared selections
         Log.d("DistrictSelection", "Cleared previous town and area selections.")
@@ -401,6 +365,15 @@ townDropDown.addTextChangedListener(object : TextWatcher {
                 townDropDown.dropDownHeight =
                     (townDropDown.context.resources.displayMetrics.density * 150).toInt()
             }
+
+//            // Show or hide the add icon based on input text length
+//            if (s.isNullOrEmpty()) {
+//                binding.townIconContainer.visibility = View.GONE // Hide the add icon if no text
+//            } else {
+//                binding.townIconContainer.visibility  = View.VISIBLE // Show the add icon if text is entered
+//            }
+
+
         }
     }
 })
@@ -421,7 +394,14 @@ townDropDown.addTextChangedListener(object : TextWatcher {
         areaDropDown.setAdapter(areaAdapter)
         areaDropDown.text.clear() // Clear selected area
 
+        binding.propertyAreaDropdown.requestFocus()
+
         Log.d("TownSelection", "Selected town: $selectedTown, areas: $areas")
+    }
+
+    areaDropDown.setOnItemClickListener { _, _, _, _ ->
+
+        binding.landTypeDropdown.requestFocus()
     }
 
 
@@ -458,15 +438,46 @@ townDropDown.addTextChangedListener(object : TextWatcher {
                     areaDropDown.dropDownHeight =
                         (areaDropDown.context.resources.displayMetrics.density * 150).toInt()
                 }
+
+//                // Show or hide the add icon based on input text length
+//                if (s.isNullOrEmpty()) {
+//                    binding.propertyAreaIconContainer.visibility = View.GONE // Hide the add icon if no text
+//                } else {
+//                    binding.propertyAreaIconContainer.visibility  = View.VISIBLE // Show the add icon if text is entered
+//                }
             }
         }
     })
+
+
+    //    When the town text clears all other field text clear as well
+    binding.districtInputLayout.setEndIconOnClickListener {
+        // Also clear dependent dropdown fields for Town and Area
+        districtDropDown.text.clear()
+        townDropDown.text.clear()
+        areaDropDown.text.clear()
+        binding.landTypeDropdown.text.clear()
+        // Request focus back to the district dropdown
+        townDropDown.requestFocus()
+
+    }
 
     //    When the town text clears all other field text clear as well
     binding.townInputLayout.setEndIconOnClickListener {
         // Also clear dependent dropdown fields for Town and Area
         townDropDown.text.clear()
         areaDropDown.text.clear()
+        binding.landTypeDropdown.text.clear()
+        // Request focus back to the district dropdown
+        townDropDown.requestFocus()
+
+    }
+
+    //    When the town text clears all other field text clear as well
+    binding.propertyAreaInputLayout.setEndIconOnClickListener {
+        // Also clear dependent dropdown fields for Town and Area
+        areaDropDown.text.clear()
+        binding.landTypeDropdown.text.clear()
         // Request focus back to the district dropdown
         townDropDown.requestFocus()
 
@@ -517,9 +528,6 @@ townDropDown.addTextChangedListener(object : TextWatcher {
                             townList = towns
                             townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
                             townDropDown.setAdapter(townAdapter)
-
-                            // Save the updated list in SharedPreferences
-                            PreferencesManager.saveDropdownList(districtList)
 
                             Log.d("DistrictList", "Updated district list: $districtList")
                             Toast.makeText(this, "District added successfully", Toast.LENGTH_SHORT).show()
@@ -611,9 +619,6 @@ townDropDown.addTextChangedListener(object : TextWatcher {
                                 townDropDown.setText(newTownName, false)
                                 townDropDown.setSelection(newTownName.length) // Move cursor to the end
                                 towns.add(newTownName)
-
-                                // Save updated district-town map in SharedPreference
-                                PreferencesManager.saveDistrictTownMap(districtTownMap)
 
                                 // Update the town list and adapter for the current district
                                 townList = towns
@@ -863,10 +868,6 @@ districtEditIcon.setOnClickListener {
 
                         }
 
-
-//                    Adding in as SharedPreference
-                        PreferencesManager.saveDropdownList(districtList)
-
                     }
                 }
                 // Close the keyboard
@@ -962,9 +963,6 @@ districtEditIcon.setOnClickListener {
                             val index = townList.indexOf(selectedTown)
                             val oldTownName = townList[index]
                             townList[index] = newTownName
-
-                            // Save updated district-town map in SharedPreference
-                            PreferencesManager.saveDistrictTownMap(districtTownMap)
 
                             // Set the new town name as the selected text
                             townDropDown.setText(newTownName, false)
@@ -1201,9 +1199,6 @@ binding.deleteDistrictIcon.setOnClickListener {
                 districtDropDown.setAdapter(districtAdapter)
 
 
-//              Adding in as SharedPreference
-                    PreferencesManager.saveDropdownList(districtList)
-
                 Log.d("DistrictList", "Deleted district list: $districtList")
                 Toast.makeText(this, "District deleted successfully", Toast.LENGTH_SHORT).show()
             } else {
@@ -1293,9 +1288,6 @@ binding.deleteDistrictIcon.setOnClickListener {
                     townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
                     townDropDown.setAdapter(townAdapter)
                     // Clear the area dropdown and its adapter since the town was deleted
-
-                    // Save updated district-town map in SharedPreference
-                    PreferencesManager.saveDistrictTownMap(districtTownMap)
 
                     Log.d("TownList", "Deleted town: $selectedTown")
                     Log.d("AreaList", "Deleted areas for town $selectedTown: $areas")
@@ -1536,6 +1528,12 @@ val landList = listOf("Residential", "Commercial", "Agricultural", "Industrial")
                 "Are you sure you want to save the above data?\n\n"
             )
             .setPositiveButton("Save") { _, _ ->
+
+                // Save the updated list in SharedPreferences
+                PreferencesManager.saveDropdownList(districtList)
+
+                // Save updated district-town map in SharedPreference
+                PreferencesManager.saveDistrictTownMap(districtTownMap)
 
 
             }

@@ -4,8 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     tools:context=".SettingsActivity"
-
     >
 
 <androidx.constraintlayout.widget.ConstraintLayout
@@ -54,7 +54,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginEnd="40dp"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintTop_toTopOf="@id/district_text"
         app:layout_constraintBottom_toBottomOf="@id/district_text"
         app:layout_constraintEnd_toEndOf="parent">
@@ -81,19 +81,22 @@
             android:layout_marginStart="18dp"
             android:clickable="true"
             android:focusable="true"
-            app:tint="#FFC107" />
+            app:tint="#FFC107"
+
+            />
 
         <!-- Third SVG Icon -->
         <ImageView
             android:id="@+id/delete_district_icon"
-            android:layout_width="wrap_content"
+            android:layout_width="27dp"
             android:layout_height="27dp"
+            android:src="@drawable/delete"
+            android:contentDescription="Icon Delete"
             android:layout_marginStart="18dp"
             android:clickable="true"
-            android:contentDescription="Icon Delete"
             android:focusable="true"
-            android:src="@drawable/delete"
-            app:tint="#F44336 " />
+            app:tint="#F44336 "
+            />
     </LinearLayout>
 
 
@@ -163,7 +166,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:visibility="gone"
+        android:visibility="visible"
         android:layout_marginEnd="40dp"
         app:layout_constraintTop_toTopOf="@id/town_text"
         app:layout_constraintBottom_toBottomOf="@id/town_text"
@@ -179,7 +182,9 @@
             android:layout_marginStart="8dp"
             android:clickable="true"
             android:focusable="true"
-            app:tint="#4CAF50 " />
+            app:tint="@color/wasiqa_light_green"
+
+            />
 
         <!-- Second SVG Icon -->
         <ImageView
@@ -191,7 +196,8 @@
             android:layout_marginStart="18dp"
             android:clickable="true"
             android:focusable="true"
-            app:tint="#FFC107" />
+            app:tint="#FFC107"
+            />
 
         <!-- Third SVG Icon -->
         <ImageView
@@ -203,7 +209,8 @@
             android:layout_marginStart="18dp"
             android:clickable="true"
             android:focusable="true"
-            app:tint="#F44336 " />
+            app:tint="#F44336 "
+            />
     </LinearLayout>
 
 
@@ -268,7 +275,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginEnd="40dp"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintTop_toTopOf="@id/propertyArea_text"
         app:layout_constraintBottom_toBottomOf="@id/propertyArea_text"
         app:layout_constraintEnd_toEndOf="parent"
@@ -277,38 +284,42 @@
         <!-- First SVG Icon -->
         <ImageView
             android:id="@+id/add_area_icon"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="27dp"
+            android:layout_height="27dp"
             android:src="@drawable/add_icon"
             android:contentDescription="Icon Add"
             android:layout_marginStart="8dp"
             android:clickable="true"
             android:focusable="true"
-            app:tint="#4CAF50 " />
+            app:tint="@color/wasiqa_light_green"
+
+            />
 
         <!-- Second SVG Icon -->
         <ImageView
             android:id="@+id/edit_area_icon"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="27dp"
+            android:layout_height="27dp"
             android:src="@drawable/pencil_edit"
             android:contentDescription="Icon Edit"
             android:layout_marginStart="18dp"
             android:clickable="true"
             android:focusable="true"
-            app:tint="#FFC107" />
+            app:tint="#FFC107"
+            />
 
         <!-- Third SVG Icon -->
         <ImageView
             android:id="@+id/delete_area_icon"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="27dp"
+            android:layout_height="27dp"
             android:src="@drawable/delete"
             android:contentDescription="Icon Delete"
             android:layout_marginStart="18dp"
             android:clickable="true"
             android:focusable="true"
-            app:tint="#F44336 " />
+            app:tint="#F44336 "
+            />
     </LinearLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -432,42 +443,47 @@
         app:layout_constraintTop_toTopOf="@id/landType_text"
         app:layout_constraintBottom_toBottomOf="@id/landType_text"
         app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="visible"
         >
 
         <!-- First SVG Icon -->
         <ImageView
             android:id="@+id/add_land_icon"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="27dp"
+            android:layout_height="27dp"
             android:src="@drawable/add_icon"
+            android:contentDescription="Icon Add"
             android:layout_marginStart="8dp"
             android:clickable="true"
             android:focusable="true"
-            app:tint="#4CAF50 " />
+            app:tint="@color/wasiqa_light_green"
+            />
 
         <!-- Second SVG Icon -->
         <ImageView
             android:id="@+id/edit_land_icon"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="27dp"
+            android:layout_height="27dp"
             android:src="@drawable/pencil_edit"
             android:contentDescription="Icon Edit"
             android:layout_marginStart="18dp"
             android:clickable="true"
             android:focusable="true"
-            app:tint="#FFC107" />
+            app:tint="#FFC107"
+            />
 
         <!-- Third SVG Icon -->
         <ImageView
             android:id="@+id/delete_land_icon"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="27dp"
+            android:layout_height="27dp"
             android:src="@drawable/delete"
             android:contentDescription="Icon Delete"
             android:layout_marginStart="18dp"
             android:clickable="true"
             android:focusable="true"
-            app:tint="#F44336 " />
+            app:tint="#F44336 "
+            />
     </LinearLayout>
 
 
@@ -884,9 +900,9 @@
         android:textAllCaps="false"
         android:tooltipText="Click to erase above data"
         android:textSize="17sp"
-        app:layout_constraintTop_toBottomOf="@id/landTypeInputLayout"
         android:layout_marginStart="50dp"
-        android:layout_marginVertical="45dp"
+        android:layout_marginVertical="100dp"
+        app:layout_constraintTop_toBottomOf="@id/landTypeInputLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         />
