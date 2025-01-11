@@ -28,7 +28,6 @@ class Page1Activity : AppCompatActivity() {
 
 
     // Variables for dynamically updated data
-    private var districtToTowns: MutableMap<String, List<String>> = mutableMapOf()
     private var townsToPropertyAreas: MutableMap<String, List<String>> = mutableMapOf()
 
 
@@ -263,7 +262,6 @@ class Page1Activity : AppCompatActivity() {
 
         // Fetch the latest district list
         districtList = PreferencesManager.getDropdownList().toMutableList()
-
         // Update the district dropdown adapter
         val districtAdapter = ArrayAdapter(
             this,
@@ -274,7 +272,10 @@ class Page1Activity : AppCompatActivity() {
 
 
         if (selectedDistrictPg1.isNotEmpty()){
-            val districtTownMap = PreferencesManager.getDistrictTownMap()
+            // Fetch the districtTownMap once when the activity starts
+            val districtTownMap: MutableMap<String, MutableList<String>> by lazy {
+                PreferencesManager.getDistrictTownMap()
+            }
             val towns = districtTownMap[selectedDistrictPg1] ?: mutableListOf()
 
             // Update the town dropdown adapter

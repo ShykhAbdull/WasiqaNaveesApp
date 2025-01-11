@@ -6,19 +6,13 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AlphaAnimation
-import android.view.animation.Animation
-import android.view.animation.ScaleAnimation
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
@@ -26,7 +20,6 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.TableRow
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -61,7 +54,7 @@ setContentView(binding.root)
 //    ------------------------------------------------------ UI CHANGES -------------------------------------------------------------------
 
 
-    val headingText = findViewById<TextView>(R.id.heading_text_settings)
+    val headingText = binding.headingTextSettings
 
 // Add ripple-like effect using a circular gradient
     val rippleAnimator = ObjectAnimator.ofFloat(headingText, "scaleX", 1.0f, 1.1f).apply {
@@ -136,6 +129,13 @@ val districtDropDown = binding.districtDropdown
         }
     }
 
+    // TownDropdown setup
+    val townDropDown = binding.townDropdown // ID of AutoCompleteTextView for towns
+    val townAreaMap = mutableMapOf<String, MutableList<String>>()
+    townList = mutableListOf()
+    townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
+    townDropDown.setAdapter(townAdapter)
+
     binding.townDropdown.setOnClickListener {
         if (binding.districtDropdown.text.toString().isNotEmpty()) {
             // Show the dropdown only if a district is selected
@@ -158,6 +158,11 @@ val districtDropDown = binding.districtDropdown
             Toast.makeText(this, "Please select a district first", Toast.LENGTH_SHORT).show()
         }
     }
+
+    val areaDropDown = binding.propertyAreaDropdown
+    areaList = mutableListOf()
+    areaAdapter = ArrayAdapter(this, custom_dropdown_item, areaList)
+    areaDropDown.setAdapter(areaAdapter)
 
     binding.propertyAreaDropdown.setOnFocusChangeListener { _, hasFocus ->
         if (hasFocus && binding.townDropdown.text.toString().isNotEmpty()) {
@@ -283,8 +288,9 @@ val districtAddIcon = binding.addDestrictIcon
 // Map to hold district-to-town associations
 
 // Sample data for the dropdown
-districtList = PreferencesManager.getDropdownList().toMutableList()
+districtList = PreferencesManager.getDropdownList()
 districtAdapter = ArrayAdapter(this, custom_dropdown_item, districtList)
+districtDropDown.setAdapter(districtAdapter)
 
 // Set adapter to AutoCompleteTextView
 districtDropDown.setAdapter(districtAdapter)
@@ -329,13 +335,38 @@ districtDropDown.addTextChangedListener(object : TextWatcher {
     }
 })
 
-// TownDropdown setup
-val townDropDown = binding.townDropdown // ID of AutoCompleteTextView for towns
-val townAreaMap = mutableMapOf<String, MutableList<String>>()
-townList = mutableListOf() //PreferenceManager.getDistrictTownMap()[selectedDistrict] ?: mutableListOf()
-townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
-townDropDown.setAdapter(townAdapter)
-townDropDown.threshold = 1
+
+    // Fetch the districtTownMap once when the activity starts
+    val districtTownMap: MutableMap<String, MutableList<String>> by lazy {
+        PreferencesManager.getDistrictTownMap()
+    }
+
+// Dropdown item selection logic
+    districtDropDown.setOnItemClickListener { _, _, _, _ ->
+        // Normalize the selected district to avoid formatting issues
+        selectedDistrict = districtDropDown.text.toString().trim()
+
+        // Retrieve the towns for the selected district
+        val towns = districtTownMap[selectedDistrict] ?: mutableListOf()
+
+        // Log the retrieved data
+        Log.d("DistrictSelection", "Selected district: $selectedDistrict, towns: $towns")
+
+        // Update the town dropdown
+        townList = towns
+        townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
+        townDropDown.setAdapter(townAdapter)
+        townDropDown.threshold = 1
+
+        // Clear previously selected town and area
+        townDropDown.text.clear()
+        areaDropDown.text.clear()
+
+        // Log the cleared selections
+        Log.d("DistrictSelection", "Cleared previous town and area selections.")
+    }
+
+
 
 
 // Apply filter and count the visible items
@@ -373,45 +404,6 @@ townDropDown.addTextChangedListener(object : TextWatcher {
         }
     }
 })
-
-
-    // Area Dropdown setup
-    val areaDropDown = binding.propertyAreaDropdown // ID of AutoCompleteTextView for Area
-    areaList = mutableListOf() //PreferenceManager.getTownAreaMap()[selectedTown] ?: mutableListOf()
-    areaAdapter = ArrayAdapter(this, custom_dropdown_item, areaList)
-    areaDropDown.setAdapter(areaAdapter)
-    areaDropDown.threshold = 1
-
-
-
-    // Fetch the districtTownMap once when the activity starts
-    val districtTownMap: MutableMap<String, MutableList<String>> by lazy {
-        PreferencesManager.getDistrictTownMap()
-    }
-
-// Dropdown item selection logic
-    districtDropDown.setOnItemClickListener { _, _, _, _ ->
-        // Normalize the selected district to avoid formatting issues
-        selectedDistrict = districtDropDown.text.toString().trim()
-
-        // Retrieve the towns for the selected district
-        val towns = districtTownMap[selectedDistrict] ?: mutableListOf()
-
-        // Log the retrieved data
-        Log.d("DistrictSelection", "Selected district: $selectedDistrict, towns: $towns")
-
-        // Update the town dropdown
-        townList = towns
-        townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
-        townDropDown.setAdapter(townAdapter)
-
-        // Clear previously selected town and area
-        townDropDown.text.clear()
-        areaDropDown.text.clear()
-
-        // Log the cleared selections
-        Log.d("DistrictSelection", "Cleared previous town and area selections.")
-    }
 
 
 
@@ -623,10 +615,10 @@ townDropDown.addTextChangedListener(object : TextWatcher {
                                 // Save updated district-town map in SharedPreference
                                 PreferencesManager.saveDistrictTownMap(districtTownMap)
 
-//                                // Update the town list and adapter for the current district
-//                                townList = towns
-//                                townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
-//                                townDropDown.setAdapter(townAdapter)
+                                // Update the town list and adapter for the current district
+                                townList = towns
+                                townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
+                                townDropDown.setAdapter(townAdapter)
 
                                 // Clear and reset areas
                                 val areas = townAreaMap[newTownName] ?: mutableListOf()

@@ -23,14 +23,14 @@ object PreferencesManager {
 
 
     // Save and Get district dropdown list
-    fun saveDropdownList(dropdownList: List<String>) {
+    fun saveDropdownList(dropdownList: MutableList<String>) {
         val json = gson.toJson(dropdownList)
         sharedPreferences.edit().putString(DROPDOWN_LIST_KEY, json).apply()
     }
-    fun getDropdownList(): List<String> {
+    fun getDropdownList(): MutableList<String> {
         val json = sharedPreferences.getString(DROPDOWN_LIST_KEY, "[]")
         val type = object : TypeToken<List<String>>() {}.type
-        return gson.fromJson(json, type) ?: emptyList()
+        return gson.fromJson(json, type) ?: emptyList<String>().toMutableList()
     }
 
 
