@@ -1,5 +1,6 @@
 package com.hashimnaqvillc.wasiqanaveesapp
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -12,6 +13,7 @@ class Page2Activity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPage2Binding
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -30,6 +32,8 @@ class Page2Activity : AppCompatActivity() {
         val marlaValue = intent.getDoubleExtra("marlaValue", 0.0)
         val sqftValue = intent.getDoubleExtra("sqftValue", 0.0)
         val coveredArea = intent.getDoubleExtra("coveredArea", 0.0)
+
+        val plotValueDC = intent.getDoubleExtra("plotValueDC", 0.0)
 
 
 
@@ -81,6 +85,8 @@ class Page2Activity : AppCompatActivity() {
         dateMonth.visibility = View.GONE
         val dateYear = findViewById<TextView>(R.id.date_year)
         dateYear.visibility = View.GONE
+
+        binding.plotValueDCDisplay.text = plotValueDC.toString()
 
 
         binding.nextButtonPg2.setOnClickListener {

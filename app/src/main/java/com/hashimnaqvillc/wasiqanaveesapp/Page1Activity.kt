@@ -1,5 +1,6 @@
 package com.hashimnaqvillc.wasiqanaveesapp
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -11,6 +12,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.hashimnaqvillc.wasiqanaveesapp.R.layout.custom_dropdown_item
 import com.hashimnaqvillc.wasiqanaveesapp.databinding.ActivityPage1Binding
 
 class Page1Activity : AppCompatActivity() {
@@ -31,6 +33,7 @@ class Page1Activity : AppCompatActivity() {
     private var townsToPropertyAreas: MutableMap<String, List<String>> = mutableMapOf()
 
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -55,73 +58,34 @@ class Page1Activity : AppCompatActivity() {
         val dateYear = findViewById<TextView>(R.id.date_year)
         dateYear.visibility = View.GONE
 
-//        // Construct districtToTowns and townsToPropertyAreas mappings
-//        constructMappings(updatedDistrictList, updatedTownList, updatedAreaList)
 
-        districtList = PreferencesManager.getDropdownList().toMutableList()
+        setupDropdowns()
 
-// District Dropdown
-        val districts = districtList
-        val districtAdapter = ArrayAdapter(
-            this,
-            R.layout.custom_dropdown_item,
-            districts
-        )
-        binding.districtDropdown.setAdapter(districtAdapter)
 
 // Handle District selection
         binding.districtDropdown.setOnClickListener {
             binding.districtDropdown.showDropDown()
-            Log.d("District", "Updated district list: $districts")
+            binding.districtDropdown.requestFocus()
         }
 
-        // Fetch the districtTownMap once when the activity starts
-        val districtTownMap: MutableMap<String, MutableList<String>> by lazy {
-            PreferencesManager.getDistrictTownMap()
-        }
-        binding.districtDropdown.setOnItemClickListener { parent, _, position, _ ->
-            selectedDistrict = parent.getItemAtPosition(position) as String
-            val towns = districtTownMap[selectedDistrict] ?: mutableListOf()
-            // Update Town Dropdown
-            val townAdapter = ArrayAdapter(
-                this,
-                R.layout.custom_dropdown_item,
-                towns
-            )
-            binding.townDropdown.setAdapter(townAdapter)
-            // Clear previous selections
-            binding.townDropdown.text.clear()
-            binding.propertyAreaDropdown.text.clear()
-        }
+
 
 // Handle Town selection
         binding.townDropdown.setOnClickListener {
             binding.townDropdown.showDropDown()
+            binding.townDropdown.requestFocus()
         }
-        binding.townDropdown.setOnItemClickListener { parent, _, position, _ ->
-            selectedTown = parent.getItemAtPosition(position) as String
-            val propertyAreas = townsToPropertyAreas[selectedTown] ?: emptyList()
 
-            // Update Property Area Dropdown
-            val propertyAreaAdapter = ArrayAdapter(
-                this,
-                R.layout.custom_dropdown_item,
-                propertyAreas
-            )
-            binding.propertyAreaDropdown.setAdapter(propertyAreaAdapter)
 
-            // Clear previous selection
-            binding.propertyAreaDropdown.text.clear()
-        }
+
+
 
 // Handle Property Area selection
         binding.propertyAreaDropdown.setOnClickListener {
             binding.propertyAreaDropdown.showDropDown()
+            binding.propertyAreaDropdown.requestFocus()
         }
-        binding.propertyAreaDropdown.setOnItemClickListener { parent, _, position, _ ->
-            selectedPropertyArea = parent.getItemAtPosition(position) as String
-            println("Selected Property Area: $selectedPropertyArea")
-        }
+
 
 
 
@@ -129,16 +93,20 @@ class Page1Activity : AppCompatActivity() {
 
 
         val propertyTypeAutoComplete = binding.propertyTypeDropdown
+
         val landTypeAutoComplete = binding.landTypeDropdown
 
 // Data for the dropdowns
+        val landTypeOptions = PreferencesManager.getLandList()
+
         val propertyTypeOptions = listOf("Plot", "Building")
-        val landTypeOptions = listOf("Residential", "Commercial", "Agricultural", "Industrial", "Apartment", "Shop")
+
 
 // Adapters for the dropdowns
-        val propertyTypeAdapter = ArrayAdapter(this, R.layout.custom_dropdown_item,
+        val propertyTypeAdapter = ArrayAdapter(this, custom_dropdown_item,
             propertyTypeOptions)
-        val landTypeAdapter = ArrayAdapter(this, R.layout.custom_dropdown_item,
+
+        val landTypeAdapter = ArrayAdapter(this, custom_dropdown_item,
             landTypeOptions)
 
 // Set adapters to AutoCompleteTextViews
@@ -202,11 +170,52 @@ class Page1Activity : AppCompatActivity() {
 
         binding.findButton.setOnClickListener {
             // Retrieve numeric values
-            val kanalValue = binding.kanalEditText.text.toString().toDoubleOrNull()
-            val marlaValue = binding.marlaEditText.text.toString().toDoubleOrNull()
-            val sqftValue = binding.sqftEditText.text.toString().toDoubleOrNull()
+            val kanalValue = binding.kanalEditText.text.toString().toDoubleOrNull() ?: 0.0
+            val marlaValue = binding.marlaEditText.text.toString().toDoubleOrNull() ?: 0.0
+            val sqftValue = binding.sqftEditText.text.toString().toDoubleOrNull() ?: 0.0
+            val sqftPerMarla = 225.0
 
-            val coveredAreaValue = binding.coveredAreaEditText.text.toString().toDoubleOrNull()
+            // Retrieve land rates safely
+            val landRates = PreferencesManager.getLandRates()
+            val marlaDc = landRates["MarlaDC"]?.toDoubleOrNull() ?: 1.0
+            val marlaFbr = landRates["MarlaFBR"] ?: "N/A"
+            val coveredAreaDc = landRates["CoveredAreaDC"] ?: "N/A"
+            val coveredAreaFbr = landRates["CoveredAreaFBR"] ?: "N/A"
+            val transferFee = landRates["TransferFee"] ?: "N/A"
+            val khasraNumber = landRates["KhasraNumber"] ?: "N/A"
+
+
+//            Log.d("LandRates", "MarlaDC: $marlaDc, MarlaFBR: $marlaFbr")
+
+            val totalSqft = (kanalValue * 20 * sqftPerMarla + marlaValue * sqftPerMarla + sqftValue) / sqftPerMarla
+            val plotValueDC = totalSqft * marlaDc
+
+            Log.d("Calculation", "Total Sqft: $plotValueDC")
+
+            // Retrieve covered area value safely
+            val coveredAreaValue = binding.coveredAreaEditText.text.toString().toDoubleOrNull() ?: 0.0
+
+            // Log results or proceed with further operations
+            Log.d("Calculation", "Total Sqft: $totalSqft, Covered Area Value: $coveredAreaValue")
+
+            // Optional: Show results in a Toast or update UI
+            Toast.makeText(
+                this,
+                "Total Sqft: $totalSqft\nCovered Area Value: $coveredAreaValue",
+                Toast.LENGTH_SHORT
+            ).show()
+
+
+
+
+
+
+
+
+//            val totalSqft = (kanalValue!! * 20 * sqftPerMarla + marlaValue!! * sqftPerMarla + sqftValue!!) / sqftPerMarla
+
+
+
 
 
             // Validate dropdown selections and numeric inputs
@@ -226,12 +235,10 @@ class Page1Activity : AppCompatActivity() {
                 selectedPropertyType.isNullOrEmpty() -> {
                     Toast.makeText(this, "Please select an option in Property Type", Toast.LENGTH_SHORT).show()
                 }
-                kanalValue == null && marlaValue == null && sqftValue == null -> {
-                    Toast.makeText(this, "Please enter a valid Land Area", Toast.LENGTH_SHORT).show()
-                }
-                selectedPropertyType == "Building" && coveredAreaValue == null -> {
-                    Toast.makeText(this, "Please enter a valid Covered Area for Building", Toast.LENGTH_SHORT).show()
-                }
+
+//                selectedPropertyType == "Building" && coveredAreaValue == null -> {
+//                    Toast.makeText(this, "Please enter a valid Covered Area for Building", Toast.LENGTH_SHORT).show()
+//                }
                 else -> {
                     // All inputs are valid; proceed to the next activity
                     val intent = Intent(this, Page2Activity::class.java)
@@ -239,10 +246,11 @@ class Page1Activity : AppCompatActivity() {
                     intent.putExtra("selectedTown", selectedTown)
                     intent.putExtra("selectedPropertyArea", selectedPropertyArea)
                     intent.putExtra("selectedLandType", selectedLandType)
-                    intent.putExtra("selectedPropertyType", selectedPropertyType)
-                    if (selectedPropertyType == "Building"){
-                        intent.putExtra("coveredArea", coveredAreaValue)
-                    }
+                    intent.putExtra("plotValueDC", plotValueDC)
+//                    intent.putExtra("selectedPropertyType", selectedPropertyType)
+//                    if (selectedPropertyType == "Building"){
+//                        intent.putExtra("coveredArea", coveredAreaValue)
+//                    }
                     intent.putExtra("kanalValue", kanalValue)
                     intent.putExtra("marlaValue", marlaValue)
                     intent.putExtra("sqftValue", sqftValue)
@@ -254,43 +262,130 @@ class Page1Activity : AppCompatActivity() {
 
     }
 
+
     // Refresh logic in onResume()
     override fun onResume() {
         super.onResume()
 
-        val selectedDistrictPg1 = binding.districtDropdown.text.toString()
+        setupDropdowns()
 
-        // Fetch the latest district list
-        districtList = PreferencesManager.getDropdownList().toMutableList()
-        // Update the district dropdown adapter
+    }
+
+
+    private fun setupDropdowns() {
+
+        // District Dropdown Setup
+        val districtList = PreferencesManager.getDropdownList().toMutableList()
         val districtAdapter = ArrayAdapter(
             this,
-            R.layout.custom_dropdown_item,
+            custom_dropdown_item,
             districtList
         )
         binding.districtDropdown.setAdapter(districtAdapter)
 
 
-        if (selectedDistrictPg1.isNotEmpty()){
-            // Fetch the districtTownMap once when the activity starts
-            val districtTownMap: MutableMap<String, MutableList<String>> by lazy {
-                PreferencesManager.getDistrictTownMap()
-            }
-            val towns = districtTownMap[selectedDistrictPg1] ?: mutableListOf()
+//        --------------------------------------------------------------------------------------
 
-            // Update the town dropdown adapter
+
+// Fetch the districtTownMap once when the activity starts
+        val districtTownMap: MutableMap<String, MutableList<String>> by lazy {
+            PreferencesManager.getDistrictTownMap()
+        }
+
+// District dropdown item selection logic
+        binding.districtDropdown.setOnItemClickListener { _, _, _, _ ->
+
+            // Clear dependent dropdown fields for Town and Area
+            binding.townDropdown.text.clear()
+            binding.propertyAreaDropdown.text.clear()
+            binding.landTypeDropdown.text.clear()
+
+            // Normalize the selected district to avoid formatting issues
+            selectedDistrict = binding.districtDropdown.text.toString().trim()
+
+            // Retrieve the towns for the selected district
+            val towns = districtTownMap[selectedDistrict] ?: mutableListOf()
+
+            // Log the retrieved data
+            Log.d("DistrictSelection", "Selected district: $selectedDistrict, towns: $towns")
+
+            // Update the town dropdown
             val townAdapter = ArrayAdapter(
                 this,
-                R.layout.custom_dropdown_item,
+                custom_dropdown_item,
                 towns
             )
             binding.townDropdown.setAdapter(townAdapter)
+            binding.townDropdown.threshold = 1
 
-            // Clear previous selections
-            binding.townDropdown.text.clear()
+            // Request focus to the town dropdown
+            binding.townDropdown.requestFocus()
+
+            // Log the cleared selections
+            Log.d("DistrictSelection", "Cleared previous town and area selections.")
+        }
+
+
+// ------------------------------------------------------------------------------------
+
+// Fetch the TownAreaMap once when the activity starts
+        val townAreaMap: MutableMap<String, MutableList<String>> by lazy {
+            PreferencesManager.getTownAreaMap()
+        }
+
+// On Town Selection
+        binding.townDropdown.setOnItemClickListener { _, _, _, _ ->
+
+            // Clear dependent dropdowns
             binding.propertyAreaDropdown.text.clear()
+            binding.landTypeDropdown.text.clear()
 
-            Log.d("TownDropdown", "Updated towns for district '$selectedDistrictPg1': $towns")        }
+            // Normalize the selected town to avoid formatting issues
+            selectedTown = binding.townDropdown.text.toString().trim()
+
+            // Retrieve the areas for the selected town
+            val areas = townAreaMap[selectedTown] ?: mutableListOf()
+
+            // Update the property area dropdown
+            val areaAdapter = ArrayAdapter(
+                this,
+                custom_dropdown_item,
+                areas
+            )
+            binding.propertyAreaDropdown.setAdapter(areaAdapter)
+
+            // Request focus to the property area dropdown
+            binding.propertyAreaDropdown.requestFocus()
+
+            // Log the selected town and areas
+            Log.d("TownSelection", "Selected town: $selectedTown, areas: $areas")
+        }
+
+//        ---------------------------------------------------------------------------------------
+
+        binding.propertyAreaDropdown.setOnItemClickListener { _, _, _, _ ->
+
+            // Normalize the selected property area to avoid formatting issues
+            selectedPropertyArea = binding.propertyAreaDropdown.text.toString().trim()
+
+        }
+
+
+//        ---------------------------------------------------------------------------------------
+
+
+        // Sample data for the dropdown (Land Type)
+        val landList = PreferencesManager.getLandList()
+
+// Create an ArrayAdapter and set it on the AutoCompleteTextView
+        val landTypeDropdown = binding.landTypeDropdown
+        val landAdapter = ArrayAdapter(this, custom_dropdown_item, landList)
+        landTypeDropdown.setAdapter(landAdapter)
+
+        landTypeDropdown.setOnClickListener {
+            landTypeDropdown.showDropDown()
+        }
+
     }
 
 
@@ -298,4 +393,5 @@ class Page1Activity : AppCompatActivity() {
 
 
 
-    }
+
+}

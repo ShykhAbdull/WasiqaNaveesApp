@@ -53,7 +53,7 @@ object PreferencesManager {
 
 
 // Town to Property Area (SAVE&GET)
-    fun saveTownAreaMap(townAreaMap: Map<String, MutableList<String>>) {
+    fun saveTownAreaMap(townAreaMap: MutableMap<String, MutableList<String>>) {
         val json = gson.toJson(townAreaMap) // Serialize the map to JSON
         sharedPreferences.edit().putString("TownAreaMap", json).apply()
     }
@@ -64,16 +64,43 @@ object PreferencesManager {
     }
 
 
-
-
-
-    // Save EditText value
-    fun saveEditTextValue(value: String) {
-        sharedPreferences.edit().putString(EDIT_TEXT_KEY, value).apply()
+    fun saveLandRates(data: MutableMap<String, String>) {
+        val json = gson.toJson(data)
+        sharedPreferences.edit().putString("LandRates", json).apply()
     }
 
-    // Get EditText value
-    fun getEditTextValue(): String {
-        return sharedPreferences.getString(EDIT_TEXT_KEY, "") ?: ""
+
+    fun getLandRates(): MutableMap<String, String> {
+        val json = sharedPreferences.getString("LandRates", "{}")
+        val type = object : TypeToken<MutableMap<String, String>>() {}.type
+        return gson.fromJson(json, type) ?: mutableMapOf()
     }
+
+
+
+
+
+
+    fun saveLandList(landList: MutableList<String>) {
+        val json = gson.toJson(landList)
+        sharedPreferences.edit().putString("LandList", json).apply()
+    }
+
+    fun getLandList(): MutableList<String> {
+        val json = sharedPreferences.getString("LandList", "[]")
+        val type = object : TypeToken<List<String>>() {}.type
+        return gson.fromJson(json, type) ?: emptyList<String>().toMutableList()
+    }
+
+
+
+//    // Save EditText value
+//    fun saveEditTextValue(value: String) {
+//        sharedPreferences.edit().putString(EDIT_TEXT_KEY, value).apply()
+//    }
+//
+//    // Get EditText value
+//    fun getEditTextValue(): String {
+//        return sharedPreferences.getString(EDIT_TEXT_KEY, "") ?: ""
+//    }
 }

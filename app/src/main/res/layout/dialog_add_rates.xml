@@ -3,11 +3,13 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fillViewport="true"
-    android:padding="16dp">
+    >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        >
 
         <!--        1st Display -->
         <TextView
@@ -25,19 +27,20 @@
             />
 
         <TextView
-            android:id="@+id/district_display_pg2"
+            android:id="@+id/district_display_DialogDisplay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="Lahore"
             android:textColorHint="@color/black"
             android:gravity="center"
             android:textSize="15sp"
-            android:layout_marginStart="140dp"
+            android:layout_marginStart="100dp"
             android:textColor="@color/black"
             android:fontFamily="@font/sf_pro_display_regular"
             app:layout_constraintTop_toTopOf="@id/district_text_pg2"
             app:layout_constraintBottom_toBottomOf="@id/district_text_pg2"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
 
             />
 
@@ -52,25 +55,26 @@
             android:fontFamily="@font/sf_pro_display_medium"
             android:layout_marginTop="8dp"
             android:layout_marginStart="10dp"
-            app:layout_constraintTop_toBottomOf="@id/district_display_pg2"
+            app:layout_constraintTop_toBottomOf="@id/district_display_DialogDisplay"
             app:layout_constraintStart_toStartOf="parent"
             />
 
         <TextView
-            android:id="@+id/town_display_pg2"
+            android:id="@+id/town_DialogDisplay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="Allama Iqbal Town"
             android:textColorHint="@color/black"
             android:gravity="center"
             android:textSize="15sp"
-            android:layout_marginStart="140dp"
+            android:layout_marginStart="100dp"
             android:textColor="@color/black"
             android:fontFamily="@font/sf_pro_display_regular"
             android:layout_marginTop="0dp"
             app:layout_constraintTop_toTopOf="@id/town_text_pg2"
             app:layout_constraintBottom_toBottomOf="@id/town_text_pg2"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             />
 
 
@@ -85,25 +89,26 @@
             android:fontFamily="@font/sf_pro_display_medium"
             android:layout_marginTop="8dp"
             android:layout_marginStart="10dp"
-            app:layout_constraintTop_toBottomOf="@id/propertyArea_display_pg2"
+            app:layout_constraintTop_toBottomOf="@id/propertyArea_DialogDisplay"
             app:layout_constraintStart_toStartOf="parent"
             />
 
         <TextView
-            android:id="@+id/landType_display_pg2"
+            android:id="@+id/landType_DialogDisplay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="Commercial Plot"
             android:textColorHint="@color/black"
             android:gravity="center"
             android:textSize="15sp"
-            android:layout_marginStart="140dp"
+            android:layout_marginStart="100dp"
             android:textColor="@color/black"
             android:fontFamily="@font/sf_pro_display_regular"
-
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/landType_text_pg2"
             app:layout_constraintBottom_toBottomOf="@id/landType_text_pg2"
+            app:layout_constraintEnd_toEndOf="parent"
+
             />
         <!--4th Display -->
 
@@ -119,73 +124,39 @@
             android:fontFamily="@font/sf_pro_display_medium"
             android:layout_marginTop="8dp"
             android:layout_marginStart="10dp"
-            app:layout_constraintTop_toBottomOf="@id/town_display_pg2"
+            app:layout_constraintTop_toBottomOf="@id/town_DialogDisplay"
             app:layout_constraintStart_toStartOf="parent"
             />
 
         <TextView
-            android:id="@+id/propertyArea_display_pg2"
+            android:id="@+id/propertyArea_DialogDisplay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="Bahria Town Lhr"
             android:textColorHint="@color/black"
             android:gravity="center"
             android:textSize="15sp"
-            android:layout_marginStart="140dp"
+            android:layout_marginStart="100dp"
             android:textColor="@color/black"
             android:fontFamily="@font/sf_pro_display_regular"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/propertyArea_text_pg2"
             app:layout_constraintBottom_toBottomOf="@id/propertyArea_text_pg2"
-            />
-
-
-
-        <!-- Khasra Number Section -->
-        <TextView
-            android:id="@+id/khasra_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Khasra Number"
-            android:textSize="15sp"
-            android:layout_marginTop="5dp"
-            android:fontFamily="@font/sf_pro_display_medium"
-            android:textColor="@color/black"
-            android:layout_marginStart="10dp"
-            app:layout_constraintTop_toTopOf="@id/khasraEditText"
-            app:layout_constraintBottom_toBottomOf="@id/khasraEditText"
-            app:layout_constraintStart_toStartOf="parent"
-            />
-
-        <EditText
-            android:id="@+id/khasraEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="(Optional)"
-            android:background="@drawable/email_input_background"
-            android:fontFamily="@font/sf_pro_display_medium"
-            android:maxLines="1"
-            android:paddingStart="20dp"
-            android:layout_marginStart="140dp"
-            android:layout_marginEnd="10dp"
-            android:textSize="10dp"
-            android:paddingVertical="10dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@id/landType_display_pg2"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             />
+
+
 
         <!-- CardView Section -->
         <androidx.cardview.widget.CardView
             android:id="@+id/cardViewSettings"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="30dp"
-            android:layout_marginHorizontal="10dp"
+            android:layout_marginVertical="25dp"
+            android:layout_marginHorizontal="8dp"
             app:cardCornerRadius="8dp"
             app:cardElevation="4dp"
-            app:layout_constraintTop_toBottomOf="@id/khasraEditText"
+            app:layout_constraintTop_toBottomOf="@id/landType_DialogDisplay"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -194,8 +165,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingVertical="20dp"
-
+                android:padding="10dp"
                 >
 
                 <!-- Title -->
@@ -210,16 +180,18 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    android:paddingBottom="8dp" />
+                    android:paddingBottom="8dp"
+                    />
 
                 <!-- Table Layout -->
                 <TableLayout
+                    android:layout_width="match_parent"
                     android:id="@+id/tableLayoutSettings"
-                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toBottomOf="@id/property_rate_title"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent">
+                    app:layout_constraintEnd_toEndOf="parent"
+                    >
 
                     <!-- Table Header -->
                     <TableRow>
@@ -264,35 +236,42 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Marla / Price"
-                            android:gravity="center"
+                            android:text="Marla\n(Unit Price)"
                             android:textSize="15sp"
+                            android:paddingVertical="5dp"
                             android:fontFamily="@font/sf_pro_display_regular"
                             android:textColor="#000" />
 
                         <EditText
+                            android:id="@+id/marlaUnitPriceDC"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:hint="100000"
                             android:textSize="15sp"
                             android:inputType="number"
-                            android:paddingVertical="8dp"
+                            android:paddingVertical="10dp"
+                            android:layout_marginEnd=".1dp"
                             android:background="@drawable/email_input_background"
                             android:gravity="center"
-                            android:fontFamily="@font/sf_pro_display_medium" />
+                            android:layout_gravity="center"
+                            android:fontFamily="@font/sf_pro_display_medium"
+                            />
 
                         <EditText
+                            android:id="@+id/marlaUnitPriceFBR"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:hint="150000"
                             android:textSize="15sp"
                             android:inputType="numberDecimal"
-                            android:paddingVertical="8dp"
+                            android:paddingVertical="10dp"
+                            android:layout_marginStart=".1dp"
                             android:background="@drawable/email_input_background"
                             android:gravity="center"
-                            android:fontFamily="@font/sf_pro_display_regular" />
+                            android:layout_gravity="center"
+                            android:fontFamily="@font/sf_pro_display_medium" />
                     </TableRow>
 
                     <TableRow
@@ -309,35 +288,108 @@
                             android:text="Covered Area (Sqft)"
                             android:textSize="15sp"
                             android:fontFamily="@font/sf_pro_display_regular"
-                            android:gravity="center"
                             android:paddingVertical="5dp"
 
                             android:textColor="#000" />
 
                         <EditText
+                            android:id="@+id/covereAreaDC"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:hint="100000"
                             android:textSize="15sp"
                             android:inputType="number"
-                            android:paddingVertical="8dp"
+                            android:paddingVertical="10dp"
+                            android:layout_marginEnd=".1dp"
                             android:layout_gravity="center"
                             android:background="@drawable/email_input_background"
                             android:gravity="center"
                             android:fontFamily="@font/sf_pro_display_medium" />
 
                         <EditText
+                            android:id="@+id/covereAreaFBR"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:hint="100000"
                             android:textSize="15sp"
                             android:inputType="number"
-                            android:paddingVertical="8dp"
+                            android:paddingVertical="10dp"
+                            android:layout_marginStart=".1dp"
                             android:background="@drawable/email_input_background"
                             android:layout_gravity="center"
                             android:gravity="center"
+                            android:fontFamily="@font/sf_pro_display_medium" />
+                    </TableRow>
+
+<!--                    Transfer Fee -->
+
+                    <!-- Table Rows -->
+                    <TableRow
+                        android:layout_marginVertical="5dp"
+                        >
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Tranfer Fee"
+                            android:textSize="15sp"
+                            android:paddingVertical="5dp"
+                            android:layout_gravity="center"
+                            android:fontFamily="@font/sf_pro_display_regular"
+                            android:textColor="#000" />
+
+                        <EditText
+                            android:id="@+id/transferFee"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:hint="Optional"
+                            android:textSize="15sp"
+                            android:inputType="number"
+                            android:textColorHint="#C7BFBF"
+                            android:textColor="#C7BFBF"
+                            android:paddingVertical="10dp"
+                            android:layout_marginStart=".1dp"
+                            android:background="@drawable/email_input_background"
+                            android:gravity="center"
+                            android:layout_gravity="center"
+                            android:fontFamily="@font/sf_pro_display_medium" />
+                    </TableRow>
+
+<!--                    Khasra Number -->
+
+                    <!-- Table Rows -->
+                    <TableRow
+                        android:layout_marginVertical="5dp"
+                        >
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Khasra Number"
+                            android:textSize="15sp"
+                            android:paddingVertical="5dp"
+                            android:layout_gravity="center"
+                            android:fontFamily="@font/sf_pro_display_regular"
+                            android:textColor="#C7BFBF" />
+
+                        <EditText
+                            android:id="@+id/khasraNumberEditText"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:hint="Optional"
+                            android:textSize="15sp"
+                            android:inputType="number"
+                            android:paddingVertical="10dp"
+                            android:textColorHint="#C7BFBF"
+                            android:textColor="#C7BFBF"
+                            android:layout_marginStart=".1dp"
+                            android:background="@drawable/email_input_background"
+                            android:gravity="center"
+                            android:layout_gravity="center"
                             android:fontFamily="@font/sf_pro_display_medium" />
                     </TableRow>
 

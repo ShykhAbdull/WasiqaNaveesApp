@@ -115,46 +115,42 @@ backBtn.setOnClickListener {
 //        Logic for District DropDownClick
 val districtDropDown = binding.districtDropdown
     districtDropDown.setOnClickListener {
-        binding.districtDropdown.dismissDropDown()
         binding.districtDropdown.showDropDown()
         binding.districtDropdown.requestFocus()
     }
 
     districtDropDown.setOnFocusChangeListener { _, hasFocus ->
         if (hasFocus) {
-            binding.districtDropdown.dismissDropDown()
+            binding.districtIconContainer.visibility = View.VISIBLE
             binding.districtDropdown.showDropDown()
-
+        }
+        else{
+            binding.districtIconContainer.visibility = View.GONE
         }
     }
 
     // TownDropdown setup
     val townDropDown = binding.townDropdown // ID of AutoCompleteTextView for towns
-    val townAreaMap = mutableMapOf<String, MutableList<String>>()
     townList = mutableListOf()
     townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
     townDropDown.setAdapter(townAdapter)
 
     binding.townDropdown.setOnClickListener {
-        if (binding.districtDropdown.text.toString().isNotEmpty()) {
             // Show the dropdown only if a district is selected
-            binding.townDropdown.dismissDropDown()
             binding.townDropdown.showDropDown()
             binding.townDropdown.requestFocus()
-        } else {
-            Toast.makeText(this, "Please select a district first", Toast.LENGTH_SHORT).show()
-        }
     }
 
     binding.townDropdown.setOnFocusChangeListener { _, hasFocus ->
-        if (hasFocus && binding.districtDropdown.text.toString().isNotEmpty()) {
-            binding.townDropdown.dismissDropDown()
+        if (hasFocus && binding.districtDropdown.text.toString().isNotEmpty() && districtList.contains(binding.districtDropdown.text.toString().trim())) {
+            binding.townIconContainer.visibility = View.VISIBLE
             binding.townDropdown.showDropDown()
-
-
         } else if (hasFocus) {
             binding.townDropdown.clearFocus() // Prevent focus if no district is selected
-            Toast.makeText(this, "Please select a district first", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Add or Select District first!", Toast.LENGTH_SHORT).show()
+        }
+        else{
+            binding.townIconContainer.visibility = View.GONE
         }
     }
 
@@ -163,28 +159,37 @@ val districtDropDown = binding.districtDropdown
     areaAdapter = ArrayAdapter(this, custom_dropdown_item, areaList)
     areaDropDown.setAdapter(areaAdapter)
 
-    binding.propertyAreaDropdown.setOnFocusChangeListener { _, hasFocus ->
-        if (hasFocus && binding.townDropdown.text.toString().isNotEmpty()) {
-            binding.propertyAreaDropdown.dismissDropDown()
-            binding.propertyAreaDropdown.showDropDown()
+    areaDropDown.setOnClickListener {
+        areaDropDown.showDropDown()
+        areaDropDown.requestFocus()
+    }
 
+    binding.propertyAreaDropdown.setOnFocusChangeListener { _, hasFocus ->
+        if (hasFocus && binding.townDropdown.text.toString().isNotEmpty() && townList.contains(binding.townDropdown.text.toString().trim() )) {
+            areaDropDown.showDropDown()
+            binding.propertyAreaIconContainer.visibility = View.VISIBLE
 
         } else if (hasFocus) {
-            binding.propertyAreaDropdown.clearFocus() // Prevent focus if no town is selected
-            Toast.makeText(this, "Please select a town first", Toast.LENGTH_SHORT).show()
+
+            areaDropDown.clearFocus() // Prevent focus if no town is selected
+            Toast.makeText(this, "Add or Select Town first!", Toast.LENGTH_SHORT).show()
+        }
+        else{
+            binding.propertyAreaIconContainer.visibility = View.GONE
         }
     }
-    binding.propertyAreaDropdown.setOnClickListener {
-        binding.propertyAreaDropdown.dismissDropDown()
-    binding.propertyAreaDropdown.showDropDown()
-}
 
 
     // Optional: Disable default focus stealing by the clear_text icon
     binding.landTypeDropdown.setOnFocusChangeListener { _, hasFocus ->
 
-        if (hasFocus) {
+        if (hasFocus && binding.propertyAreaDropdown.text.toString().isNotEmpty() && areaList.contains(binding.propertyAreaDropdown.text.toString().trim())) {
             binding.landTypeDropdown.showDropDown()
+            binding.landTypeIconContainer.visibility = View.VISIBLE
+        }
+        else{
+            binding.landTypeDropdown.clearFocus()
+            binding.landTypeIconContainer.visibility = View.GONE
         }
     }
 
@@ -242,13 +247,9 @@ binding.landTypeDropdown.setRawInputType(InputType.TYPE_CLASS_TEXT)
 
 val districtAddIcon = binding.addDestrictIcon
 
-
 // Sample data for the dropdown
 districtList = PreferencesManager.getDropdownList()
 districtAdapter = ArrayAdapter(this, custom_dropdown_item, districtList)
-districtDropDown.setAdapter(districtAdapter)
-
-// Set adapter to AutoCompleteTextView
 districtDropDown.setAdapter(districtAdapter)
 // Start searching after typing one character
 districtDropDown.threshold = 1
@@ -264,8 +265,6 @@ if (itemCount <= 3) {
         (districtDropDown.context.resources.displayMetrics.density * 150).toInt()
     Log.d("DistrictList", "Updated district list: $districtList")
 }
-
-
 
 
 
@@ -305,6 +304,13 @@ if (itemCount <= 3) {
 
 // Dropdown item selection logic
     districtDropDown.setOnItemClickListener { _, _, _, _ ->
+
+        // Also clear dependent dropdown fields for Town and Area
+        townDropDown.text.clear()
+        areaDropDown.text.clear()
+        binding.landTypeDropdown.text.clear()
+
+
         // Normalize the selected district to avoid formatting issues
         selectedDistrict = districtDropDown.text.toString().trim()
 
@@ -319,10 +325,6 @@ if (itemCount <= 3) {
         townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
         townDropDown.setAdapter(townAdapter)
         townDropDown.threshold = 1
-
-        // Clear previously selected town and area
-        townDropDown.text.clear()
-        areaDropDown.text.clear()
 
         binding.townDropdown.requestFocus()
 
@@ -365,34 +367,30 @@ townDropDown.addTextChangedListener(object : TextWatcher {
                 townDropDown.dropDownHeight =
                     (townDropDown.context.resources.displayMetrics.density * 150).toInt()
             }
-
-//            // Show or hide the add icon based on input text length
-//            if (s.isNullOrEmpty()) {
-//                binding.townIconContainer.visibility = View.GONE // Hide the add icon if no text
-//            } else {
-//                binding.townIconContainer.visibility  = View.VISIBLE // Show the add icon if text is entered
-//            }
-
-
         }
     }
 })
 
 
 
-
-
+    // Fetch the TownAreaMap once when the activity starts
+    val townAreaMap: MutableMap<String, MutableList<String>> by lazy {
+        PreferencesManager.getTownAreaMap()
+    }
 
 // On Town Selection
     townDropDown.setOnItemClickListener { _, _, _, _ ->
-        val selectedTown = townDropDown.text.toString()
 
+        areaDropDown.text.clear()
+        binding.landTypeDropdown.text.clear()
+
+
+        val selectedTown = townDropDown.text.toString().trim()
         // Clear and reset areas
         val areas = townAreaMap[selectedTown] ?: mutableListOf()
         areaList = areas
         areaAdapter = ArrayAdapter(this, custom_dropdown_item, areaList)
         areaDropDown.setAdapter(areaAdapter)
-        areaDropDown.text.clear() // Clear selected area
 
         binding.propertyAreaDropdown.requestFocus()
 
@@ -400,7 +398,7 @@ townDropDown.addTextChangedListener(object : TextWatcher {
     }
 
     areaDropDown.setOnItemClickListener { _, _, _, _ ->
-
+        binding.landTypeDropdown.text.clear()
         binding.landTypeDropdown.requestFocus()
     }
 
@@ -457,8 +455,6 @@ townDropDown.addTextChangedListener(object : TextWatcher {
         townDropDown.text.clear()
         areaDropDown.text.clear()
         binding.landTypeDropdown.text.clear()
-        // Request focus back to the district dropdown
-        townDropDown.requestFocus()
 
     }
 
@@ -468,8 +464,7 @@ townDropDown.addTextChangedListener(object : TextWatcher {
         townDropDown.text.clear()
         areaDropDown.text.clear()
         binding.landTypeDropdown.text.clear()
-        // Request focus back to the district dropdown
-        townDropDown.requestFocus()
+
 
     }
 
@@ -478,10 +473,21 @@ townDropDown.addTextChangedListener(object : TextWatcher {
         // Also clear dependent dropdown fields for Town and Area
         areaDropDown.text.clear()
         binding.landTypeDropdown.text.clear()
-        // Request focus back to the district dropdown
-        townDropDown.requestFocus()
-
     }
+
+//    binding.landTypeDropdown.addTextChangedListener(object : TextWatcher{
+//        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+//        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+//
+//        override fun afterTextChanged(s: Editable?) {
+//            // Show or hide the add icon based on input text length
+//            if (s.isNullOrEmpty()) {
+//                binding.landTypeIconContainer.visibility = View.GONE // Hide the add icon if no text
+//            } else {
+//                binding.landTypeIconContainer.visibility  = View.VISIBLE // Show the add icon if text is entered
+//            }
+//        }
+//    })
 
 //--------------------------------------------------------------
 
@@ -495,7 +501,7 @@ townDropDown.addTextChangedListener(object : TextWatcher {
 
         if (currentDistrictName.isEmpty()) {
             // Show a message if the dropdown is empty
-            Toast.makeText(this, "Please enter a district name in the dropdown before adding", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Empty District!", Toast.LENGTH_SHORT).show()
         } else {
             // Proceed with the dialog to confirm adding the district
             val dialogView = layoutInflater.inflate(R.layout.custom_add_alert, null)
@@ -513,6 +519,7 @@ townDropDown.addTextChangedListener(object : TextWatcher {
                             Toast.makeText(this, "District already exists", Toast.LENGTH_SHORT).show()
                         }
                         else -> {
+
                             // Add the new district to the list
                             districtList.add(currentDistrictName)
 
@@ -528,6 +535,7 @@ townDropDown.addTextChangedListener(object : TextWatcher {
                             townList = towns
                             townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
                             townDropDown.setAdapter(townAdapter)
+
 
                             Log.d("DistrictList", "Updated district list: $districtList")
                             Toast.makeText(this, "District added successfully", Toast.LENGTH_SHORT).show()
@@ -554,6 +562,7 @@ townDropDown.addTextChangedListener(object : TextWatcher {
                 positiveButtonAdd.textSize = 16f
                 negativeButtonAdd.setTextColor(ContextCompat.getColor(this, R.color.wasiqa_dark_grey)) // For "Cancel"
                 negativeButtonAdd.textSize = 16f
+
                 // Make the background dim darker
                 val window = addDistrictDialog.window
                 window?.setDimAmount(0.8f) // Adjust the dim level (default is 0.5f)
@@ -579,12 +588,9 @@ townDropDown.addTextChangedListener(object : TextWatcher {
         selectedDistrict = districtDropDown.text.toString().trim()
         val selectedTown = townDropDown.text.toString().trim()
 
-        if (selectedDistrict.isEmpty()) {
-            // Show a Toast message prompting the user to select a district
-            Toast.makeText(this, "Please select a district first", Toast.LENGTH_SHORT).show()
-        } else if (selectedTown.isEmpty()) {
+        if (selectedTown.isEmpty()) {
             // Show a Toast message prompting the user to enter a town name
-            Toast.makeText(this, "Please enter a town name in the dropdown", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Empty Town!", Toast.LENGTH_SHORT).show()
         } else {
             // Inflate the custom add alert view for the dialog
             val dialogView = layoutInflater.inflate(R.layout.custom_add_alert, null)
@@ -603,7 +609,7 @@ townDropDown.addTextChangedListener(object : TextWatcher {
                         newTownName.isEmpty() -> {
                             Toast.makeText(
                                 this,
-                                "Town name cannot be empty",
+                                "Town cannot be empty",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
@@ -698,7 +704,7 @@ townDropDown.addTextChangedListener(object : TextWatcher {
             inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
 
             // Show Toast message
-            Toast.makeText(this, "Please select a Town first", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Select a Town first", Toast.LENGTH_SHORT).show()
         } else {
             // Set the message text
             addMessage.text = "Add $selectedArea for $selectedTown Town?"
@@ -817,13 +823,13 @@ districtEditIcon.setOnClickListener {
                 val newDistrictName = inputEditText.text.toString().trim()
                 when {
                     newDistrictName.isEmpty() -> {
-                        Toast.makeText(this, "New district name cannot be empty", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "District cannot be empty", Toast.LENGTH_SHORT).show()
                     }
                     newDistrictName == selectedDistrict -> {
                         Toast.makeText(this, "No changes made", Toast.LENGTH_SHORT).show()
                     }
                     districtList.contains(newDistrictName) -> {
-                        Toast.makeText(this, "New district name already exists", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "District already exists", Toast.LENGTH_SHORT).show()
                     }
                     else -> {
                         // Update the district name in the list
@@ -910,7 +916,7 @@ districtEditIcon.setOnClickListener {
         editDistrictDialog.show()
     } else {
         inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
-        Toast.makeText(this, "Please select a district to edit", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Add or Select District to edit", Toast.LENGTH_SHORT).show()
     }
 }
 
@@ -946,13 +952,13 @@ districtEditIcon.setOnClickListener {
                     val newTownName = inputEditText.text.toString().trim()
                     when {
                         newTownName.isEmpty() -> {
-                            Toast.makeText(this, "New Town name cannot be empty", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "Town cannot be empty", Toast.LENGTH_SHORT).show()
                         }
                         newTownName == selectedTown -> {
                             Toast.makeText(this, "No changes made", Toast.LENGTH_SHORT).show()
                         }
                         townList.contains(newTownName) -> {
-                            Toast.makeText(this, "New Town name already exists", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "Town already exists", Toast.LENGTH_SHORT).show()
                         }
                         else -> {
 
@@ -1073,13 +1079,13 @@ districtEditIcon.setOnClickListener {
                     val newAreaName = inputEditText.text.toString().trim()
                     when {
                         newAreaName.isEmpty() -> {
-                            Toast.makeText(this, "New Town name cannot be empty", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "Area cannot be empty", Toast.LENGTH_SHORT).show()
                         }
                         newAreaName == selectedArea -> {
                             Toast.makeText(this, "No changes made", Toast.LENGTH_SHORT).show()
                         }
                         areaList.contains(newAreaName) -> {
-                            Toast.makeText(this, "New Town name already exists", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "Area already exists", Toast.LENGTH_SHORT).show()
                         }
                         else -> {
                             // Close the keyboard
@@ -1122,6 +1128,7 @@ districtEditIcon.setOnClickListener {
                 positiveButtonEdit.textSize = 16f
                 negativeButtonEdit.setTextColor(ContextCompat.getColor(this, R.color.teal_700)) // For "Cancel"
                 negativeButtonEdit.textSize = 16f
+
                 // Make the background dim darker
                 val window = editAreaDialog.window
                 window?.setDimAmount(0.8f) // Adjust the dim level (default is 0.5f)
@@ -1415,7 +1422,7 @@ binding.deleteDistrictIcon.setOnClickListener {
 
 
 // Sample data for the dropdown (Land Type)
-val landList = listOf("Residential", "Commercial", "Agricultural", "Industrial")
+val landList = mutableListOf("Residential", "Commercial", "Agricultural", "Industrial")
 
 // Create an ArrayAdapter and set it on the AutoCompleteTextView
     val landTypeDropdown = binding.landTypeDropdown
@@ -1434,6 +1441,9 @@ val landList = listOf("Residential", "Commercial", "Agricultural", "Industrial")
     landTypeDropdown.setOnItemClickListener { parent, _, position, _ ->
         val selectedLand = parent.getItemAtPosition(position) as String
         Toast.makeText(this, "You selected: $selectedLand", Toast.LENGTH_SHORT).show()
+        // Close the keyboard
+        val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
 
         // Perform your action based on the selected item
         when (selectedLand) {
@@ -1453,65 +1463,68 @@ val landList = listOf("Residential", "Commercial", "Agricultural", "Industrial")
     }
 
 
-    val landAddIcon = binding.addLandIcon // Replace with your actual Add Icon ID
+
+
+//    ----------------------------------------LAND ADD ICON ------------------------------------------------
+    val landAddIcon = binding.addLandIcon
     landAddIcon.setOnClickListener {
         val dialogView = layoutInflater.inflate(R.layout.dialog_add_rates, null)
+
+        dialogView.findViewById<TextView>(R.id.district_display_DialogDisplay).text = districtDropDown.text.toString()
+        dialogView.findViewById<TextView>(R.id.town_DialogDisplay).text = townDropDown.text.toString()
+        dialogView.findViewById<TextView>(R.id.propertyArea_DialogDisplay).text = areaDropDown.text.toString()
+        dialogView.findViewById<TextView>(R.id.landType_DialogDisplay).text = landTypeDropdown.text.toString()
+
 
         val dialog = MaterialAlertDialogBuilder(this)
             .setView(dialogView)
             .setPositiveButton("Save") { _, _ ->
 
+
+
+
+                // Fetch values from EditText fields
+                val marlaDc = dialogView.findViewById<EditText>(R.id.marlaUnitPriceDC)?.text.toString().trim()
+                val marlaFbr = dialogView.findViewById<EditText>(R.id.marlaUnitPriceFBR)?.text.toString().trim()
+                val coveredAreaDc = dialogView.findViewById<EditText>(R.id.covereAreaDC)?.text.toString().trim()
+                val coveredAreaFbr = dialogView.findViewById<EditText>(R.id.covereAreaFBR)?.text.toString().trim()
+                val transferFee = dialogView.findViewById<EditText>(R.id.transferFee)?.text.toString().trim()
+                val khasraNumber = dialogView.findViewById<EditText>(R.id.khasraNumberEditText)?.text.toString().trim()
+
+                // Validate input values (optional)
+                if (marlaDc.isEmpty() || marlaFbr.isEmpty() || coveredAreaDc.isEmpty() || coveredAreaFbr.isEmpty()) {
+                    Toast.makeText(this, "Please fill in all required fields", Toast.LENGTH_SHORT).show()
+                    return@setPositiveButton
+                }
+
+                // Prepare data to save
+                val landRatesData = mutableMapOf(
+                    "MarlaDC" to marlaDc,
+                    "MarlaFBR" to marlaFbr,
+                    "CoveredAreaDC" to coveredAreaDc,
+                    "CoveredAreaFBR" to coveredAreaFbr,
+                    "TransferFee" to transferFee,
+                    "KhasraNumber" to khasraNumber
+                )
+
+                // Save data in PreferencesManager
+                PreferencesManager.saveLandRates(landRatesData)
+
+                // Notify user
+                Toast.makeText(this, "Data saved successfully!", Toast.LENGTH_SHORT).show()
             }
             .setNegativeButton("Cancel") { dialog, _ ->
                 dialog.dismiss()
             }
             .create()
 
+        // Adjust dimming for the dialog
+        dialog.window?.setDimAmount(0.8f)
+
+        // Show the dialog
         dialog.show()
     }
 
-
-
-
-
-//    // Sample data for the property type dropdown
-//    val propertyTypeList = listOf("Plot","House", "Apartment", "Shop")
-//
-//// Find the AutoCompleteTextView
-//    val propertyTypeDropdown = findViewById<AutoCompleteTextView>(R.id.propertyTypeDropdown)
-//
-//// Create an ArrayAdapter using a custom layout or a built-in Android layout
-//    val propertyTypeAdapter = ArrayAdapter(this, custom_dropdown_item, propertyTypeList)
-//
-//// Set the adapter on the AutoCompleteTextView
-//    propertyTypeDropdown.setAdapter(propertyTypeAdapter)
-//
-
-//
-//// Optional: Set threshold if you want the dropdown to show after typing only 1 character
-//    propertyTypeDropdown.threshold = 1
-//
-//// Handle selection events
-//    propertyTypeDropdown.setOnItemClickListener { parent, _, position, _ ->
-//        val selectedPropertyType = parent.getItemAtPosition(position) as String
-//        Toast.makeText(this, "Selected: $selectedPropertyType", Toast.LENGTH_SHORT).show()
-//
-//        // Perform actions based on the selected property type
-//        when (selectedPropertyType) {
-//            "Plot" -> {
-//                // Action for House
-//            }
-//            "Apartment" -> {
-//                // Action for Apartment
-//            }
-//            "Building" -> {
-//                // Action for Villa
-//            }
-//            "Farmhouse" -> {
-//                // Action for Farmhouse
-//            }
-//        }
-//    }
 
 
 
@@ -1522,7 +1535,7 @@ val landList = listOf("Residential", "Commercial", "Agricultural", "Industrial")
 
 
         // Show confirmation dialog
-        MaterialAlertDialogBuilder(this)
+        val saveAllDialog = MaterialAlertDialogBuilder(this)
             .setTitle("Confirm Save")
             .setMessage(
                 "Are you sure you want to save the above data?\n\n"
@@ -1535,12 +1548,25 @@ val landList = listOf("Residential", "Commercial", "Agricultural", "Industrial")
                 // Save updated district-town map in SharedPreference
                 PreferencesManager.saveDistrictTownMap(districtTownMap)
 
+                // Save updated Town-Area map in SharedPreference
+                PreferencesManager.saveTownAreaMap(townAreaMap)
+
+                // Save the landList to PreferencesManager
+                PreferencesManager.saveLandList(landList)
+
+                Toast.makeText(this, "Data saved successfully", Toast.LENGTH_SHORT).show()
 
             }
             .setNegativeButton("Cancel") { dialog, _ ->
                 dialog.dismiss() // Close the dialog without saving
             }
-            .show()
+            .create()
+
+        // Make the background dim darker
+        val window = saveAllDialog.window
+        window?.setDimAmount(0.8f) // Adjust the dim level (default is 0.5f)
+
+        saveAllDialog.show()
     }
 
 
