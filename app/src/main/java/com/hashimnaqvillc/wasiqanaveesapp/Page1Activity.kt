@@ -68,6 +68,14 @@ class Page1Activity : AppCompatActivity() {
             binding.districtDropdown.requestFocus()
         }
 
+        binding.districtDropdown.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                binding.districtDropdown.showDropDown()
+            }else{
+                binding.districtDropdown.clearFocus()
+            }
+        }
+
 
 
 // Handle Town selection
@@ -76,8 +84,14 @@ class Page1Activity : AppCompatActivity() {
             binding.townDropdown.requestFocus()
         }
 
+        binding.townDropdown.setOnFocusChangeListener { _, hasFocus ->
 
-
+            if (hasFocus) {
+                binding.townDropdown.showDropDown()
+            }else{
+                binding.townDropdown.clearFocus()
+            }
+        }
 
 
 // Handle Property Area selection
@@ -86,42 +100,51 @@ class Page1Activity : AppCompatActivity() {
             binding.propertyAreaDropdown.requestFocus()
         }
 
+        binding.propertyAreaDropdown.setOnFocusChangeListener { _, hasFocus ->
 
+            if (hasFocus) {
+                binding.propertyAreaDropdown.showDropDown()
+            }else{
+                binding.propertyAreaDropdown.clearFocus()
+            }
+        }
 
+        val landTypeAutoComplete = binding.landTypeDropdown
+
+        landTypeAutoComplete.setOnClickListener {
+            landTypeAutoComplete.showDropDown()
+            landTypeAutoComplete.requestFocus()
+        }
+        landTypeAutoComplete.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                landTypeAutoComplete.showDropDown()
+            } else {
+                landTypeAutoComplete.clearFocus()
+            }
+        }
+//// Data for the dropdowns
+//        val landTypeOptions = PreferencesManager.getLandList()
+//        val landTypeAdapter = ArrayAdapter(this, custom_dropdown_item,
+//            landTypeOptions)
+//        landTypeAutoComplete.setAdapter(landTypeAdapter)
 
 
 
 
         val propertyTypeAutoComplete = binding.propertyTypeDropdown
-
-        val landTypeAutoComplete = binding.landTypeDropdown
-
-// Data for the dropdowns
-        val landTypeOptions = PreferencesManager.getLandList()
-
-        val propertyTypeOptions = listOf("Plot", "Building")
-
-
-// Adapters for the dropdowns
+        val propertyTypeOptions = mutableListOf("Plot", "Building")
         val propertyTypeAdapter = ArrayAdapter(this, custom_dropdown_item,
             propertyTypeOptions)
-
-        val landTypeAdapter = ArrayAdapter(this, custom_dropdown_item,
-            landTypeOptions)
-
-// Set adapters to AutoCompleteTextViews
         propertyTypeAutoComplete.setAdapter(propertyTypeAdapter)
-        landTypeAutoComplete.setAdapter(landTypeAdapter)
 
-        landTypeAutoComplete.setOnClickListener {
-            // Close the keyboard
-            val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
-            landTypeAutoComplete.showDropDown()
-        }
+
+
+
+
+
 // Handle selection actions for "Land Type"
         landTypeAutoComplete.setOnItemClickListener { _, _, position, _ ->
-            selectedLandType = landTypeOptions[position]
+//            selectedLandType = landTypeOptions[position]
             // Take actions based on the selected land type
             when (selectedLandType) {
                 "Residential" -> {
@@ -142,6 +165,8 @@ class Page1Activity : AppCompatActivity() {
 //                    Action to perform for Industrial
                 }
             }
+            propertyTypeAutoComplete.requestFocus()
+            propertyTypeAutoComplete.showDropDown()
         }
 
 
@@ -169,20 +194,27 @@ class Page1Activity : AppCompatActivity() {
 
 
         binding.findButton.setOnClickListener {
+
+            val areaLandRates = PreferencesManager.getLandRates()
+            val selectedArea = binding.propertyAreaDropdown.text.toString().trim()
+            val selectedLandType = binding.landTypeDropdown.text.toString().trim()
+
             // Retrieve numeric values
             val kanalValue = binding.kanalEditText.text.toString().toDoubleOrNull() ?: 0.0
             val marlaValue = binding.marlaEditText.text.toString().toDoubleOrNull() ?: 0.0
             val sqftValue = binding.sqftEditText.text.toString().toDoubleOrNull() ?: 0.0
             val sqftPerMarla = 225.0
 
-            // Retrieve land rates safely
-            val landRates = PreferencesManager.getLandRates()
-            val marlaDc = landRates["MarlaDC"]?.toDoubleOrNull() ?: 1.0
-            val marlaFbr = landRates["MarlaFBR"] ?: "N/A"
-            val coveredAreaDc = landRates["CoveredAreaDC"] ?: "N/A"
-            val coveredAreaFbr = landRates["CoveredAreaFBR"] ?: "N/A"
-            val transferFee = landRates["TransferFee"] ?: "N/A"
-            val khasraNumber = landRates["KhasraNumber"] ?: "N/A"
+// Retrieve land rates for the selected area and land type
+            val landRates = areaLandRates[selectedArea]?.get(selectedLandType)
+
+// Safely retrieve individual values with default fallbacks
+            val marlaDc = landRates?.get("MarlaDC")?.toDoubleOrNull() ?: 1.0
+            val marlaFbr = landRates?.get("MarlaFBR") ?: "N/A"
+            val coveredAreaDc = landRates?.get("CoveredAreaDC") ?: "N/A"
+            val coveredAreaFbr = landRates?.get("CoveredAreaFBR") ?: "N/A"
+            val transferFee = landRates?.get("TransferFee") ?: "N/A"
+            val khasraNumber = landRates?.get("KhasraNumber") ?: "N/A"
 
 
 //            Log.d("LandRates", "MarlaDC: $marlaDc, MarlaFBR: $marlaFbr")
@@ -228,9 +260,6 @@ class Page1Activity : AppCompatActivity() {
                 }
                 selectedPropertyArea.isNullOrEmpty() -> {
                     Toast.makeText(this, "Please select a property area", Toast.LENGTH_SHORT).show()
-                }
-                selectedLandType.isNullOrEmpty() -> {
-                    Toast.makeText(this, "Please select an option in Land Type", Toast.LENGTH_SHORT).show()
                 }
                 selectedPropertyType.isNullOrEmpty() -> {
                     Toast.makeText(this, "Please select an option in Property Type", Toast.LENGTH_SHORT).show()
@@ -363,28 +392,39 @@ class Page1Activity : AppCompatActivity() {
 
 //        ---------------------------------------------------------------------------------------
 
+// Fetch the TownAreaMap once when the activity starts
+        val areaLandMap: MutableMap<String, MutableList<String>> by lazy {
+            PreferencesManager.getAreaLandMap()
+        }
+
+// On Town Selection
         binding.propertyAreaDropdown.setOnItemClickListener { _, _, _, _ ->
 
-            // Normalize the selected property area to avoid formatting issues
+            // Clear dependent dropdowns
+            binding.landTypeDropdown.text.clear()
+
+            // Normalize the selected town to avoid formatting issues
             selectedPropertyArea = binding.propertyAreaDropdown.text.toString().trim()
+
+            // Retrieve the areas for the selected town
+            val lands = areaLandMap[selectedPropertyArea] ?: mutableListOf()
+
+            // Update the property area dropdown
+            val landsAdapter = ArrayAdapter(
+                this,
+                custom_dropdown_item,
+                lands
+            )
+            binding.landTypeDropdown.setAdapter(landsAdapter)
+
+            // Request focus to the property area dropdown
+            binding.landTypeDropdown.requestFocus()
 
         }
 
 
 //        ---------------------------------------------------------------------------------------
 
-
-        // Sample data for the dropdown (Land Type)
-        val landList = PreferencesManager.getLandList()
-
-// Create an ArrayAdapter and set it on the AutoCompleteTextView
-        val landTypeDropdown = binding.landTypeDropdown
-        val landAdapter = ArrayAdapter(this, custom_dropdown_item, landList)
-        landTypeDropdown.setAdapter(landAdapter)
-
-        landTypeDropdown.setOnClickListener {
-            landTypeDropdown.showDropDown()
-        }
 
     }
 

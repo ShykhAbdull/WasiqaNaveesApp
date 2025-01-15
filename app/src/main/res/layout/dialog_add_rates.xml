@@ -1,4 +1,5 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -77,41 +78,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             />
 
-
-        <!--        3rd  Display -->
-        <TextView
-            android:id="@+id/landType_text_pg2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Land Classification"
-            android:textSize="15sp"
-            android:textColor="@color/black"
-            android:fontFamily="@font/sf_pro_display_medium"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="10dp"
-            app:layout_constraintTop_toBottomOf="@id/propertyArea_DialogDisplay"
-            app:layout_constraintStart_toStartOf="parent"
-            />
-
-        <TextView
-            android:id="@+id/landType_DialogDisplay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="Commercial Plot"
-            android:textColorHint="@color/black"
-            android:gravity="center"
-            android:textSize="15sp"
-            android:layout_marginStart="100dp"
-            android:textColor="@color/black"
-            android:fontFamily="@font/sf_pro_display_regular"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/landType_text_pg2"
-            app:layout_constraintBottom_toBottomOf="@id/landType_text_pg2"
-            app:layout_constraintEnd_toEndOf="parent"
-
-            />
-        <!--4th Display -->
-
         <!--        5th  Display -->
 
         <TextView
@@ -147,16 +113,56 @@
 
 
 
+
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/landTypeDropdownDialogDisplayLAYOUT"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/propertyArea_text_pg2"
+            app:layout_constraintStart_toStartOf="parent"
+            android:hint="LAND CLASSIFICATION"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="20dp"
+            app:endIconDrawable="@drawable/cross"
+            app:endIconMode="clear_text"
+            app:endIconTint="@color/wasiqa_dark"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            >
+        <AutoCompleteTextView
+            android:id="@+id/landTypeDropdownDialogDisplay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:tooltipText="Click to open drop down"
+            android:fontFamily="@font/sf_pro_display_medium"
+            android:textSize="20sp"
+            android:clickable="true"
+            android:popupBackground="@drawable/popup_background"
+            android:layout_marginHorizontal="30dp"
+            android:focusable="true"
+            android:inputType="none"
+            android:paddingVertical="5dp"
+            android:background="@null"
+            android:gravity="center"
+            />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+
+
+
         <!-- CardView Section -->
         <androidx.cardview.widget.CardView
             android:id="@+id/cardViewSettings"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="25dp"
+            android:layout_marginVertical="55dp"
             android:layout_marginHorizontal="8dp"
             app:cardCornerRadius="8dp"
             app:cardElevation="4dp"
-            app:layout_constraintTop_toBottomOf="@id/landType_DialogDisplay"
+            app:layout_constraintTop_toBottomOf="@id/landTypeDropdownDialogDisplayLAYOUT"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -320,41 +326,6 @@
                             android:background="@drawable/email_input_background"
                             android:layout_gravity="center"
                             android:gravity="center"
-                            android:fontFamily="@font/sf_pro_display_medium" />
-                    </TableRow>
-
-<!--                    Transfer Fee -->
-
-                    <!-- Table Rows -->
-                    <TableRow
-                        android:layout_marginVertical="5dp"
-                        >
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Tranfer Fee"
-                            android:textSize="15sp"
-                            android:paddingVertical="5dp"
-                            android:layout_gravity="center"
-                            android:fontFamily="@font/sf_pro_display_regular"
-                            android:textColor="#000" />
-
-                        <EditText
-                            android:id="@+id/transferFee"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="2"
-                            android:hint="Optional"
-                            android:textSize="15sp"
-                            android:inputType="number"
-                            android:textColorHint="#C7BFBF"
-                            android:textColor="#C7BFBF"
-                            android:paddingVertical="10dp"
-                            android:layout_marginStart=".1dp"
-                            android:background="@drawable/email_input_background"
-                            android:gravity="center"
-                            android:layout_gravity="center"
                             android:fontFamily="@font/sf_pro_display_medium" />
                     </TableRow>
 

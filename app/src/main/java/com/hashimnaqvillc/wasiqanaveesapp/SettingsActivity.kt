@@ -16,6 +16,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
@@ -27,6 +28,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputLayout
 import com.hashimnaqvillc.wasiqanaveesapp.R.layout.custom_dropdown_item
 import com.hashimnaqvillc.wasiqanaveesapp.databinding.ActivitySettingsBinding
 
@@ -35,10 +37,12 @@ class SettingsActivity : AppCompatActivity() {
 private lateinit var districtList: MutableList<String>
 private lateinit var townList: MutableList<String>
 private lateinit var areaList: MutableList<String>
+private lateinit var landList: MutableList<String>
 
 private lateinit var districtAdapter: ArrayAdapter<String>
 private lateinit var townAdapter: ArrayAdapter<String>
 private lateinit var areaAdapter: ArrayAdapter<String>
+private lateinit var landAdapter: ArrayAdapter<String>
 
 private lateinit var selectedDistrict: String
 
@@ -53,25 +57,8 @@ setContentView(binding.root)
 
 //    ------------------------------------------------------ UI CHANGES -------------------------------------------------------------------
 
-
-    val headingText = binding.headingTextSettings
-
-// Add ripple-like effect using a circular gradient
-    val rippleAnimator = ObjectAnimator.ofFloat(headingText, "scaleX", 1.0f, 1.1f).apply {
-        duration = 1000 // 1 second
-        repeatMode = ValueAnimator.REVERSE
-        repeatCount = ValueAnimator.INFINITE
-    }
-
-    val rippleAnimatorY = ObjectAnimator.ofFloat(headingText, "scaleY", 1.0f, 1.1f).apply {
-        duration = 1000
-        repeatMode = ValueAnimator.REVERSE
-        repeatCount = ValueAnimator.INFINITE
-    }
-
-    val animatorSet = AnimatorSet()
-    animatorSet.playTogether(rippleAnimator, rippleAnimatorY)
-    animatorSet.start()
+    addRippleEffect(binding.headingTextSettings)
+    addRippleEffect(binding.taxRateBtn)
 
 
 
@@ -180,19 +167,6 @@ val districtDropDown = binding.districtDropdown
     }
 
 
-    // Optional: Disable default focus stealing by the clear_text icon
-    binding.landTypeDropdown.setOnFocusChangeListener { _, hasFocus ->
-
-        if (hasFocus && binding.propertyAreaDropdown.text.toString().isNotEmpty() && areaList.contains(binding.propertyAreaDropdown.text.toString().trim())) {
-            binding.landTypeDropdown.showDropDown()
-            binding.landTypeIconContainer.visibility = View.VISIBLE
-        }
-        else{
-            binding.landTypeDropdown.clearFocus()
-            binding.landTypeIconContainer.visibility = View.GONE
-        }
-    }
-
 //        Focus from District ---> Town
 districtDropDown.setOnEditorActionListener { _, actionId, _ ->
     if (actionId == EditorInfo.IME_ACTION_NEXT || actionId == EditorInfo.IME_ACTION_DONE) {
@@ -217,16 +191,7 @@ binding.townDropdown.setOnEditorActionListener { _, actionId, _ ->
     }
 }
 
-//        Focus from Property Area ---> Land Type
-binding.propertyAreaDropdown.setOnEditorActionListener { _, actionId, _ ->
-    if (actionId == EditorInfo.IME_ACTION_NEXT || actionId == EditorInfo.IME_ACTION_DONE) {
-        // Move focus to the next view (e.g., another dropdown)
-        binding.landTypeDropdown.requestFocus()
-        true // Return true to consume the action
-    } else {
-        false
-    }
-}
+
 
 
 // Optional: Customize the keyboard action to show "Next" instead of "Done"
@@ -237,11 +202,8 @@ binding.districtDropdown.setRawInputType(InputType.TYPE_CLASS_TEXT)
 binding.townDropdown.imeOptions = EditorInfo.IME_ACTION_NEXT
 binding.townDropdown.setRawInputType(InputType.TYPE_CLASS_TEXT)
 
-binding.propertyAreaDropdown.imeOptions = EditorInfo.IME_ACTION_NEXT
+binding.propertyAreaDropdown.imeOptions = EditorInfo.IME_ACTION_DONE
 binding.propertyAreaDropdown.setRawInputType(InputType.TYPE_CLASS_TEXT)
-
-binding.landTypeDropdown.imeOptions = EditorInfo.IME_ACTION_DONE
-binding.landTypeDropdown.setRawInputType(InputType.TYPE_CLASS_TEXT)
 
 
 
@@ -285,13 +247,6 @@ if (itemCount <= 3) {
                     districtDropDown.dropDownHeight =
                         (districtDropDown.context.resources.displayMetrics.density * 150).toInt()
                 }
-
-//                // Show or hide the add icon based on input text length
-//                if (s.isNullOrEmpty()) {
-//                    binding.districtIconContainer.visibility = View.GONE // Hide the add icon if no text
-//                } else {
-//                    binding.districtIconContainer.visibility  = View.VISIBLE // Show the add icon if text is entered
-//                }
             }
         }
     })
@@ -308,7 +263,6 @@ if (itemCount <= 3) {
         // Also clear dependent dropdown fields for Town and Area
         townDropDown.text.clear()
         areaDropDown.text.clear()
-        binding.landTypeDropdown.text.clear()
 
 
         // Normalize the selected district to avoid formatting issues
@@ -326,7 +280,6 @@ if (itemCount <= 3) {
         townDropDown.setAdapter(townAdapter)
         townDropDown.threshold = 1
 
-        binding.townDropdown.requestFocus()
 
         // Log the cleared selections
         Log.d("DistrictSelection", "Cleared previous town and area selections.")
@@ -382,7 +335,6 @@ townDropDown.addTextChangedListener(object : TextWatcher {
     townDropDown.setOnItemClickListener { _, _, _, _ ->
 
         areaDropDown.text.clear()
-        binding.landTypeDropdown.text.clear()
 
 
         val selectedTown = townDropDown.text.toString().trim()
@@ -392,15 +344,41 @@ townDropDown.addTextChangedListener(object : TextWatcher {
         areaAdapter = ArrayAdapter(this, custom_dropdown_item, areaList)
         areaDropDown.setAdapter(areaAdapter)
 
-        binding.propertyAreaDropdown.requestFocus()
 
         Log.d("TownSelection", "Selected town: $selectedTown, areas: $areas")
     }
 
-    areaDropDown.setOnItemClickListener { _, _, _, _ ->
-        binding.landTypeDropdown.text.clear()
-        binding.landTypeDropdown.requestFocus()
+
+
+    // Fetch the AreaLandMap once when the activity starts
+    val areaLandMap: MutableMap<String, MutableList<String>> by lazy {
+        PreferencesManager.getAreaLandMap()
     }
+
+
+//    // On Area Selection
+//    areaDropDown.setOnItemClickListener { _, _, _, _ ->
+//
+//        // Get the selected area from the dropdown
+//        val selectedArea = areaDropDown.text.toString().trim()
+//
+//        // Reset landList with fixed 4 options
+//
+//        // Check if the area already has saved land types and remove them from the options
+//        val savedLandTypes = areaLandMap[selectedArea] ?: mutableListOf()
+//        landList.removeAll(savedLandTypes)
+//
+//        // Create and set the adapter for landTypeDropdown
+//        landAdapter = ArrayAdapter(this, custom_dropdown_item, landList)
+//
+//
+//    }
+
+
+
+
+
+
 
 
 // Apply filter and count the visible items
@@ -436,16 +414,11 @@ townDropDown.addTextChangedListener(object : TextWatcher {
                     areaDropDown.dropDownHeight =
                         (areaDropDown.context.resources.displayMetrics.density * 150).toInt()
                 }
-
-//                // Show or hide the add icon based on input text length
-//                if (s.isNullOrEmpty()) {
-//                    binding.propertyAreaIconContainer.visibility = View.GONE // Hide the add icon if no text
-//                } else {
-//                    binding.propertyAreaIconContainer.visibility  = View.VISIBLE // Show the add icon if text is entered
-//                }
             }
         }
     })
+
+
 
 
     //    When the town text clears all other field text clear as well
@@ -454,7 +427,6 @@ townDropDown.addTextChangedListener(object : TextWatcher {
         districtDropDown.text.clear()
         townDropDown.text.clear()
         areaDropDown.text.clear()
-        binding.landTypeDropdown.text.clear()
 
     }
 
@@ -463,7 +435,6 @@ townDropDown.addTextChangedListener(object : TextWatcher {
         // Also clear dependent dropdown fields for Town and Area
         townDropDown.text.clear()
         areaDropDown.text.clear()
-        binding.landTypeDropdown.text.clear()
 
 
     }
@@ -472,22 +443,7 @@ townDropDown.addTextChangedListener(object : TextWatcher {
     binding.propertyAreaInputLayout.setEndIconOnClickListener {
         // Also clear dependent dropdown fields for Town and Area
         areaDropDown.text.clear()
-        binding.landTypeDropdown.text.clear()
     }
-
-//    binding.landTypeDropdown.addTextChangedListener(object : TextWatcher{
-//        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-//        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-//
-//        override fun afterTextChanged(s: Editable?) {
-//            // Show or hide the add icon based on input text length
-//            if (s.isNullOrEmpty()) {
-//                binding.landTypeIconContainer.visibility = View.GONE // Hide the add icon if no text
-//            } else {
-//                binding.landTypeIconContainer.visibility  = View.VISIBLE // Show the add icon if text is entered
-//            }
-//        }
-//    })
 
 //--------------------------------------------------------------
 
@@ -905,8 +861,6 @@ districtEditIcon.setOnClickListener {
             val window = editDistrictDialog.window
             window?.setDimAmount(0.8f) // Adjust the dim level (default is 0.5f)
 
-            inputEditText.requestFocus()
-
             // Use a Handler to ensure the keyboard opens after the dialog is fully visible
             inputEditText.postDelayed({
                 inputMethodManager.showSoftInput(inputEditText, InputMethodManager.SHOW_IMPLICIT)
@@ -1030,7 +984,6 @@ districtEditIcon.setOnClickListener {
                 val window = editTownDialog.window
                 window?.setDimAmount(0.8f) // Adjust the dim level (default is 0.5f)
 
-                inputEditText.requestFocus()
 
                 // Use a Handler to ensure the keyboard opens after the dialog is fully visible
                 inputEditText.postDelayed({
@@ -1133,8 +1086,6 @@ districtEditIcon.setOnClickListener {
                 val window = editAreaDialog.window
                 window?.setDimAmount(0.8f) // Adjust the dim level (default is 0.5f)
 
-                inputEditText.requestFocus()
-
                 // Use a Handler to ensure the keyboard opens after the dialog is fully visible
                 inputEditText.postDelayed({
                     inputMethodManager.showSoftInput(inputEditText, InputMethodManager.SHOW_IMPLICIT)
@@ -1149,6 +1100,8 @@ districtEditIcon.setOnClickListener {
 
 
 // ============= Delete  district Logic Below ================
+
+
 
 
 binding.deleteDistrictIcon.setOnClickListener {
@@ -1421,109 +1374,106 @@ binding.deleteDistrictIcon.setOnClickListener {
 
 
 
-// Sample data for the dropdown (Land Type)
-val landList = mutableListOf("Residential", "Commercial", "Agricultural", "Industrial")
-
-// Create an ArrayAdapter and set it on the AutoCompleteTextView
-    val landTypeDropdown = binding.landTypeDropdown
-    val landAdapter = ArrayAdapter(this, custom_dropdown_item, landList)
-    landTypeDropdown.setAdapter(landAdapter)
-
-    landTypeDropdown.setOnClickListener {
-        landTypeDropdown.showDropDown()
-    }
-
-
-// Optional: Set threshold to start showing dropdown from first character
-    landTypeDropdown.threshold = 1
-
-// Handle selection events
-    landTypeDropdown.setOnItemClickListener { parent, _, position, _ ->
-        val selectedLand = parent.getItemAtPosition(position) as String
-        Toast.makeText(this, "You selected: $selectedLand", Toast.LENGTH_SHORT).show()
-        // Close the keyboard
-        val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
-
-        // Perform your action based on the selected item
-        when (selectedLand) {
-            "Residential" -> {
-
-            }
-            "Commercial" -> {
-
-            }
-            "Agricultural" -> {
-
-            }
-            "Industrial" -> {
-
-            }
-        }
-    }
-
-
-
-
-//    ----------------------------------------LAND ADD ICON ------------------------------------------------
-    val landAddIcon = binding.addLandIcon
-    landAddIcon.setOnClickListener {
+    val taxRateBtn = binding.taxRateBtn
+    taxRateBtn.setOnClickListener {
+        // Inflate the dialog layout
         val dialogView = layoutInflater.inflate(R.layout.dialog_add_rates, null)
 
+        // Populate static fields
         dialogView.findViewById<TextView>(R.id.district_display_DialogDisplay).text = districtDropDown.text.toString()
         dialogView.findViewById<TextView>(R.id.town_DialogDisplay).text = townDropDown.text.toString()
         dialogView.findViewById<TextView>(R.id.propertyArea_DialogDisplay).text = areaDropDown.text.toString()
-        dialogView.findViewById<TextView>(R.id.landType_DialogDisplay).text = landTypeDropdown.text.toString()
 
+        // Access the AutoCompleteTextView for land types
+        val landTypeDropdown = dialogView.findViewById<AutoCompleteTextView>(R.id.landTypeDropdownDialogDisplay)
+        val selectedArea = areaDropDown.text.toString().trim()
+        landTypeDropdown.setOnClickListener {
+            landTypeDropdown.showDropDown()
+            landTypeDropdown.requestFocus()
+        }
 
+        // Validate selectedArea
+        if (selectedArea.isEmpty()) {
+            Toast.makeText(this, "Please select an area first.", Toast.LENGTH_SHORT).show()
+            return@setOnClickListener
+        }
+
+        // Fetch and filter dropdown options dynamically
+        val savedLandTypes = PreferencesManager.getLandRates()[selectedArea]?.keys ?: emptySet()
+        val landOptions = mutableListOf("Agriculture", "Residential", "Commercial", "Industrial")
+        val availableLandOptions = landOptions.filter { it !in savedLandTypes }
+        val landAdapter = ArrayAdapter(this, custom_dropdown_item, availableLandOptions)
+        landTypeDropdown.setAdapter(landAdapter)
+
+        // Prepopulate fields if land type already exists
+        landTypeDropdown.setOnItemClickListener { _, _, position, _ ->
+            val landType = availableLandOptions[position]
+            val existingLandRates = PreferencesManager.getLandRates()[selectedArea]?.get(landType)
+            existingLandRates?.let {
+                dialogView.findViewById<EditText>(R.id.marlaUnitPriceDC)?.setText(it["MarlaDC"])
+                dialogView.findViewById<EditText>(R.id.marlaUnitPriceFBR)?.setText(it["MarlaFBR"])
+                dialogView.findViewById<EditText>(R.id.covereAreaDC)?.setText(it["CoveredAreaDC"])
+                dialogView.findViewById<EditText>(R.id.covereAreaFBR)?.setText(it["CoveredAreaFBR"])
+                dialogView.findViewById<EditText>(R.id.khasraNumberEditText)?.setText(it["KhasraNumber"])
+            }
+        }
+
+        // Create the dialog
         val dialog = MaterialAlertDialogBuilder(this)
             .setView(dialogView)
             .setPositiveButton("Save") { _, _ ->
+                val landType = landTypeDropdown.text.toString().trim()
 
-
-
+                if (landType.isEmpty()) {
+                    Toast.makeText(this, "Please select a land type.", Toast.LENGTH_SHORT).show()
+                    return@setPositiveButton
+                }
 
                 // Fetch values from EditText fields
                 val marlaDc = dialogView.findViewById<EditText>(R.id.marlaUnitPriceDC)?.text.toString().trim()
                 val marlaFbr = dialogView.findViewById<EditText>(R.id.marlaUnitPriceFBR)?.text.toString().trim()
                 val coveredAreaDc = dialogView.findViewById<EditText>(R.id.covereAreaDC)?.text.toString().trim()
                 val coveredAreaFbr = dialogView.findViewById<EditText>(R.id.covereAreaFBR)?.text.toString().trim()
-                val transferFee = dialogView.findViewById<EditText>(R.id.transferFee)?.text.toString().trim()
                 val khasraNumber = dialogView.findViewById<EditText>(R.id.khasraNumberEditText)?.text.toString().trim()
 
-                // Validate input values (optional)
                 if (marlaDc.isEmpty() || marlaFbr.isEmpty() || coveredAreaDc.isEmpty() || coveredAreaFbr.isEmpty()) {
-                    Toast.makeText(this, "Please fill in all required fields", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Please fill in all required fields.", Toast.LENGTH_SHORT).show()
                     return@setPositiveButton
                 }
 
-                // Prepare data to save
-                val landRatesData = mutableMapOf(
+                // Prepare and save data
+                val areaLandRates = PreferencesManager.getLandRates()
+                val landRatesData = mapOf(
                     "MarlaDC" to marlaDc,
                     "MarlaFBR" to marlaFbr,
                     "CoveredAreaDC" to coveredAreaDc,
                     "CoveredAreaFBR" to coveredAreaFbr,
-                    "TransferFee" to transferFee,
                     "KhasraNumber" to khasraNumber
                 )
+                val updatedLandRates = (areaLandRates[selectedArea] ?: mutableMapOf()).apply {
+                    put(landType, landRatesData)
+                }
+                areaLandRates[selectedArea] = updatedLandRates
 
-                // Save data in PreferencesManager
-                PreferencesManager.saveLandRates(landRatesData)
-
-                // Notify user
-                Toast.makeText(this, "Data saved successfully!", Toast.LENGTH_SHORT).show()
+                try {
+                    PreferencesManager.saveLandRates(areaLandRates)
+                    Toast.makeText(this, "Data saved successfully!", Toast.LENGTH_SHORT).show()
+                    Log.d("SaveSuccess", "Land rates saved successfully! Data: $areaLandRates")
+                } catch (e: Exception) {
+                    Toast.makeText(this, "Failed to save data: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Log.e("SaveError", "Error saving land rates", e)
+                }
             }
             .setNegativeButton("Cancel") { dialog, _ ->
                 dialog.dismiss()
             }
             .create()
 
-        // Adjust dimming for the dialog
         dialog.window?.setDimAmount(0.8f)
-
-        // Show the dialog
         dialog.show()
     }
+
+
 
 
 
@@ -1551,8 +1501,8 @@ val landList = mutableListOf("Residential", "Commercial", "Agricultural", "Indus
                 // Save updated Town-Area map in SharedPreference
                 PreferencesManager.saveTownAreaMap(townAreaMap)
 
-                // Save the landList to PreferencesManager
-                PreferencesManager.saveLandList(landList)
+                // Save updated Area-Land map in SharedPreference
+                PreferencesManager.saveAreaLandMap(areaLandMap)
 
                 Toast.makeText(this, "Data saved successfully", Toast.LENGTH_SHORT).show()
 
@@ -1568,9 +1518,28 @@ val landList = mutableListOf("Residential", "Commercial", "Agricultural", "Indus
 
         saveAllDialog.show()
     }
-
-
 }
+
+    private fun addRippleEffect(view: View, scaleFactor: Float = 1.1f, duration: Long = 1000L) {
+        // Scale X Animation
+        val rippleAnimatorX = ObjectAnimator.ofFloat(view, "scaleX", 1.0f, scaleFactor).apply {
+            this.duration = duration
+            repeatMode = ValueAnimator.REVERSE
+            repeatCount = ValueAnimator.INFINITE
+        }
+
+        // Scale Y Animation
+        val rippleAnimatorY = ObjectAnimator.ofFloat(view, "scaleY", 1.0f, scaleFactor).apply {
+            this.duration = duration
+            repeatMode = ValueAnimator.REVERSE
+            repeatCount = ValueAnimator.INFINITE
+        }
+
+        // Play Animations Together
+        val animatorSet = AnimatorSet()
+        animatorSet.playTogether(rippleAnimatorX, rippleAnimatorY)
+        animatorSet.start()
+    }
 
 
 }
