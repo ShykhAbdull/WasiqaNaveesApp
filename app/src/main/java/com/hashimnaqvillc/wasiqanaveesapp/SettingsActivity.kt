@@ -45,6 +45,8 @@ private lateinit var areaAdapter: ArrayAdapter<String>
 private lateinit var landAdapter: ArrayAdapter<String>
 
 private lateinit var selectedDistrict: String
+private lateinit var selectedTown: String
+private lateinit var selectedArea: String
 
 
 private lateinit var binding: ActivitySettingsBinding
@@ -336,13 +338,19 @@ townDropDown.addTextChangedListener(object : TextWatcher {
 
         areaDropDown.text.clear()
 
+        selectedDistrict = districtDropDown.text.toString().trim()
+        selectedTown = townDropDown.text.toString().trim()
 
-        val selectedTown = townDropDown.text.toString().trim()
+        val compoundKey = "$selectedDistrict|$selectedTown"
+
+
         // Clear and reset areas
-        val areas = townAreaMap[selectedTown] ?: mutableListOf()
+        val areas = townAreaMap[compoundKey] ?: mutableListOf()
         areaList = areas
         areaAdapter = ArrayAdapter(this, custom_dropdown_item, areaList)
         areaDropDown.setAdapter(areaAdapter)
+        areaDropDown.threshold = 1
+
 
 
         Log.d("TownSelection", "Selected town: $selectedTown, areas: $areas")
@@ -355,23 +363,24 @@ townDropDown.addTextChangedListener(object : TextWatcher {
         PreferencesManager.getAreaLandMap()
     }
 
-
 //    // On Area Selection
 //    areaDropDown.setOnItemClickListener { _, _, _, _ ->
 //
-//        // Get the selected area from the dropdown
-//        val selectedArea = areaDropDown.text.toString().trim()
+//        selectedDistrict = districtDropDown.text.toString().trim()
+//        selectedTown = townDropDown.text.toString().trim()
+//        selectedArea = areaDropDown.text.toString().trim()
 //
-//        // Reset landList with fixed 4 options
+//        // Create a compound key for Area-Land mapping
+//        val compoundKey = "$selectedDistrict|$selectedTown|$selectedArea"
 //
-//        // Check if the area already has saved land types and remove them from the options
-//        val savedLandTypes = areaLandMap[selectedArea] ?: mutableListOf()
-//        landList.removeAll(savedLandTypes)
-//
-//        // Create and set the adapter for landTypeDropdown
+//        // Clear and reset land types
+//        val landTypes = areaLandMap[compoundKey] ?: mutableListOf()
+//        landList = landTypes
 //        landAdapter = ArrayAdapter(this, custom_dropdown_item, landList)
+//        landTypeDropdown.setAdapter(landTypeAdapter)
+//        landTypeDropdown.threshold = 1
 //
-//
+//        Log.d("AreaSelection", "Selected area: $selectedArea, land types: $landTypes")
 //    }
 
 
@@ -427,6 +436,7 @@ townDropDown.addTextChangedListener(object : TextWatcher {
         districtDropDown.text.clear()
         townDropDown.text.clear()
         areaDropDown.text.clear()
+        districtDropDown.requestFocus()
 
     }
 
@@ -435,14 +445,14 @@ townDropDown.addTextChangedListener(object : TextWatcher {
         // Also clear dependent dropdown fields for Town and Area
         townDropDown.text.clear()
         areaDropDown.text.clear()
-
-
+        townDropDown.requestFocus()
     }
 
     //    When the town text clears all other field text clear as well
     binding.propertyAreaInputLayout.setEndIconOnClickListener {
         // Also clear dependent dropdown fields for Town and Area
         areaDropDown.text.clear()
+        areaDropDown.requestFocus()
     }
 
 //--------------------------------------------------------------
@@ -542,7 +552,7 @@ townDropDown.addTextChangedListener(object : TextWatcher {
         inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
 
         selectedDistrict = districtDropDown.text.toString().trim()
-        val selectedTown = townDropDown.text.toString().trim()
+        selectedTown = townDropDown.text.toString().trim()
 
         if (selectedTown.isEmpty()) {
             // Show a Toast message prompting the user to enter a town name
@@ -578,17 +588,22 @@ townDropDown.addTextChangedListener(object : TextWatcher {
                                     .show()
                             } else {
 
+                                // Update the districtTownMap
+                                towns.add(newTownName)
+                                districtTownMap[selectedDistrict] = towns
+
+                                // Update the compound key for town-to-area mapping
+                                val compoundKey = "$selectedDistrict|$newTownName"
+
+                                // Ensure the townDropDown reflects the new town
                                 townDropDown.setText(newTownName, false)
                                 townDropDown.setSelection(newTownName.length) // Move cursor to the end
-                                towns.add(newTownName)
-
-                                // Update the town list and adapter for the current district
                                 townList = towns
                                 townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
                                 townDropDown.setAdapter(townAdapter)
 
-                                // Clear and reset areas
-                                val areas = townAreaMap[newTownName] ?: mutableListOf()
+                                // Clear and reset areas for the new town
+                                val areas = townAreaMap.getOrPut(compoundKey) { mutableListOf() } // Create empty area list if it doesn't exist
                                 areaList = areas
                                 areaAdapter = ArrayAdapter(this, custom_dropdown_item, areaList)
                                 areaDropDown.setAdapter(areaAdapter)
@@ -651,9 +666,9 @@ townDropDown.addTextChangedListener(object : TextWatcher {
         val dialogView = layoutInflater.inflate(R.layout.custom_add_alert, null)
         val addMessage = dialogView.findViewById<TextView>(R.id.addMessage)
 
-        val selectedTown = townDropDown.text.toString().trim()
+        selectedTown = townDropDown.text.toString().trim()
 
-        val selectedArea = areaDropDown.text.toString().trim()
+        selectedArea = areaDropDown.text.toString().trim()
 
         if (selectedArea.isEmpty()) {
             // Close the keyboard
@@ -679,8 +694,10 @@ townDropDown.addTextChangedListener(object : TextWatcher {
                         }
 
                         else -> {
+                            val compoundKey = "$selectedDistrict|$selectedTown"
+
                             // Add the new area to the town's list in the map
-                            val area = townAreaMap.getOrPut(selectedTown) { mutableListOf() }
+                            val area = townAreaMap.getOrPut(compoundKey) { mutableListOf() }
                             if (area.contains(selectedArea)) {
                                 Toast.makeText(this, "Area already exists", Toast.LENGTH_SHORT).show()
                             } else {
@@ -877,7 +894,7 @@ districtEditIcon.setOnClickListener {
 
     val townEditIcon = binding.editTownIcon
     townEditIcon.setOnClickListener {
-        val selectedTown = townDropDown.text.toString().trim()
+        selectedTown = townDropDown.text.toString().trim()
         val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
         if (selectedTown.isNotEmpty() && townList.contains(selectedTown)) {
@@ -941,13 +958,18 @@ districtEditIcon.setOnClickListener {
                             Toast.makeText(this, "Town updated successfully", Toast.LENGTH_SHORT).show()
 
 
-                            if (oldTownName != newTownName && townAreaMap.containsKey(oldTownName)) {
+                            // Use the compound keys for consistency
+                            val oldCompoundKey = "$selectedDistrict|$oldTownName"
+                            val newCompoundKey = "$selectedDistrict|$newTownName"
+
+
+                            if (oldTownName != newTownName && townAreaMap.containsKey(oldCompoundKey)) {
                                 // Retrieve towns associated with the old district name
-                                val areas = townAreaMap.remove(oldTownName)
+                                val areas = townAreaMap.remove(oldCompoundKey)
 
                                 // Update the map with the new district name and its towns
                                 if (areas != null) {
-                                    townAreaMap[newTownName] = areas
+                                    townAreaMap[newCompoundKey] = areas
                                 }
 
                                 // Optionally, update the selected district in the UI if this is the currently selected district
@@ -1003,7 +1025,7 @@ districtEditIcon.setOnClickListener {
     val areaEditIcon = binding.editAreaIcon
 
     areaEditIcon.setOnClickListener {
-        val selectedArea = areaDropDown.text.toString().trim()
+        selectedArea = areaDropDown.text.toString().trim()
         val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
         if (selectedArea.isNotEmpty() && areaList.contains(selectedArea)) {
@@ -1030,6 +1052,8 @@ districtEditIcon.setOnClickListener {
                 .setView(dialogView)
                 .setPositiveButton("Save") { _, _ ->
                     val newAreaName = inputEditText.text.toString().trim()
+                    val compoundKey = "$selectedDistrict|$selectedTown"
+
                     when {
                         newAreaName.isEmpty() -> {
                             Toast.makeText(this, "Area cannot be empty", Toast.LENGTH_SHORT).show()
@@ -1041,12 +1065,35 @@ districtEditIcon.setOnClickListener {
                             Toast.makeText(this, "Area already exists", Toast.LENGTH_SHORT).show()
                         }
                         else -> {
+                            val areaLandRates = PreferencesManager.getLandRates()
+
                             // Close the keyboard
                             inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
 
-                            // Update the area name in the list
-                            val index = areaList.indexOf(selectedArea)
-                            areaList[index] = newAreaName
+                            // Update the area name in the list for the compound key
+                            val areas = townAreaMap[compoundKey] ?: mutableListOf()
+                            val index = areas.indexOf(selectedArea)
+                            areas[index] = newAreaName
+
+                            // Update the map with the modified area list
+                            townAreaMap[compoundKey] = areas
+
+                            // Refresh the area dropdown
+                            areaList = areas
+
+
+                            // Move data in areaLandRates to the new key while keeping the data intact
+                            val areaData = areaLandRates[selectedDistrict]?.get(selectedTown)?.remove(selectedArea)
+                            if (areaData != null) {
+                                // Assign the data to the new key
+                                areaLandRates[selectedDistrict]?.get(selectedTown)?.put(newAreaName, areaData)
+                            }
+
+                            // Refresh the area dropdown
+                            areaList = areas
+
+
+
 
                             areaDropDown.setText(newAreaName, false)
                             areaDropDown.setSelection(newAreaName.length) // Move cursor to the end
@@ -1205,7 +1252,7 @@ binding.deleteDistrictIcon.setOnClickListener {
 
     binding.deleteTownIcon.setOnClickListener {
 
-        val selectedTown = townDropDown.text.toString().trim()
+        selectedTown = townDropDown.text.toString().trim()
         val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
         if (selectedTown.isNotEmpty()) {
@@ -1297,7 +1344,7 @@ binding.deleteDistrictIcon.setOnClickListener {
 
     binding.deleteAreaIcon.setOnClickListener {
 
-        val selectedArea = areaDropDown.text.toString().trim()
+        selectedArea = areaDropDown.text.toString().trim()
         if (selectedArea.isNotEmpty()) {
             // Inflate the custom alert view for the dialog
             val dialogView = layoutInflater.inflate(R.layout.custom_delete_alert, null)
@@ -1385,30 +1432,41 @@ binding.deleteDistrictIcon.setOnClickListener {
         dialogView.findViewById<TextView>(R.id.propertyArea_DialogDisplay).text = areaDropDown.text.toString()
 
         // Access the AutoCompleteTextView for land types
+        selectedDistrict = districtDropDown.text.toString().trim()
+        selectedTown = townDropDown.text.toString().trim()
+        selectedArea = areaDropDown.text.toString().trim()
         val landTypeDropdown = dialogView.findViewById<AutoCompleteTextView>(R.id.landTypeDropdownDialogDisplay)
-        val selectedArea = areaDropDown.text.toString().trim()
+
+        // Ensure all necessary selections are made
+        if (selectedDistrict.isEmpty() || selectedTown.isEmpty() || selectedArea.isEmpty()) {
+            Toast.makeText(this, "Please select all fields (District, Town, and Area) first.", Toast.LENGTH_SHORT).show()
+            // Close the keyboard
+            val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+        }
+
+        // Configure dropdown for land types
+        val landOptions = mutableListOf("Agriculture", "Residential", "Commercial", "Industrial")
+
+        landAdapter = ArrayAdapter(this, custom_dropdown_item, landOptions)
+        landTypeDropdown.setAdapter(landAdapter)
+
         landTypeDropdown.setOnClickListener {
             landTypeDropdown.showDropDown()
             landTypeDropdown.requestFocus()
         }
 
-        // Validate selectedArea
-        if (selectedArea.isEmpty()) {
-            Toast.makeText(this, "Please select an area first.", Toast.LENGTH_SHORT).show()
-            return@setOnClickListener
+        landTypeDropdown.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus && !landTypeDropdown.isPopupShowing) {
+                landTypeDropdown.showDropDown()
+            }
         }
 
-        // Fetch and filter dropdown options dynamically
-        val savedLandTypes = PreferencesManager.getLandRates()[selectedArea]?.keys ?: emptySet()
-        val landOptions = mutableListOf("Agriculture", "Residential", "Commercial", "Industrial")
-        val availableLandOptions = landOptions.filter { it !in savedLandTypes }
-        val landAdapter = ArrayAdapter(this, custom_dropdown_item, availableLandOptions)
-        landTypeDropdown.setAdapter(landAdapter)
-
-        // Prepopulate fields if land type already exists
         landTypeDropdown.setOnItemClickListener { _, _, position, _ ->
-            val landType = availableLandOptions[position]
-            val existingLandRates = PreferencesManager.getLandRates()[selectedArea]?.get(landType)
+            val landType = landOptions[position]
+            val existingLandRates = PreferencesManager.getLandRates()[selectedDistrict]?.get(selectedTown)?.get(selectedArea)?.get(landType)
+
+            // Prepopulate fields if land type already exists
             existingLandRates?.let {
                 dialogView.findViewById<EditText>(R.id.marlaUnitPriceDC)?.setText(it["MarlaDC"])
                 dialogView.findViewById<EditText>(R.id.marlaUnitPriceFBR)?.setText(it["MarlaFBR"])
@@ -1416,6 +1474,7 @@ binding.deleteDistrictIcon.setOnClickListener {
                 dialogView.findViewById<EditText>(R.id.covereAreaFBR)?.setText(it["CoveredAreaFBR"])
                 dialogView.findViewById<EditText>(R.id.khasraNumberEditText)?.setText(it["KhasraNumber"])
             }
+            Log.d("ExistingLandRates", "Existing Land Rates: $existingLandRates")
         }
 
         // Create the dialog
@@ -1443,20 +1502,49 @@ binding.deleteDistrictIcon.setOnClickListener {
 
                 // Prepare and save data
                 val areaLandRates = PreferencesManager.getLandRates()
-                val landRatesData = mapOf(
+                val landRatesData = mutableMapOf(
                     "MarlaDC" to marlaDc,
                     "MarlaFBR" to marlaFbr,
                     "CoveredAreaDC" to coveredAreaDc,
                     "CoveredAreaFBR" to coveredAreaFbr,
                     "KhasraNumber" to khasraNumber
                 )
-                val updatedLandRates = (areaLandRates[selectedArea] ?: mutableMapOf()).apply {
+
+
+
+// Prepare the new landRatesData for the selected area
+                val updatedLandRates = (areaLandRates[selectedDistrict]
+                    ?.get(selectedTown)
+                    ?.get(selectedArea)
+                    ?: mutableMapOf()).apply {
                     put(landType, landRatesData)
                 }
-                areaLandRates[selectedArea] = updatedLandRates
+
+// Ensure the hierarchy structure is created
+                areaLandRates.getOrPut(selectedDistrict) { mutableMapOf() }
+                    .getOrPut(selectedTown) { mutableMapOf() }
+                    .getOrPut(selectedArea) { mutableMapOf() }
+                    .putAll(updatedLandRates)
+
+
+
 
                 try {
+                    // Save the updated list in SharedPreferences
+                    PreferencesManager.saveDropdownList(districtList)
+
+                    // Save updated district-town map in SharedPreference
+                    PreferencesManager.saveDistrictTownMap(districtTownMap)
+
+                    // Save updated Town-Area map in SharedPreference
+                    PreferencesManager.saveTownAreaMap(townAreaMap)
+
+                    // Save updated Area-Land map in SharedPreference
+                    PreferencesManager.saveAreaLandMap(areaLandMap)
+
                     PreferencesManager.saveLandRates(areaLandRates)
+
+
                     Toast.makeText(this, "Data saved successfully!", Toast.LENGTH_SHORT).show()
                     Log.d("SaveSuccess", "Land rates saved successfully! Data: $areaLandRates")
                 } catch (e: Exception) {
@@ -1478,6 +1566,7 @@ binding.deleteDistrictIcon.setOnClickListener {
 
 
 
+
 //    Save the lists when save button is pressed
     binding.saveButton.setOnClickListener {
         // Log the data for debugging
@@ -1491,18 +1580,6 @@ binding.deleteDistrictIcon.setOnClickListener {
                 "Are you sure you want to save the above data?\n\n"
             )
             .setPositiveButton("Save") { _, _ ->
-
-                // Save the updated list in SharedPreferences
-                PreferencesManager.saveDropdownList(districtList)
-
-                // Save updated district-town map in SharedPreference
-                PreferencesManager.saveDistrictTownMap(districtTownMap)
-
-                // Save updated Town-Area map in SharedPreference
-                PreferencesManager.saveTownAreaMap(townAreaMap)
-
-                // Save updated Area-Land map in SharedPreference
-                PreferencesManager.saveAreaLandMap(areaLandMap)
 
                 Toast.makeText(this, "Data saved successfully", Toast.LENGTH_SHORT).show()
 

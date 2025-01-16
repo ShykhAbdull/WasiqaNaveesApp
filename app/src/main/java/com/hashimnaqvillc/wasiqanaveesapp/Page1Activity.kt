@@ -196,97 +196,73 @@ class Page1Activity : AppCompatActivity() {
         binding.findButton.setOnClickListener {
 
             val areaLandRates = PreferencesManager.getLandRates()
+            val selectedDistrict = binding.districtDropdown.text.toString().trim()
+            val selectedTown = binding.townDropdown.text.toString().trim()
             val selectedArea = binding.propertyAreaDropdown.text.toString().trim()
             val selectedLandType = binding.landTypeDropdown.text.toString().trim()
 
-            // Retrieve numeric values
+            // Validate dropdown selections
+            if (selectedDistrict.isEmpty() || selectedTown.isEmpty() || selectedArea.isEmpty() || selectedLandType.isEmpty()) {
+                Toast.makeText(this, "Please select all required fields (District, Town, Area, Land Type).", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // Retrieve numeric values safely
             val kanalValue = binding.kanalEditText.text.toString().toDoubleOrNull() ?: 0.0
             val marlaValue = binding.marlaEditText.text.toString().toDoubleOrNull() ?: 0.0
             val sqftValue = binding.sqftEditText.text.toString().toDoubleOrNull() ?: 0.0
             val sqftPerMarla = 225.0
 
-// Retrieve land rates for the selected area and land type
-            val landRates = areaLandRates[selectedArea]?.get(selectedLandType)
+            // Fetch land rates for the selected district, town, area, and land type
+            val landRates = areaLandRates[selectedDistrict]?.get(selectedTown)?.get(selectedArea)?.get(selectedLandType)
 
-// Safely retrieve individual values with default fallbacks
-            val marlaDc = landRates?.get("MarlaDC")?.toDoubleOrNull() ?: 1.0
-            val marlaFbr = landRates?.get("MarlaFBR") ?: "N/A"
-            val coveredAreaDc = landRates?.get("CoveredAreaDC") ?: "N/A"
-            val coveredAreaFbr = landRates?.get("CoveredAreaFBR") ?: "N/A"
-            val transferFee = landRates?.get("TransferFee") ?: "N/A"
-            val khasraNumber = landRates?.get("KhasraNumber") ?: "N/A"
+            if (landRates == null) {
+                Toast.makeText(this, "No land rates found for the selected area and land type.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
+            // Safely retrieve individual values with defaults
+            val marlaDc = landRates["MarlaDC"]?.toDoubleOrNull() ?: 0.0
+            val marlaFbr = landRates["MarlaFBR"]?.toDoubleOrNull() ?: 0.0
+            val coveredAreaDc = landRates["CoveredAreaDC"]?.toDoubleOrNull() ?: 0.0
+            val coveredAreaFbr = landRates["CoveredAreaFBR"]?.toDoubleOrNull() ?: 0.0
+            val khasraNumber = landRates["KhasraNumber"] ?: "N/A"
 
-//            Log.d("LandRates", "MarlaDC: $marlaDc, MarlaFBR: $marlaFbr")
+            // Calculate total square feet and plot value
+            val totalSqft = kanalValue * 20 * sqftPerMarla + marlaValue * sqftPerMarla + sqftValue
+            val plotValueDC = totalSqft / sqftPerMarla * marlaDc
 
-            val totalSqft = (kanalValue * 20 * sqftPerMarla + marlaValue * sqftPerMarla + sqftValue) / sqftPerMarla
-            val plotValueDC = totalSqft * marlaDc
-
-            Log.d("Calculation", "Total Sqft: $plotValueDC")
+            Log.d("Calculation", "Total Sqft: $totalSqft, Plot Value DC: $plotValueDC")
 
             // Retrieve covered area value safely
             val coveredAreaValue = binding.coveredAreaEditText.text.toString().toDoubleOrNull() ?: 0.0
 
-            // Log results or proceed with further operations
+            // Log additional details
+            Log.d("LandRates", "MarlaDC: $marlaDc, Covered Area DC: $coveredAreaDc, Khasra Number: $khasraNumber")
             Log.d("Calculation", "Total Sqft: $totalSqft, Covered Area Value: $coveredAreaValue")
 
             // Optional: Show results in a Toast or update UI
             Toast.makeText(
                 this,
-                "Total Sqft: $totalSqft\nCovered Area Value: $coveredAreaValue",
-                Toast.LENGTH_SHORT
+                "Total Sqft: $totalSqft\nPlot Value DC: $plotValueDC\nCovered Area Value: $coveredAreaValue",
+                Toast.LENGTH_LONG
             ).show()
 
-
-
-
-
-
-
-
-//            val totalSqft = (kanalValue!! * 20 * sqftPerMarla + marlaValue!! * sqftPerMarla + sqftValue!!) / sqftPerMarla
-
-
-
-
-
-            // Validate dropdown selections and numeric inputs
-            when {
-                selectedDistrict.isNullOrEmpty() -> {
-                    Toast.makeText(this, "Please select a district", Toast.LENGTH_SHORT).show()
-                }
-                selectedTown.isNullOrEmpty() -> {
-                    Toast.makeText(this, "Please select a town", Toast.LENGTH_SHORT).show()
-                }
-                selectedPropertyArea.isNullOrEmpty() -> {
-                    Toast.makeText(this, "Please select a property area", Toast.LENGTH_SHORT).show()
-                }
-                selectedPropertyType.isNullOrEmpty() -> {
-                    Toast.makeText(this, "Please select an option in Property Type", Toast.LENGTH_SHORT).show()
-                }
-
-//                selectedPropertyType == "Building" && coveredAreaValue == null -> {
-//                    Toast.makeText(this, "Please enter a valid Covered Area for Building", Toast.LENGTH_SHORT).show()
-//                }
-                else -> {
-                    // All inputs are valid; proceed to the next activity
-                    val intent = Intent(this, Page2Activity::class.java)
-                    intent.putExtra("selectedDistrict", selectedDistrict)
-                    intent.putExtra("selectedTown", selectedTown)
-                    intent.putExtra("selectedPropertyArea", selectedPropertyArea)
-                    intent.putExtra("selectedLandType", selectedLandType)
-                    intent.putExtra("plotValueDC", plotValueDC)
-//                    intent.putExtra("selectedPropertyType", selectedPropertyType)
-//                    if (selectedPropertyType == "Building"){
-//                        intent.putExtra("coveredArea", coveredAreaValue)
-//                    }
-                    intent.putExtra("kanalValue", kanalValue)
-                    intent.putExtra("marlaValue", marlaValue)
-                    intent.putExtra("sqftValue", sqftValue)
-                    startActivity(intent)
-                }
+            // Proceed to the next activity with validated data
+            val intent = Intent(this, Page2Activity::class.java).apply {
+                putExtra("selectedDistrict", selectedDistrict)
+                putExtra("selectedTown", selectedTown)
+                putExtra("selectedArea", selectedArea)
+                putExtra("selectedLandType", selectedLandType)
+                putExtra("plotValueDC", plotValueDC)
+                putExtra("kanalValue", kanalValue)
+                putExtra("marlaValue", marlaValue)
+                putExtra("sqftValue", sqftValue)
+                putExtra("coveredAreaValue", coveredAreaValue)
             }
+            startActivity(intent)
         }
+
 
 
     }

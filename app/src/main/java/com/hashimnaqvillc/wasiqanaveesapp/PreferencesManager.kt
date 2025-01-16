@@ -55,11 +55,16 @@ object PreferencesManager {
         val json = gson.toJson(townAreaMap) // Serialize the map to JSON
         sharedPreferences.edit().putString("TownAreaMap", json).apply()
     }
+
     fun getTownAreaMap(): MutableMap<String, MutableList<String>> {
         val json = sharedPreferences.getString("TownAreaMap", null)
         val type = object : TypeToken<MutableMap<String, MutableList<String>>>() {}.type
         return gson.fromJson(json, type) ?: mutableMapOf() // Deserialize or return an empty map
     }
+
+
+
+
 
     // Property Area to Land Type (SAVE&GET)
     fun saveAreaLandMap(areaLandMap: MutableMap<String, MutableList<String>>) {
@@ -76,18 +81,19 @@ object PreferencesManager {
 
 
 
-    // Save land rates
-    fun saveLandRates(areaLandRates: MutableMap<String, MutableMap<String, Map<String, String>>>) {
-        val json = gson.toJson(areaLandRates)
+    // Save land rates with updated hierarchical structure
+    fun saveLandRates(areaLandRates: MutableMap<String, MutableMap<String, MutableMap<String, MutableMap<String, Map<String, String>>>>>) {
+        val json = gson.toJson(areaLandRates) // Serialize the entire nested structure
         sharedPreferences.edit().putString("AreaLandRates", json).apply()
     }
 
-    // Retrieve land rates
-    fun getLandRates(): MutableMap<String, MutableMap<String, Map<String, String>>> {
-        val json = sharedPreferences.getString("AreaLandRates", "{}")
-        val type = object : TypeToken<MutableMap<String, MutableMap<String, Map<String, String>>>>() {}.type
-        return gson.fromJson(json, type) ?: mutableMapOf()
+    // Retrieve land rates with updated hierarchical structure
+    fun getLandRates(): MutableMap<String, MutableMap<String, MutableMap<String, MutableMap<String, Map<String, String>>>>> {
+        val json = sharedPreferences.getString("AreaLandRates", "{}") // Default to an empty JSON object
+        val type = object : TypeToken<MutableMap<String, MutableMap<String, MutableMap<String, MutableMap<String, Map<String, String>>>>>>() {}.type
+        return gson.fromJson(json, type) ?: mutableMapOf() // Deserialize or return an empty map if null
     }
+
 
 
 
