@@ -47,6 +47,7 @@ private lateinit var landAdapter: ArrayAdapter<String>
 private lateinit var selectedDistrict: String
 private lateinit var selectedTown: String
 private lateinit var selectedArea: String
+private lateinit var selectedLand: String
 
 
 private lateinit var binding: ActivitySettingsBinding
@@ -400,8 +401,6 @@ townDropDown.addTextChangedListener(object : TextWatcher {
         // Set a fixed height for more than 3 items
         areaDropDown.dropDownHeight =
             (areaDropDown.context.resources.displayMetrics.density * 150).toInt()
-        Log.d("AreaList", "Updated area list: $areaList")
-
 
     }
 
@@ -1077,20 +1076,9 @@ districtEditIcon.setOnClickListener {
 
                             // Update the map with the modified area list
                             townAreaMap[compoundKey] = areas
-
-                            // Refresh the area dropdown
-                            areaList = areas
+                            
 
 
-                            // Move data in areaLandRates to the new key while keeping the data intact
-                            val areaData = areaLandRates[selectedDistrict]?.get(selectedTown)?.remove(selectedArea)
-                            if (areaData != null) {
-                                // Assign the data to the new key
-                                areaLandRates[selectedDistrict]?.get(selectedTown)?.put(newAreaName, areaData)
-                            }
-
-                            // Refresh the area dropdown
-                            areaList = areas
 
 
 
@@ -1463,8 +1451,8 @@ binding.deleteDistrictIcon.setOnClickListener {
         }
 
         landTypeDropdown.setOnItemClickListener { _, _, position, _ ->
-            val landType = landOptions[position]
-            val existingLandRates = PreferencesManager.getLandRates()[selectedDistrict]?.get(selectedTown)?.get(selectedArea)?.get(landType)
+            selectedLand = landOptions[position]
+            val existingLandRates = PreferencesManager.getLandRates()[selectedDistrict]?.get(selectedTown)?.get(selectedArea)?.get(selectedLand)
 
             // Prepopulate fields if land type already exists
             existingLandRates?.let {

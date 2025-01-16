@@ -230,7 +230,18 @@ class Page1Activity : AppCompatActivity() {
 
             // Calculate total square feet and plot value
             val totalSqft = kanalValue * 20 * sqftPerMarla + marlaValue * sqftPerMarla + sqftValue
+
             val plotValueDC = totalSqft / sqftPerMarla * marlaDc
+
+//            val plotValueFBR = totalSqft / sqftPerMarla * marlaFbr
+
+
+
+
+
+
+
+
 
             Log.d("Calculation", "Total Sqft: $totalSqft, Plot Value DC: $plotValueDC")
 
