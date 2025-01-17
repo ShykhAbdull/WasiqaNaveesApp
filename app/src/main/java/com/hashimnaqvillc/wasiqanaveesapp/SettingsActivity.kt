@@ -28,7 +28,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.textfield.TextInputLayout
 import com.hashimnaqvillc.wasiqanaveesapp.R.layout.custom_dropdown_item
 import com.hashimnaqvillc.wasiqanaveesapp.databinding.ActivitySettingsBinding
 
@@ -44,6 +43,7 @@ private lateinit var townAdapter: ArrayAdapter<String>
 private lateinit var areaAdapter: ArrayAdapter<String>
 private lateinit var landAdapter: ArrayAdapter<String>
 
+//Selected Value Names
 private lateinit var selectedDistrict: String
 private lateinit var selectedTown: String
 private lateinit var selectedArea: String
@@ -256,23 +256,24 @@ if (itemCount <= 3) {
 
 
     // Fetch the districtTownMap once when the activity starts
-    val districtTownMap: MutableMap<String, MutableList<String>> by lazy {
+    val districtTownMap: MutableMap<Int, MutableList<String>> by lazy {
         PreferencesManager.getDistrictTownMap()
     }
 
 // Dropdown item selection logic
     districtDropDown.setOnItemClickListener { _, _, _, _ ->
-
         // Also clear dependent dropdown fields for Town and Area
         townDropDown.text.clear()
         areaDropDown.text.clear()
 
 
         // Normalize the selected district to avoid formatting issues
-        selectedDistrict = districtDropDown.text.toString().trim()
+        val currentDistrictName  = districtDropDown.text.toString().trim()
+        val currentDistrictHashKey = currentDistrictName.hashCode()
 
-        // Retrieve the towns for the selected district
-        val towns = districtTownMap[selectedDistrict] ?: mutableListOf()
+
+        // Retrieve the towns for the selected district using the district hash key
+        val towns = districtTownMap[currentDistrictHashKey] ?: mutableListOf()
 
         // Log the retrieved data
         Log.d("DistrictSelection", "Selected district: $selectedDistrict, towns: $towns")
@@ -330,7 +331,7 @@ townDropDown.addTextChangedListener(object : TextWatcher {
 
 
     // Fetch the TownAreaMap once when the activity starts
-    val townAreaMap: MutableMap<String, MutableList<String>> by lazy {
+    val townAreaMap: MutableMap<Int, MutableList<String>> by lazy {
         PreferencesManager.getTownAreaMap()
     }
 
@@ -339,14 +340,19 @@ townDropDown.addTextChangedListener(object : TextWatcher {
 
         areaDropDown.text.clear()
 
-        selectedDistrict = districtDropDown.text.toString().trim()
-        selectedTown = townDropDown.text.toString().trim()
+        // Normalize the selected town to avoid formatting issues
+        val currentDistrictName = districtDropDown.text.toString().trim()
+        val currentDistrictHashKey = currentDistrictName.hashCode()
 
-        val compoundKey = "$selectedDistrict|$selectedTown"
+        val currentTownName = townDropDown.text.toString().trim()
+        val currentTownHashKey = (currentDistrictHashKey.toString() + currentTownName).hashCode()
+
+        // Retrieve the areas for the selected town using the town hash key
+        val areas = townAreaMap[currentTownHashKey] ?: mutableListOf()
+
 
 
         // Clear and reset areas
-        val areas = townAreaMap[compoundKey] ?: mutableListOf()
         areaList = areas
         areaAdapter = ArrayAdapter(this, custom_dropdown_item, areaList)
         areaDropDown.setAdapter(areaAdapter)
@@ -354,13 +360,13 @@ townDropDown.addTextChangedListener(object : TextWatcher {
 
 
 
-        Log.d("TownSelection", "Selected town: $selectedTown, areas: $areas")
+        Log.d("TownSelection", "Selected town: $selectedTown")
     }
 
 
 
     // Fetch the AreaLandMap once when the activity starts
-    val areaLandMap: MutableMap<String, MutableList<String>> by lazy {
+    val areaLandMap: MutableMap<Int, MutableList<String>> by lazy {
         PreferencesManager.getAreaLandMap()
     }
 
@@ -395,7 +401,6 @@ townDropDown.addTextChangedListener(object : TextWatcher {
     val areaItemCount = areaAdapter.count // Gets the current filtered item count
     if (areaItemCount <= 3) {
         areaDropDown.dropDownHeight = ViewGroup.LayoutParams.WRAP_CONTENT
-        Log.d("AreaList", "Updated area list: $areaList")
 
     } else {
         // Set a fixed height for more than 3 items
@@ -463,6 +468,8 @@ townDropDown.addTextChangedListener(object : TextWatcher {
 
         // Check if the dropdown has text written
         val currentDistrictName = districtDropDown.text.toString().trim()
+        selectedDistrict = currentDistrictName
+
 
         if (currentDistrictName.isEmpty()) {
             // Show a message if the dropdown is empty
@@ -485,24 +492,39 @@ townDropDown.addTextChangedListener(object : TextWatcher {
                         }
                         else -> {
 
+                            // Generate a unique hash code for the new district
+                            val districtHashCode = currentDistrictName.hashCode()
+
                             // Add the new district to the list
                             districtList.add(currentDistrictName)
+
+                            // Add the hash code to the districtTownMap with an empty list for towns
+                            districtTownMap[districtHashCode] = mutableListOf()
 
                             // Refresh adapter by recreating it
                             districtAdapter = ArrayAdapter(this, custom_dropdown_item, districtList)
                             districtDropDown.setAdapter(districtAdapter)
 
-                            townDropDown.text.clear() // Clear towns dropdown
-                            areaDropDown.text.clear() // Clear areas dropdown
 
-                            // Clear and reset towns and areas
-                            val towns = districtTownMap[currentDistrictName] ?: mutableListOf()
+                            // Normalize the selected district to avoid formatting issues
+                            val currentDistrictHashKey = currentDistrictName.hashCode()
+
+
+                            // Retrieve the towns for the selected district using the district hash key
+                            val towns = districtTownMap[currentDistrictHashKey] ?: mutableListOf()
+
+
+                            // Update the town dropdown
                             townList = towns
                             townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
                             townDropDown.setAdapter(townAdapter)
+                            townDropDown.threshold = 1
 
 
-                            Log.d("DistrictList", "Updated district list: $districtList")
+                            townDropDown.text.clear() // Clear towns dropdown
+                            areaDropDown.text.clear() // Clear areas dropdown
+
+
                             Toast.makeText(this, "District added successfully", Toast.LENGTH_SHORT).show()
                         }
                     }
@@ -550,13 +572,21 @@ townDropDown.addTextChangedListener(object : TextWatcher {
         val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
 
-        selectedDistrict = districtDropDown.text.toString().trim()
-        selectedTown = townDropDown.text.toString().trim()
+        val currentDistrictName = districtDropDown.text.toString().trim()
+        val currentSelectedTown = townDropDown.text.toString().trim()
+        selectedTown = currentSelectedTown
 
-        if (selectedTown.isEmpty()) {
+
+        if (currentSelectedTown.isEmpty()) {
             // Show a Toast message prompting the user to enter a town name
             Toast.makeText(this, "Empty Town!", Toast.LENGTH_SHORT).show()
         } else {
+            // Generate district hash code
+            val districtHashCode = currentDistrictName.hashCode()
+
+            // Generate town hash code (dependent on district hash code)
+            val townHashCode = "$districtHashCode-$currentSelectedTown".hashCode()
+
             // Inflate the custom add alert view for the dialog
             val dialogView = layoutInflater.inflate(R.layout.custom_add_alert, null)
             val addMessage = dialogView.findViewById<TextView>(R.id.addMessage)
@@ -564,63 +594,54 @@ townDropDown.addTextChangedListener(object : TextWatcher {
             // Set the message text and pre-fill the input field with the dropdown text
             addMessage.text = "Add $selectedTown for $selectedDistrict District?"
 
-            // Create a confirmation dialog to add a new town
+// Create a confirmation dialog to add a new town
             val addTownDialog = MaterialAlertDialogBuilder(this)
                 .setView(dialogView)
                 .setPositiveButton("Add") { _, _ ->
-                    val newTownName = selectedTown // Get the text from the dropdown
-
                     when {
-                        newTownName.isEmpty() -> {
-                            Toast.makeText(
-                                this,
-                                "Town cannot be empty",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                        currentSelectedTown.isEmpty() -> {
+                            Toast.makeText(this, "Town cannot be empty", Toast.LENGTH_SHORT).show()
                         }
 
                         else -> {
-                            // Add the new town to the district's list in the map
-                            val towns = districtTownMap.getOrPut(selectedDistrict) { mutableListOf() }
-                            if (towns.contains(newTownName)) {
-                                Toast.makeText(this, "Town already exists", Toast.LENGTH_SHORT)
-                                    .show()
-                            } else {
+                            // Fetch the current list of towns for the selected district
+                            val towns = districtTownMap[districtHashCode] ?: mutableListOf()
+
+                            // Check if the town already exists
+                            if (towns.any { "$districtHashCode-${it}".hashCode() == townHashCode }) {
+                                Toast.makeText(this, "Town already exists", Toast.LENGTH_SHORT).show()
+                            }else {
+                                // Add the new town to the list
+                                towns.add(currentSelectedTown)
 
                                 // Update the districtTownMap
-                                towns.add(newTownName)
-                                districtTownMap[selectedDistrict] = towns
-
-                                // Update the compound key for town-to-area mapping
-                                val compoundKey = "$selectedDistrict|$newTownName"
+                                districtTownMap[districtHashCode] = towns
 
                                 // Ensure the townDropDown reflects the new town
-                                townDropDown.setText(newTownName, false)
-                                townDropDown.setSelection(newTownName.length) // Move cursor to the end
+                                townDropDown.setText(currentSelectedTown, false)
+                                townDropDown.setSelection(currentSelectedTown.length) // Move cursor to the end
+
+                                // Update the town list and adapter
                                 townList = towns
                                 townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
                                 townDropDown.setAdapter(townAdapter)
 
-                                // Clear and reset areas for the new town
-                                val areas = townAreaMap.getOrPut(compoundKey) { mutableListOf() } // Create empty area list if it doesn't exist
-                                areaList = areas
+                                // Clear areas dropdown
+                                areaDropDown.text.clear()
+                                areaList = mutableListOf()
                                 areaAdapter = ArrayAdapter(this, custom_dropdown_item, areaList)
                                 areaDropDown.setAdapter(areaAdapter)
-                                areaDropDown.text.clear() // Clear area dropdown
 
-                                Toast.makeText(
-                                    this,
-                                    "Town added successfully",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+
+                                Toast.makeText(this, "Town added successfully", Toast.LENGTH_SHORT).show()
                             }
-                            Log.d(
-                                "TownList",
-                                "Updated town list for $selectedDistrict: $townList"
-                            )
+                            Log.d("TownList", "Updated town list for district $districtHashCode: $townList")
                         }
                     }
                 }
+
+
+
                 .setNegativeButton("Cancel") { _, _ -> }
                 .create()
 
@@ -665,11 +686,18 @@ townDropDown.addTextChangedListener(object : TextWatcher {
         val dialogView = layoutInflater.inflate(R.layout.custom_add_alert, null)
         val addMessage = dialogView.findViewById<TextView>(R.id.addMessage)
 
-        selectedTown = townDropDown.text.toString().trim()
+        val currentDistrictName = districtDropDown.text.toString().trim()
+        val currentDistrictHashKey = currentDistrictName.hashCode()
 
-        selectedArea = areaDropDown.text.toString().trim()
+        val currentSelectedTown = townDropDown.text.toString().trim()
+        val currentTownHashKey = (currentDistrictHashKey.toString() + currentSelectedTown).hashCode()
 
-        if (selectedArea.isEmpty()) {
+        val currentArea = areaDropDown.text.toString().trim()
+        val currentAreaHashKey = (currentTownHashKey.toString() + currentArea).hashCode()
+
+        selectedArea = currentArea
+
+        if (currentArea.isEmpty()) {
             // Close the keyboard
             inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
 
@@ -684,7 +712,7 @@ townDropDown.addTextChangedListener(object : TextWatcher {
                 .setView(dialogView)
                 .setPositiveButton("Add") { _, _ ->
                     when {
-                        selectedArea.isEmpty() -> {
+                        currentArea.isEmpty() -> {
                             Toast.makeText(
                                 this,
                                 "Property Area cannot be empty",
@@ -693,23 +721,24 @@ townDropDown.addTextChangedListener(object : TextWatcher {
                         }
 
                         else -> {
-                            val compoundKey = "$selectedDistrict|$selectedTown"
-
                             // Add the new area to the town's list in the map
-                            val area = townAreaMap.getOrPut(compoundKey) { mutableListOf() }
-                            if (area.contains(selectedArea)) {
+                            val areas = townAreaMap[currentTownHashKey] ?: mutableListOf()
+                            if (areas.contains(currentArea)) {
                                 Toast.makeText(this, "Area already exists", Toast.LENGTH_SHORT).show()
                             } else {
-                                area.add(selectedArea) // Add the new area to the list
+                                areas.add(currentArea) // Add the new area to the list
+
+                                // Update the townAreaMap
+                                townAreaMap[currentTownHashKey] = areas
 
                                 // Update the area list and adapter for the current town
-                                areaList = area
+                                areaList = areas
                                 areaAdapter = ArrayAdapter(this, custom_dropdown_item, areaList)
                                 areaDropDown.setAdapter(areaAdapter)
 
                                 // Set the new area as the selected text
-                                areaDropDown.setText(selectedArea, false)
-                                areaDropDown.setSelection(selectedArea.length)
+                                areaDropDown.setText(currentArea, false)
+                                areaDropDown.setSelection(currentArea.length)
 
                                 // Provide feedback
                                 Toast.makeText(
@@ -718,7 +747,7 @@ townDropDown.addTextChangedListener(object : TextWatcher {
                                     Toast.LENGTH_SHORT
                                 ).show()
 
-                                Log.d("AreaList", "Updated area list for $selectedTown: $areaList")
+                                Log.d("AreaList", "Updated area list for $currentTownHashKey: $areaList")
                             }
                         }
                     }
@@ -763,11 +792,11 @@ townDropDown.addTextChangedListener(object : TextWatcher {
 val districtEditIcon = binding.editDistrictIcon
 
 districtEditIcon.setOnClickListener {
-    selectedDistrict = districtDropDown.text.toString().trim()
+    val currentDistrictName = districtDropDown.text.toString().trim()
     val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
 
-    if (selectedDistrict.isNotEmpty() && districtList.contains(selectedDistrict)) {
+    if (selectedDistrict.isNotEmpty() && districtList.contains(currentDistrictName)) {
         // Inflate the custom edit alert view for the dialog
         val dialogView = layoutInflater.inflate(R.layout.custom_edit_alert, null)
         val editMessage = dialogView.findViewById<TextView>(R.id.editMessage)
@@ -782,34 +811,41 @@ districtEditIcon.setOnClickListener {
         editMessage.text = "Edit the name of the selected district"
 
         // Set the EditText initial value
-        inputEditText.setText(selectedDistrict)
-        inputEditText.setSelection(selectedDistrict.length) // Move cursor to the end of the text
+        inputEditText.setText(currentDistrictName)
+        inputEditText.setSelection(currentDistrictName.length) // Move cursor to the end of the text
 
         // Set the title dynamically
-        centeredTitle.text = "District   ''$selectedDistrict''"
+        centeredTitle.text = "District   ''$currentDistrictName''"
 
         // Create a confirmation dialog to edit the selected district
         val editDistrictDialog = MaterialAlertDialogBuilder(this)
             .setView(dialogView)
             .setPositiveButton("Save") { _, _ ->
                 val newDistrictName = inputEditText.text.toString().trim()
+
                 when {
                     newDistrictName.isEmpty() -> {
                         Toast.makeText(this, "District cannot be empty", Toast.LENGTH_SHORT).show()
                     }
-                    newDistrictName == selectedDistrict -> {
+                    newDistrictName == currentDistrictName -> {
                         Toast.makeText(this, "No changes made", Toast.LENGTH_SHORT).show()
                     }
                     districtList.contains(newDistrictName) -> {
                         Toast.makeText(this, "District already exists", Toast.LENGTH_SHORT).show()
                     }
                     else -> {
-                        // Update the district name in the list
-                        val index = districtList.indexOf(selectedDistrict)
-                        val oldDistrictName = districtList[index]
-                        Log.d("newDistrictList", "Old district name : $oldDistrictName")
+                        // Hash-based key for district
+                        val selectedDistrictHashKey = currentDistrictName.hashCode()
+                        val newDistrictHashKey = newDistrictName.hashCode()
 
+                        // Update the district name in the list using hash-based keys
+                        val index = districtList.indexOf(currentDistrictName)
                         districtList[index] = newDistrictName
+
+                        // Update the district in the map using hash codes to avoid dependency issues
+                        val towns = districtTownMap.remove(selectedDistrictHashKey) ?: mutableListOf()
+                        districtTownMap[newDistrictHashKey] = towns
+
 
                         districtDropDown.setText(newDistrictName, false)
                         districtDropDown.setSelection(newDistrictName.length) // Move cursor to the end
@@ -823,28 +859,18 @@ districtEditIcon.setOnClickListener {
                         districtDropDown.setAdapter(districtAdapter)
 
 
+                        townList = towns
+                        townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
+                        townDropDown.setAdapter(townAdapter)
+                        townDropDown.threshold = 1
+
+
 
                         Log.d("newDistrictList", "After district list: $newDistrictName")
                         Log.d("townList", "After town list: $townList")
                         Toast.makeText(this, "District updated successfully", Toast.LENGTH_SHORT).show()
 
 
-                        if (oldDistrictName != newDistrictName && districtTownMap.containsKey(oldDistrictName))
-                        {
-                            // Retrieve towns associated with the old district name
-                            val towns = districtTownMap.remove(oldDistrictName)
-
-                            // Update the map with the new district name and its towns
-                            if (towns != null) {
-                                districtTownMap[newDistrictName] = towns
-                            }
-
-                            // Optionally, update the selected district in the UI if this is the currently selected district
-                            if (districtDropDown.text.toString() == oldDistrictName) {
-                                districtDropDown.setText(newDistrictName, false)
-                            }
-
-                        }
 
                     }
                 }
@@ -893,10 +919,10 @@ districtEditIcon.setOnClickListener {
 
     val townEditIcon = binding.editTownIcon
     townEditIcon.setOnClickListener {
-        selectedTown = townDropDown.text.toString().trim()
+        val currentTownName = townDropDown.text.toString().trim()
         val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
-        if (selectedTown.isNotEmpty() && townList.contains(selectedTown)) {
+        if (currentTownName.isNotEmpty() && townList.contains(currentTownName)) {
             // Inflate the custom edit alert view for the dialog
             val dialogView = layoutInflater.inflate(R.layout.custom_edit_alert, null)
             val editMessage = dialogView.findViewById<TextView>(R.id.editMessage)
@@ -909,11 +935,11 @@ districtEditIcon.setOnClickListener {
             editMessage.text = "Edit the name of the selected town"
 
             // Set the EditText initial value
-            inputEditText.setText(selectedTown)
-            inputEditText.setSelection(selectedTown.length) // Move cursor to the end of the text
+            inputEditText.setText(currentTownName)
+            inputEditText.setSelection(currentTownName.length) // Move cursor to the end of the text
 
             // Set the title dynamically
-            centeredTitle.text = "Town   ''$selectedTown''"
+            centeredTitle.text = "Town   ''$currentTownName''"
 
             // Create a confirmation dialog to edit the selected district
             val editTownDialog = MaterialAlertDialogBuilder(this)
@@ -924,7 +950,7 @@ districtEditIcon.setOnClickListener {
                         newTownName.isEmpty() -> {
                             Toast.makeText(this, "Town cannot be empty", Toast.LENGTH_SHORT).show()
                         }
-                        newTownName == selectedTown -> {
+                        newTownName == currentTownName -> {
                             Toast.makeText(this, "No changes made", Toast.LENGTH_SHORT).show()
                         }
                         townList.contains(newTownName) -> {
@@ -935,46 +961,25 @@ districtEditIcon.setOnClickListener {
                             // Close the keyboard
                             inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
 
-                            // Update the district name in the list
-                            val index = townList.indexOf(selectedTown)
-                            val oldTownName = townList[index]
-                            townList[index] = newTownName
+                            // Update the town name in the list using hashCode
+                            val townHashCode = currentTownName.hashCode()
+                            val townIndex = townList.indexOfFirst { it.hashCode() == townHashCode }
 
-                            // Set the new town name as the selected text
-                            townDropDown.setText(newTownName, false)
-                            townDropDown.setSelection(newTownName.length) // Move cursor to the end
+                            if (townIndex != -1) {
+                                townList[townIndex] = newTownName
 
+                                // Set the new town name as the selected text
+                                townDropDown.setText(newTownName, false)
+                                townDropDown.setSelection(newTownName.length) // Move cursor to the end
 
-                            areaDropDown.text.clear() // Clear dropdown text.
+                                areaDropDown.text.clear() // Clear dropdown text.
 
-                            // Refresh adapter by recreating it
-                            townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
-                            townDropDown.setAdapter(townAdapter)
+                                // Refresh adapter by recreating it
+                                townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
+                                townDropDown.setAdapter(townAdapter)
 
-
-
-                            Log.d("TownList", "Updated Town list: $townList")
-                            Toast.makeText(this, "Town updated successfully", Toast.LENGTH_SHORT).show()
-
-
-                            // Use the compound keys for consistency
-                            val oldCompoundKey = "$selectedDistrict|$oldTownName"
-                            val newCompoundKey = "$selectedDistrict|$newTownName"
-
-
-                            if (oldTownName != newTownName && townAreaMap.containsKey(oldCompoundKey)) {
-                                // Retrieve towns associated with the old district name
-                                val areas = townAreaMap.remove(oldCompoundKey)
-
-                                // Update the map with the new district name and its towns
-                                if (areas != null) {
-                                    townAreaMap[newCompoundKey] = areas
-                                }
-
-                                // Optionally, update the selected district in the UI if this is the currently selected district
-                                if (townDropDown.text.toString() == oldTownName) {
-                                    townDropDown.setText(newTownName, false)
-                                }
+                                Log.d("TownList", "Updated Town list: $townList")
+                                Toast.makeText(this, "Town updated successfully", Toast.LENGTH_SHORT).show()
                             }
 
 
@@ -1024,10 +1029,10 @@ districtEditIcon.setOnClickListener {
     val areaEditIcon = binding.editAreaIcon
 
     areaEditIcon.setOnClickListener {
-        selectedArea = areaDropDown.text.toString().trim()
+        val currentAreaName = areaDropDown.text.toString().trim()
         val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
-        if (selectedArea.isNotEmpty() && areaList.contains(selectedArea)) {
+        if (currentAreaName.isNotEmpty() && areaList.contains(currentAreaName)) {
             // Inflate the custom edit alert view for the dialog
             val dialogView = layoutInflater.inflate(R.layout.custom_edit_alert, null)
             val editMessage = dialogView.findViewById<TextView>(R.id.editMessage)
@@ -1040,58 +1045,50 @@ districtEditIcon.setOnClickListener {
             editMessage.text = "Edit the name of the selected area"
 
             // Set the EditText initial value
-            inputEditText.setText(selectedArea)
-            inputEditText.setSelection(selectedArea.length) // Move cursor to the end of the text
+            inputEditText.setText(currentAreaName)
+            inputEditText.setSelection(currentAreaName.length) // Move cursor to the end of the text
 
             // Set the title dynamically
-            centeredTitle.text = "Property Area ''$selectedArea''"
+            centeredTitle.text = "Property Area ''$currentAreaName''"
 
             // Create a confirmation dialog to edit the selected district
             val editAreaDialog = MaterialAlertDialogBuilder(this)
                 .setView(dialogView)
                 .setPositiveButton("Save") { _, _ ->
+
                     val newAreaName = inputEditText.text.toString().trim()
-                    val compoundKey = "$selectedDistrict|$selectedTown"
 
                     when {
                         newAreaName.isEmpty() -> {
                             Toast.makeText(this, "Area cannot be empty", Toast.LENGTH_SHORT).show()
                         }
-                        newAreaName == selectedArea -> {
+                        newAreaName == currentAreaName -> {
                             Toast.makeText(this, "No changes made", Toast.LENGTH_SHORT).show()
                         }
                         areaList.contains(newAreaName) -> {
                             Toast.makeText(this, "Area already exists", Toast.LENGTH_SHORT).show()
                         }
                         else -> {
-                            val areaLandRates = PreferencesManager.getLandRates()
 
-                            // Close the keyboard
-                            inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+                            // Locate the area in the list using hashCode
+                            val areaHashCode = selectedArea.hashCode()
+                            val areaIndex = areaList.indexOfFirst { it.hashCode() == areaHashCode }
 
-                            // Update the area name in the list for the compound key
-                            val areas = townAreaMap[compoundKey] ?: mutableListOf()
-                            val index = areas.indexOf(selectedArea)
-                            areas[index] = newAreaName
+                            if (areaIndex != -1) {
+                                // Update the area name in the list
+                                areaList[areaIndex] = newAreaName
 
-                            // Update the map with the modified area list
-                            townAreaMap[compoundKey] = areas
-                            
+                                // Set the new area name as the selected text
+                                areaDropDown.setText(newAreaName, false)
+                                areaDropDown.setSelection(newAreaName.length) // Move cursor to the end
 
+                                // Refresh adapter by recreating it
+                                areaAdapter = ArrayAdapter(this, custom_dropdown_item, areaList)
+                                areaDropDown.setAdapter(areaAdapter)
 
+                                Toast.makeText(this, "Area updated successfully", Toast.LENGTH_SHORT).show()
+                            }
 
-
-
-
-                            areaDropDown.setText(newAreaName, false)
-                            areaDropDown.setSelection(newAreaName.length) // Move cursor to the end
-
-                            // Refresh adapter by recreating it
-                            areaAdapter = ArrayAdapter(this, custom_dropdown_item, areaList)
-                            areaDropDown.setAdapter(areaAdapter)
-
-                            Log.d("AreaList", "Updated Area list: $areaList")
-                            Toast.makeText(this, "Area updated successfully", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
@@ -1142,6 +1139,7 @@ districtEditIcon.setOnClickListener {
 binding.deleteDistrictIcon.setOnClickListener {
 
     selectedDistrict = districtDropDown.text.toString().trim()
+    val selectedDistrictIndex = districtList.indexOf(selectedDistrict)
     val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
 
     if (selectedDistrict.isNotEmpty()) {
@@ -1174,12 +1172,7 @@ binding.deleteDistrictIcon.setOnClickListener {
                 districtList.remove(selectedDistrict)
 
                 // Remove all associated towns
-                val towns = districtTownMap.remove(selectedDistrict)
-
-                // Remove all areas for the removed towns
-                towns?.forEach { town ->
-                    townAreaMap.remove(town)
-                }
+                districtTownMap.remove(selectedDistrictIndex)
 
                 districtDropDown.text.clear() // Clear dropdown text.
                 townDropDown.text.clear() // Clear dropdown text.
@@ -1241,6 +1234,7 @@ binding.deleteDistrictIcon.setOnClickListener {
     binding.deleteTownIcon.setOnClickListener {
 
         selectedTown = townDropDown.text.toString().trim()
+        val selectedTownIndex = townList.indexOf(selectedTown)
         val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
         if (selectedTown.isNotEmpty()) {
@@ -1273,7 +1267,7 @@ binding.deleteDistrictIcon.setOnClickListener {
                     townList.remove(selectedTown)
 
                     // Remove all associated areas
-                    val areas = townAreaMap.remove(selectedTown)
+                    val areas = townAreaMap.remove(selectedTownIndex)
 
                     townDropDown.text.clear()
                     areaDropDown.text.clear()

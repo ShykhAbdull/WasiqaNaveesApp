@@ -1,12 +1,10 @@
 package com.hashimnaqvillc.wasiqanaveesapp
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.ImageButton
 import android.widget.TextView
@@ -304,7 +302,7 @@ class Page1Activity : AppCompatActivity() {
 
 
 // Fetch the districtTownMap once when the activity starts
-        val districtTownMap: MutableMap<String, MutableList<String>> by lazy {
+        val districtTownMap: MutableMap<Int, MutableList<String>> by lazy {
             PreferencesManager.getDistrictTownMap()
         }
 
@@ -318,9 +316,10 @@ class Page1Activity : AppCompatActivity() {
 
             // Normalize the selected district to avoid formatting issues
             selectedDistrict = binding.districtDropdown.text.toString().trim()
+            val selectedDistrictIndex = districtList.indexOf(selectedDistrict)
 
             // Retrieve the towns for the selected district
-            val towns = districtTownMap[selectedDistrict] ?: mutableListOf()
+            val towns = districtTownMap[selectedDistrictIndex] ?: mutableListOf()
 
             // Log the retrieved data
             Log.d("DistrictSelection", "Selected district: $selectedDistrict, towns: $towns")
@@ -345,7 +344,7 @@ class Page1Activity : AppCompatActivity() {
 // ------------------------------------------------------------------------------------
 
 // Fetch the TownAreaMap once when the activity starts
-        val townAreaMap: MutableMap<String, MutableList<String>> by lazy {
+        val townAreaMap: MutableMap<Int, MutableList<String>> by lazy {
             PreferencesManager.getTownAreaMap()
         }
 
@@ -358,9 +357,10 @@ class Page1Activity : AppCompatActivity() {
 
             // Normalize the selected town to avoid formatting issues
             selectedTown = binding.townDropdown.text.toString().trim()
+            val selectedTownIndex = townList.indexOf(selectedTown)
 
             // Retrieve the areas for the selected town
-            val areas = townAreaMap[selectedTown] ?: mutableListOf()
+            val areas = townAreaMap[selectedTownIndex] ?: mutableListOf()
 
             // Update the property area dropdown
             val areaAdapter = ArrayAdapter(
@@ -380,7 +380,7 @@ class Page1Activity : AppCompatActivity() {
 //        ---------------------------------------------------------------------------------------
 
 // Fetch the TownAreaMap once when the activity starts
-        val areaLandMap: MutableMap<String, MutableList<String>> by lazy {
+        val areaLandMap: MutableMap<Int, MutableList<String>> by lazy {
             PreferencesManager.getAreaLandMap()
         }
 
@@ -392,9 +392,10 @@ class Page1Activity : AppCompatActivity() {
 
             // Normalize the selected town to avoid formatting issues
             selectedPropertyArea = binding.propertyAreaDropdown.text.toString().trim()
+            val selectedPropertyAreaIndex = areaList.indexOf(selectedPropertyArea)
 
             // Retrieve the areas for the selected town
-            val lands = areaLandMap[selectedPropertyArea] ?: mutableListOf()
+            val lands = areaLandMap[selectedPropertyAreaIndex] ?: mutableListOf()
 
             // Update the property area dropdown
             val landsAdapter = ArrayAdapter(

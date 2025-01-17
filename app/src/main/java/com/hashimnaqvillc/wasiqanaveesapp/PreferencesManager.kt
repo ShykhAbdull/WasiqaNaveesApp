@@ -34,31 +34,30 @@ object PreferencesManager {
     }
 
 
-
-    // Saving the MutableMap with MutableList
-    fun saveDistrictTownMap(districtTownMap: MutableMap<String, MutableList<String>>) {
+//                                                     KEY ,  VALUE
+    fun saveDistrictTownMap(districtTownMap: MutableMap<Int, MutableList<String>>) {
         val json = gson.toJson(districtTownMap) // Serialize the map to JSON
         sharedPreferences.edit().putString("DistrictTownMap", json).apply()
     }
-
-    // Getting the MutableMap with MutableList
-    fun getDistrictTownMap(): MutableMap<String, MutableList<String>> {
+//                                      KEY ,  VALUE
+    fun getDistrictTownMap(): MutableMap<Int, MutableList<String>> {
         val json = sharedPreferences.getString("DistrictTownMap", null)
-        val type = object : TypeToken<MutableMap<String, MutableList<String>>>() {}.type // Match the type
+        val type = object : TypeToken<MutableMap<Int, MutableList<String>>>() {}.type // Updated type to use Int keys
         return gson.fromJson(json, type) ?: mutableMapOf() // Deserialize or return an empty map
     }
 
 
 
+
 // Town to Property Area (SAVE&GET)
-    fun saveTownAreaMap(townAreaMap: MutableMap<String, MutableList<String>>) {
+    fun saveTownAreaMap(townAreaMap: MutableMap<Int, MutableList<String>>) {
         val json = gson.toJson(townAreaMap) // Serialize the map to JSON
         sharedPreferences.edit().putString("TownAreaMap", json).apply()
     }
 
-    fun getTownAreaMap(): MutableMap<String, MutableList<String>> {
+    fun getTownAreaMap(): MutableMap<Int, MutableList<String>> {
         val json = sharedPreferences.getString("TownAreaMap", null)
-        val type = object : TypeToken<MutableMap<String, MutableList<String>>>() {}.type
+        val type = object : TypeToken<MutableMap<Int, MutableList<String>>>() {}.type
         return gson.fromJson(json, type) ?: mutableMapOf() // Deserialize or return an empty map
     }
 
@@ -67,13 +66,13 @@ object PreferencesManager {
 
 
     // Property Area to Land Type (SAVE&GET)
-    fun saveAreaLandMap(areaLandMap: MutableMap<String, MutableList<String>>) {
+    fun saveAreaLandMap(areaLandMap: MutableMap<Int, MutableList<String>>) {
         val json = gson.toJson(areaLandMap) // Serialize the map to JSON
         sharedPreferences.edit().putString("AreaLandMap", json).apply()
     }
-    fun getAreaLandMap(): MutableMap<String, MutableList<String>> {
+    fun getAreaLandMap(): MutableMap<Int, MutableList<String>> {
         val json = sharedPreferences.getString("AreaLandMap", null)
-        val type = object : TypeToken<MutableMap<String, MutableList<String>>>() {}.type
+        val type = object : TypeToken<MutableMap<Int, MutableList<String>>>() {}.type
         return gson.fromJson(json, type) ?: mutableMapOf() // Deserialize or return an empty map
     }
 
