@@ -95,7 +95,7 @@ object PreferencesManager {
 
 
     // Retrieve land rates with updated hierarchical structure
-    fun getLandOptionValues(): MutableMap<Int, LandValues> {
+    fun getLandOptionRates(): MutableMap<Int, LandValues> {
         val json = sharedPreferences.getString("AreaLandRates", null)
         val type = object : TypeToken<MutableMap<Int, LandValues>>() {}.type
         return gson.fromJson(json, type) ?: mutableMapOf()

@@ -43,6 +43,8 @@ private lateinit var townAdapter: ArrayAdapter<String>
 private lateinit var areaAdapter: ArrayAdapter<String>
 private lateinit var landAdapter: ArrayAdapter<String>
 
+private lateinit var selectedLandType: String
+
 private lateinit var binding: ActivitySettingsBinding
 
 @SuppressLint("ClickableViewAccessibility", "InflateParams")
@@ -777,6 +779,8 @@ val districtEditIcon = binding.editDistrictIcon
 
 districtEditIcon.setOnClickListener {
     val currentDistrictName = districtDropDown.text.toString().trim()
+    val currentSelectedTown = townDropDown.text.toString().trim()
+    val currentArea = areaDropDown.text.toString().trim()
     val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
 
@@ -833,13 +837,7 @@ districtEditIcon.setOnClickListener {
                         val towns = districtTownMap.remove(oldDistrictHashKey) ?: mutableListOf()
                         districtTownMap[newDistrictHashKey] = towns
 
-//                        // Check for existing values with the old finalKey
-//                        val existingValues = PreferencesManager.getLandOptionValues()[oldFinalKey]
-//
-//// If the old finalKey exists, remove it
-//                        if (existingValues != null) {
-//                            PreferencesManager.getLandOptionValues().remove(oldFinalKey)
-//                        }
+
 
 
 
@@ -858,11 +856,17 @@ districtEditIcon.setOnClickListener {
                             areaDropDown.threshold = 1
                         }
 
-//                        // Generate the key for this new district selection
-//                        val districtHashKey = newDistrictName.hashCode()
-//                        val townHashKey = "$districtHashKey-$selectedTown".hashCode()
-//                        val areaHashKey = "$townHashKey-$selectedArea".hashCode()
-//                        val finalKey = "$areaHashKey-$selectedLand".hashCode()
+                        // Generate the key for this new district selection
+                        val oldFinalKey = generateFinalKey(currentDistrictName, currentSelectedTown, currentArea, selectedLandType)
+                        val newFinalKey = generateFinalKey(newDistrictName, currentSelectedTown, currentArea, selectedLandType)
+
+                        Log.d("newFinalKey", "newFinalKey: $oldFinalKey, $newFinalKey")
+
+                        val currentValues = PreferencesManager.getLandOptionRates()
+                        val existingLandValues = currentValues[oldFinalKey] ?: return@setPositiveButton
+                        currentValues.remove(oldFinalKey) // Remove old key
+                        currentValues[newFinalKey] = existingLandValues // Add with new key
+                        PreferencesManager.saveLandRates(currentValues)
 
 
                         districtDropDown.setText(newDistrictName, false)
@@ -1508,7 +1512,7 @@ binding.deleteDistrictIcon.setOnClickListener {
 //            val existingValues = PreferencesManager.getLandOptionValues()
 //                .getOrDefault(finalKey, null)
 
-            val existingValues = PreferencesManager.getLandOptionValues()[finalKey]
+            val existingValues = PreferencesManager.getLandOptionRates()[finalKey]
 
 
 
@@ -1528,9 +1532,9 @@ binding.deleteDistrictIcon.setOnClickListener {
         val dialog = MaterialAlertDialogBuilder(this)
             .setView(dialogView)
             .setPositiveButton("Save") { _, _ ->
-                val landType = landTypeDropdown.text.toString().trim()
+                selectedLandType = landTypeDropdown.text.toString().trim()
 
-                if (landType.isEmpty()) {
+                if (selectedLandType.isEmpty()) {
                     Toast.makeText(this, "Please select a land type.", Toast.LENGTH_SHORT).show()
                 }
 
@@ -1547,7 +1551,7 @@ binding.deleteDistrictIcon.setOnClickListener {
                 }
 
 
-                val finalKey = generateFinalKey(currentSelectedDistrict, currentSelectedTown, currentSelectedArea, landType)
+                val finalKey = generateFinalKey(currentSelectedDistrict, currentSelectedTown, currentSelectedArea, selectedLandType)
 
 //                // Create LandValues object
 //                val landValues = PreferencesManager.LandValues(
@@ -1579,7 +1583,7 @@ binding.deleteDistrictIcon.setOnClickListener {
                     // Save updated Town-Area map in SharedPreference
                     PreferencesManager.saveTownAreaMap(townAreaMap)
 
-                    val currentValues = PreferencesManager.getLandOptionValues()
+                    val currentValues = PreferencesManager.getLandOptionRates()
 
                     currentValues[finalKey] = landValues
 

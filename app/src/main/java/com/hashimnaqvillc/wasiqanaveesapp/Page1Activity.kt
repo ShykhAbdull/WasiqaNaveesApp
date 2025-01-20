@@ -211,7 +211,7 @@ class Page1Activity : AppCompatActivity() {
             val finalKey = "$areaHashKey-$selectedLandType".hashCode()
 
             // Fetch land values using the compound key
-            val landValues = PreferencesManager.getLandOptionValues()[finalKey]
+            val landValues = PreferencesManager.getLandOptionRates()[finalKey]
 
             if (landValues == null) {
                 Toast.makeText(this, "No land rates found for the selected area and land type.", Toast.LENGTH_SHORT).show()
