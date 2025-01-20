@@ -78,19 +78,27 @@ object PreferencesManager {
 
 
 
+    data class LandValues(
+        val marlaDC: String = "",
+        val marlaFBR: String = "",
+        val coveredAreaDC: String = "",
+        val coveredAreaFBR: String = "",
+        val khasraNumber: String = ""
+    )
 
 
     // Save land rates with updated hierarchical structure
-    fun saveLandRates(areaLandRates: MutableMap<String, MutableMap<String, MutableMap<String, MutableMap<String, Map<String, String>>>>>) {
+    fun saveLandRates(areaLandRates: MutableMap<Int, LandValues>) {
         val json = gson.toJson(areaLandRates) // Serialize the entire nested structure
         sharedPreferences.edit().putString("AreaLandRates", json).apply()
     }
 
+
     // Retrieve land rates with updated hierarchical structure
-    fun getLandRates(): MutableMap<String, MutableMap<String, MutableMap<String, MutableMap<String, Map<String, String>>>>> {
-        val json = sharedPreferences.getString("AreaLandRates", "{}") // Default to an empty JSON object
-        val type = object : TypeToken<MutableMap<String, MutableMap<String, MutableMap<String, MutableMap<String, Map<String, String>>>>>>() {}.type
-        return gson.fromJson(json, type) ?: mutableMapOf() // Deserialize or return an empty map if null
+    fun getLandOptionValues(): MutableMap<Int, LandValues> {
+        val json = sharedPreferences.getString("AreaLandRates", null)
+        val type = object : TypeToken<MutableMap<Int, LandValues>>() {}.type
+        return gson.fromJson(json, type) ?: mutableMapOf()
     }
 
 
