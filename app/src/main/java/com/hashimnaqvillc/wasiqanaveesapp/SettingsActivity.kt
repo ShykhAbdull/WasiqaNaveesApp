@@ -43,7 +43,6 @@ private lateinit var townAdapter: ArrayAdapter<String>
 private lateinit var areaAdapter: ArrayAdapter<String>
 private lateinit var landAdapter: ArrayAdapter<String>
 
-private lateinit var selectedLandType: String
 
 private lateinit var binding: ActivitySettingsBinding
 
@@ -52,6 +51,8 @@ override fun onCreate(savedInstanceState: Bundle?) {
 super.onCreate(savedInstanceState)
 binding = ActivitySettingsBinding.inflate(layoutInflater)
 setContentView(binding.root)
+
+    var selectedLandType: String = ""  // At class level
 
 //    ------------------------------------------------------ UI CHANGES -------------------------------------------------------------------
 
@@ -281,11 +282,11 @@ if (itemCount <= 3) {
         townDropDown.setAdapter(townAdapter)
         townDropDown.threshold = 1
 
-
-
         // Log the cleared selections
         Log.d("DistrictSelection", "Cleared previous town and area selections.")
     }
+
+    val oldDistrictName = districtDropDown.text.toString().trim()
 
 
 
@@ -775,16 +776,18 @@ townDropDown.addTextChangedListener(object : TextWatcher {
 // ============= Edit District/Town Logic Below ================
 
 
-val districtEditIcon = binding.editDistrictIcon
 
-districtEditIcon.setOnClickListener {
-    val currentDistrictName = districtDropDown.text.toString().trim()
+
+    val districtEditIcon = binding.editDistrictIcon
+    districtEditIcon.setOnClickListener {
+    val oldDistrictName = districtDropDown.text.toString().trim()
+    val oldDistrictHashKey = oldDistrictName.hashCode()
     val currentSelectedTown = townDropDown.text.toString().trim()
     val currentArea = areaDropDown.text.toString().trim()
     val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
 
-    if (currentDistrictName.isNotEmpty() && districtList.contains(currentDistrictName)) {
+    if (oldDistrictName.isNotEmpty() && districtList.contains(oldDistrictName)) {
         // Inflate the custom edit alert view for the dialog
         val dialogView = layoutInflater.inflate(R.layout.custom_edit_alert, null)
         val editMessage = dialogView.findViewById<TextView>(R.id.editMessage)
@@ -799,11 +802,11 @@ districtEditIcon.setOnClickListener {
         editMessage.text = "Edit the name of the selected district"
 
         // Set the EditText initial value
-        inputEditText.setText(currentDistrictName)
-        inputEditText.setSelection(currentDistrictName.length) // Move cursor to the end of the text
+        inputEditText.setText(oldDistrictName)
+        inputEditText.setSelection(oldDistrictName.length) // Move cursor to the end of the text
 
         // Set the title dynamically
-        centeredTitle.text = "District   ''$currentDistrictName''"
+        centeredTitle.text = "District   ''$oldDistrictName''"
 
         // Create a confirmation dialog to edit the selected district
         val editDistrictDialog = MaterialAlertDialogBuilder(this)
@@ -815,7 +818,7 @@ districtEditIcon.setOnClickListener {
                     newDistrictName.isEmpty() -> {
                         Toast.makeText(this, "District cannot be empty", Toast.LENGTH_SHORT).show()
                     }
-                    newDistrictName == currentDistrictName -> {
+                    newDistrictName == oldDistrictName -> {
                         Toast.makeText(this, "No changes made", Toast.LENGTH_SHORT).show()
                     }
                     districtList.contains(newDistrictName) -> {
@@ -823,11 +826,10 @@ districtEditIcon.setOnClickListener {
                     }
                     else -> {
                         // Hash-based key for district (UNIQUE KEYS)
-                        val oldDistrictHashKey = currentDistrictName.hashCode()
                         val newDistrictHashKey = newDistrictName.hashCode()
 
                         // Update the district name in the list using hash-based keys
-                        val index = districtList.indexOf(currentDistrictName)
+                        val index = districtList.indexOf(oldDistrictName)
 
                         if (index != -1) {
                             districtList[index] = newDistrictName
@@ -857,7 +859,7 @@ districtEditIcon.setOnClickListener {
                         }
 
                         // Generate the key for this new district selection
-                        val oldFinalKey = generateFinalKey(currentDistrictName, currentSelectedTown, currentArea, selectedLandType)
+                        val oldFinalKey = generateFinalKey(oldDistrictName, currentSelectedTown, currentArea, selectedLandType)
                         val newFinalKey = generateFinalKey(newDistrictName, currentSelectedTown, currentArea, selectedLandType)
 
                         Log.d("newFinalKey", "newFinalKey: $oldFinalKey, $newFinalKey")
@@ -1458,6 +1460,7 @@ binding.deleteDistrictIcon.setOnClickListener {
 
 
     val taxRateBtn = binding.taxRateBtn
+
     taxRateBtn.setOnClickListener {
         // Inflate the dialog layout
         val dialogView = layoutInflater.inflate(R.layout.dialog_add_rates, null)
@@ -1472,6 +1475,7 @@ binding.deleteDistrictIcon.setOnClickListener {
         val currentSelectedTown = townDropDown.text.toString().trim()
         val currentSelectedArea = areaDropDown.text.toString().trim()
         val landTypeDropdown = dialogView.findViewById<AutoCompleteTextView>(R.id.landTypeDropdownDialogDisplay)
+        selectedLandType = landTypeDropdown.text.toString().trim()
 
         // Ensure all necessary selections are made
         if (currentSelectedDistrict.isEmpty() || currentSelectedTown.isEmpty() || currentSelectedArea.isEmpty()) {
@@ -1500,23 +1504,27 @@ binding.deleteDistrictIcon.setOnClickListener {
         }
 
         landTypeDropdown.setOnItemClickListener { _, _, position, _ ->
-            val currentSelectedLand = landOptions[position]
+            selectedLandType = landOptions[position]
+            val currentDistrict = districtDropDown.text.toString().trim()
+            val currentArea = areaDropDown.text.toString().trim()
+            val oldFinalKey = generateFinalKey(oldDistrictName, currentSelectedTown, currentArea, selectedLandType)
+            val newFinalKey = generateFinalKey(currentDistrict, currentSelectedTown, currentArea, selectedLandType)
 
-            // Generate the key for this selection
-            val districtHashKey = currentSelectedDistrict.hashCode()
-            val townHashKey = "$districtHashKey-$currentSelectedTown".hashCode()
-            val areaHashKey = "$townHashKey-$currentSelectedArea".hashCode()
-            val finalKey = "$areaHashKey-$currentSelectedLand".hashCode()
+            Log.d("OldFinalKey", "Old Final Key: $oldFinalKey, $newFinalKey")
+
+
+
+
 
 //            // Get existing values
 //            val existingValues = PreferencesManager.getLandOptionValues()
 //                .getOrDefault(finalKey, null)
 
-            val existingValues = PreferencesManager.getLandOptionRates()[finalKey]
+            val existingValues = PreferencesManager.getLandOptionRates()[newFinalKey]
 
 
 
-            Log.d("ExistingValues", "Existing Values: $existingValues, $finalKey, $currentSelectedDistrict, $currentSelectedTown, $currentSelectedArea, $currentSelectedLand ")
+            Log.d("ExistingValues", "Existing Values: $existingValues, $oldFinalKey, $newFinalKey, $currentSelectedDistrict, $currentSelectedTown, $currentSelectedArea, $selectedLandType ")
 
             // Prepopulate fields if values exist
             existingValues?.let {
@@ -1532,7 +1540,6 @@ binding.deleteDistrictIcon.setOnClickListener {
         val dialog = MaterialAlertDialogBuilder(this)
             .setView(dialogView)
             .setPositiveButton("Save") { _, _ ->
-                selectedLandType = landTypeDropdown.text.toString().trim()
 
                 if (selectedLandType.isEmpty()) {
                     Toast.makeText(this, "Please select a land type.", Toast.LENGTH_SHORT).show()
