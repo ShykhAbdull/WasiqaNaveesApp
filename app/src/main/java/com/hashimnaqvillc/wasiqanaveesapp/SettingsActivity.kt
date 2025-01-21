@@ -105,7 +105,7 @@ backBtn.setOnClickListener {
 val districtDropDown = binding.districtDropdown
 
     //        Logic for District DropDownClick
-    districtList = mutableListOf("Lahore", "Kasur", "Sheikhupura", "Sialkot", "Multan","Ahmadpur East", "Ahmed Nager Chatha", "Ali Khan Abad", "Alipur", "Arifwala", "Attock", "Bhera", "Bhalwal", "Bahawalnagar", "Bahawalpur", "Bhakkar", "Burewala", "Chillianwala", "Chakwal", "Chichawatni", "Chiniot", "Chishtian", "Daska", "Darya Khan", "Dera Ghazi Khan", "Dhaular", "Dina", "Dipalpur", "Faisalabad", "Fateh Jang", "Ghakhar Mandi", "Gojra", "Gujranwala", "Gujrat", "Gujar Khan", "Hafizabad", "Haroonabad", "Hasilpur", "Haveli Lakha", "Jalalpur Jattan", "Jampur", "Jaranwala", "Jhang", "Jhelum", "Kalabagh", "Karor Lal Esan",  "Kamalia", "Kāmoke", "Khanewal", "Khanpur", "Kharian", "Khushab", "Kot Adu", "Jauharabad",  "Lalamusa", "Layyah", "Liaquat Pur", "Lodhran", "Malakwal", "Mamoori", "Mailsi", "Mandi Bahauddin", "Mian Channu", "Mianwali",  "Murree", "Muridke", "Mianwali Bangla", "Muzaffargarh", "Narowal", "Okara", "Renala Khurd", "Pakpattan", "Pattoki", "Pir Mahal", "Qaimpur", "Qila Didar Singh", "Rabwah", "Raiwind", "Rajanpur", "Rahim Yar Khan", "Rawalpindi", "Sadiqabad", "Safdarabad", "Sahiwal", "Sangla Hill", "Sarai Alamgir", "Sargodha", "Shakargarh",  "Sohawa", "Soianwala", "Siranwali", "Talagang", "Taxila", "Toba Tek Singh", "Vehari", "Wah Cantonment", "Wazirabad")
+    districtList = PreferencesManager.getDropdownList()
     PreferencesManager.saveDropdownList(districtList)
     districtAdapter = ArrayAdapter(this, custom_dropdown_item, districtList)
     districtDropDown.setAdapter(districtAdapter)
