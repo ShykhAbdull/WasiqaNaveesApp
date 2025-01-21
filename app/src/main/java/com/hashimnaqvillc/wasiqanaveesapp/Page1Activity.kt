@@ -25,10 +25,10 @@ class Page1Activity : AppCompatActivity() {
     private lateinit var districtList: List<String>
     private lateinit var townList: List<String>
     private lateinit var areaList: List<String>
+    private lateinit var landList: List<String>
 
 
     // Variables for dynamically updated data
-    private var townsToPropertyAreas: MutableMap<String, List<String>> = mutableMapOf()
 
 
     @SuppressLint("SetTextI18n")
@@ -141,7 +141,7 @@ class Page1Activity : AppCompatActivity() {
 
 
 // Handle selection actions for "Land Type"
-        landTypeAutoComplete.setOnItemClickListener { _, _, position, _ ->
+        landTypeAutoComplete.setOnItemClickListener { _, _, _, _ ->
 //            selectedLandType = landTypeOptions[position]
             // Take actions based on the selected land type
             when (selectedLandType) {
@@ -319,134 +319,216 @@ class Page1Activity : AppCompatActivity() {
     }
 
 
-    private fun setupDropdowns() {
+//    private fun setupDropdowns() {
+//
+//        val districtDropDown = binding.districtDropdown
+//        val districtHashKey = districtDropDown.text.toString().trim().hashCode()
+//
+//        val townHashKey = "$districtHashKey-$selectedTown".hashCode()
+//        val areaHashKey = "$townHashKey-$selectedPropertyArea".hashCode()
+//        val finalKey = "$areaHashKey-$selectedLandType".hashCode()
+//
+//
+//
+//        // District Dropdown Setup
+//        districtList = PreferencesManager.getDropdownList().toMutableList()
+//        val districtAdapter = ArrayAdapter(
+//            this,
+//            custom_dropdown_item,
+//            districtList
+//        )
+//        binding.districtDropdown.setAdapter(districtAdapter)
+//
+//
+////        --------------------------------------------------------------------------------------
+//
+//
+//// Fetch the districtTownMap once when the activity starts
+//        val districtTownMap: MutableMap<Int, MutableList<String>> by lazy {
+//            PreferencesManager.getDistrictTownMap()
+//        }
+//        // Retrieve the towns for the selected district
+//        townList = districtTownMap[districtHashKey] ?: mutableListOf()
+//
+//
+//// District dropdown item selection logic
+//        binding.districtDropdown.setOnItemClickListener { _, _, _, _ ->
+//
+//            // Clear dependent dropdown fields for Town and Area
+//            binding.townDropdown.text.clear()
+//            binding.propertyAreaDropdown.text.clear()
+//            binding.landTypeDropdown.text.clear()
+//
+//
+//
+//            // Log the retrieved data
+//            Log.d("DistrictSelection", "Selected district: $selectedDistrict, towns: $townList")
+//
+//            val townAdapter = ArrayAdapter(
+//                this,
+//                custom_dropdown_item,
+//                townList
+//            )
+//            binding.townDropdown.setAdapter(townAdapter)
+//            binding.townDropdown.threshold = 1
+//
+//            // Request focus to the town dropdown
+//            binding.townDropdown.requestFocus()
+//
+//            // Log the cleared selections
+//            Log.d("DistrictSelection", "Cleared previous town and area selections.")
+//        }
+//
+//
+//// ------------------------------------------------------------------------------------
+//
+//
+//
+//// Fetch the TownAreaMap once when the activity starts
+//        val townAreaMap =  PreferencesManager.getTownAreaMap()
+//        areaList = townAreaMap[townHashKey] ?: mutableListOf()
+//
+//
+//// On Town Selection
+//        binding.townDropdown.setOnItemClickListener { _, _, _, _ ->
+//
+//            // Clear dependent dropdowns
+//            binding.propertyAreaDropdown.text.clear()
+//            binding.landTypeDropdown.text.clear()
+//
+//
+//            // Update the property area dropdown
+//            val areaAdapter = ArrayAdapter(
+//                this,
+//                custom_dropdown_item,
+//                areaList
+//            )
+//
+//            binding.propertyAreaDropdown.setAdapter(areaAdapter)
+//
+//            // Request focus to the property area dropdown
+//            binding.propertyAreaDropdown.requestFocus()
+//
+//            // Log the selected town and areas
+//            Log.d("TownSelection", "Selected town: $selectedTown, areas: $areaList")
+//        }
+//
+////        ---------------------------------------------------------------------------------------
+//
+//// Fetch the TownAreaMap once when the activity starts
+//        val areaLandMap =  PreferencesManager.getAreaLandMap()
+//        // Retrieve the areas for the selected town
+//        landList = areaLandMap[areaHashKey] ?: mutableListOf()
+//
+//
+//
+//
+//// On Town Selection
+//        binding.propertyAreaDropdown.setOnItemClickListener { _, _, _, _ ->
+//
+//            // Clear dependent dropdowns
+//            binding.landTypeDropdown.text.clear()
+//
+//
+//
+//
+//            // Update the property area dropdown
+//            val landsAdapter = ArrayAdapter(
+//                this,
+//                custom_dropdown_item,
+//                landList
+//            )
+//            binding.landTypeDropdown.setAdapter(landsAdapter)
+//
+//            // Request focus to the property area dropdown
+//            binding.landTypeDropdown.requestFocus()
+//
+//        }
+//
+//
+////        ---------------------------------------------------------------------------------------
+//
+//
+//    }
 
+
+    private fun setupDropdowns() {
         // District Dropdown Setup
-        val districtList = PreferencesManager.getDropdownList().toMutableList()
-        val districtAdapter = ArrayAdapter(
-            this,
-            custom_dropdown_item,
-            districtList
-        )
+        districtList = PreferencesManager.getDropdownList().toMutableList()
+        val districtAdapter = ArrayAdapter(this, custom_dropdown_item, districtList)
         binding.districtDropdown.setAdapter(districtAdapter)
 
+        // Initial load if we have selections
+        val currentDistrict = binding.districtDropdown.text.toString().trim()
+        if (currentDistrict.isNotEmpty()) {
+            val currentDistrictHashKey = currentDistrict.hashCode()
 
-//        --------------------------------------------------------------------------------------
+            // Load towns
+            val districtTownMap = PreferencesManager.getDistrictTownMap()
+            townList = districtTownMap[currentDistrictHashKey] ?: mutableListOf()
+            val townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
+            binding.townDropdown.setAdapter(townAdapter)
+            binding.townDropdown.threshold = 1
 
+            // Load areas using the same hash key pattern as settings
+            val currentTown = binding.townDropdown.text.toString().trim()
+            if (currentTown.isNotEmpty()) {
+                val currentTownHashKey = "$currentDistrictHashKey-$currentTown".hashCode()
+                val townAreaMap = PreferencesManager.getTownAreaMap()
 
-// Fetch the districtTownMap once when the activity starts
-        val districtTownMap: MutableMap<Int, MutableList<String>> by lazy {
-            PreferencesManager.getDistrictTownMap()
+                // Use the exact same pattern as in settings
+                val areas = townAreaMap[currentTownHashKey] ?: mutableListOf()
+                areaList = areas
+                val areaAdapter = ArrayAdapter(this, custom_dropdown_item, areaList)
+                binding.propertyAreaDropdown.setAdapter(areaAdapter)
+                binding.propertyAreaDropdown.threshold = 1
+
+                Log.d("AreasLoaded", "Current areas for $currentTown: $areas")
+            }
         }
 
-// District dropdown item selection logic
+        // District Selection Listener
         binding.districtDropdown.setOnItemClickListener { _, _, _, _ ->
+            val selectedDistrict = binding.districtDropdown.text.toString().trim()
+            val districtHashKey = selectedDistrict.hashCode()
 
-            // Clear dependent dropdown fields for Town and Area
             binding.townDropdown.text.clear()
             binding.propertyAreaDropdown.text.clear()
             binding.landTypeDropdown.text.clear()
 
-            // Normalize the selected district to avoid formatting issues
-            selectedDistrict = binding.districtDropdown.text.toString().trim()
-            val selectedDistrictIndex = districtList.indexOf(selectedDistrict)
+            val districtTownMap = PreferencesManager.getDistrictTownMap()
+            townList = districtTownMap[districtHashKey] ?: mutableListOf()
 
-            // Retrieve the towns for the selected district
-            val towns = districtTownMap[selectedDistrictIndex] ?: mutableListOf()
-
-            // Log the retrieved data
-            Log.d("DistrictSelection", "Selected district: $selectedDistrict, towns: $towns")
-
-            // Update the town dropdown
-            val townAdapter = ArrayAdapter(
-                this,
-                custom_dropdown_item,
-                towns
-            )
+            val townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
             binding.townDropdown.setAdapter(townAdapter)
             binding.townDropdown.threshold = 1
-
-            // Request focus to the town dropdown
             binding.townDropdown.requestFocus()
-
-            // Log the cleared selections
-            Log.d("DistrictSelection", "Cleared previous town and area selections.")
         }
 
-
-// ------------------------------------------------------------------------------------
-
-// Fetch the TownAreaMap once when the activity starts
-        val townAreaMap: MutableMap<Int, MutableList<String>> by lazy {
-            PreferencesManager.getTownAreaMap()
-        }
-
-// On Town Selection
+        // Town Selection Listener
         binding.townDropdown.setOnItemClickListener { _, _, _, _ ->
+            // Use the exact same hash key pattern as in settings
+            val currentDistrictHashKey = binding.districtDropdown.text.toString().trim().hashCode()
+            val currentTownName = binding.townDropdown.text.toString().trim()
+            val currentTownHashKey = "$currentDistrictHashKey-$currentTownName".hashCode()
 
-            // Clear dependent dropdowns
             binding.propertyAreaDropdown.text.clear()
             binding.landTypeDropdown.text.clear()
 
-            // Normalize the selected town to avoid formatting issues
-            selectedTown = binding.townDropdown.text.toString().trim()
-            val selectedTownIndex = townList.indexOf(selectedTown)
+            val townAreaMap = PreferencesManager.getTownAreaMap()
+            val areas = townAreaMap[currentTownHashKey] ?: mutableListOf()
 
-            // Retrieve the areas for the selected town
-            val areas = townAreaMap[selectedTownIndex] ?: mutableListOf()
-
-            // Update the property area dropdown
-            val areaAdapter = ArrayAdapter(
-                this,
-                custom_dropdown_item,
-                areas
-            )
+            // Update area list and adapter
+            areaList = areas
+            val areaAdapter = ArrayAdapter(this, custom_dropdown_item, areaList)
             binding.propertyAreaDropdown.setAdapter(areaAdapter)
-
-            // Request focus to the property area dropdown
+            binding.propertyAreaDropdown.threshold = 1
             binding.propertyAreaDropdown.requestFocus()
 
-            // Log the selected town and areas
-            Log.d("TownSelection", "Selected town: $selectedTown, areas: $areas")
+            Log.d("AreasLoaded", "Areas for $currentTownName: $areas")
         }
 
-//        ---------------------------------------------------------------------------------------
-
-// Fetch the TownAreaMap once when the activity starts
-        val areaLandMap: MutableMap<Int, MutableList<String>> by lazy {
-            PreferencesManager.getAreaLandMap()
-        }
-
-// On Town Selection
-        binding.propertyAreaDropdown.setOnItemClickListener { _, _, _, _ ->
-
-            // Clear dependent dropdowns
-            binding.landTypeDropdown.text.clear()
-
-            // Normalize the selected town to avoid formatting issues
-            selectedPropertyArea = binding.propertyAreaDropdown.text.toString().trim()
-            val selectedPropertyAreaIndex = areaList.indexOf(selectedPropertyArea)
-
-            // Retrieve the areas for the selected town
-            val lands = areaLandMap[selectedPropertyAreaIndex] ?: mutableListOf()
-
-            // Update the property area dropdown
-            val landsAdapter = ArrayAdapter(
-                this,
-                custom_dropdown_item,
-                lands
-            )
-            binding.landTypeDropdown.setAdapter(landsAdapter)
-
-            // Request focus to the property area dropdown
-            binding.landTypeDropdown.requestFocus()
-
-        }
-
-
-//        ---------------------------------------------------------------------------------------
-
-
+        // ... rest of your code for area selection listener
     }
 
 

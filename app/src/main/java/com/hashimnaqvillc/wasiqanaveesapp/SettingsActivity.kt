@@ -299,10 +299,6 @@ if (itemCount <= 3) {
         Log.d("DistrictSelection", "Cleared previous town and area selections.")
     }
 
-    val oldDistrictName = districtDropDown.text.toString().trim()
-    val oldTownName = townDropDown.text.toString().trim()
-    val oldAreaName = areaDropDown.text.toString().trim()
-
 
 
 
