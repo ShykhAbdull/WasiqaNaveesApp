@@ -36,7 +36,7 @@ class SettingsActivity : AppCompatActivity() {
 private lateinit var districtList: MutableList<String>
 private lateinit var townList: MutableList<String>
 private lateinit var areaList: MutableList<String>
-//private lateinit var landList: MutableList<String>
+private lateinit var landList: MutableList<String>
 
 private lateinit var districtAdapter: ArrayAdapter<String>
 private lateinit var townAdapter: ArrayAdapter<String>
@@ -45,6 +45,35 @@ private lateinit var landAdapter: ArrayAdapter<String>
 
 
 private lateinit var binding: ActivitySettingsBinding
+
+
+//-------------------------------------------------------------------------
+private val initialDistricts = mutableListOf(
+    "Ahmadpur East", "Ahmed Nager Chatha", "Ali Khan Abad", "Alipur",
+    "Arifwala", "Attock", "Bhera", "Bhalwal", "Bahawalnagar", "Bahawalpur",
+    "Bhakkar", "Burewala", "Chillianwala", "Chakwal", "Chichawatni",
+    "Chiniot", "Chishtian", "Daska", "Darya Khan", "Dera Ghazi Khan",
+    "Dhaular", "Dina", "Dipalpur", "Faisalabad", "Fateh Jang", "Ghakhar Mandi",
+    "Gojra", "Gujranwala", "Gujrat", "Gujar Khan", "Hafizabad", "Haroonabad",
+    "Hasilpur", "Haveli Lakha", "Jalalpur Jattan", "Jampur", "Jaranwala",
+    "Jhang", "Jhelum", "Kalabagh", "Karor Lal Esan", "Kasur", "Kamalia",
+    "Kāmoke", "Khanewal", "Khanpur", "Kharian", "Khushab", "Kot Adu",
+    "Jauharabad", "Lahore", "Lalamusa", "Layyah", "Liaquat Pur", "Lodhran",
+    "Malakwal", "Mamoori", "Mailsi", "Mandi Bahauddin", "Mian Channu",
+    "Mianwali", "Multan", "Murree", "Muridke", "Mianwali Bangla",
+    "Muzaffargarh", "Narowal", "Okara", "Renala Khurd", "Pakpattan",
+    "Pattoki", "Pir Mahal", "Qaimpur", "Qila Didar Singh", "Rabwah",
+    "Raiwind", "Rajanpur", "Rahim Yar Khan", "Rawalpindi", "Sadiqabad",
+    "Safdarabad", "Sahiwal", "Sangla Hill", "Sarai Alamgir", "Sargodha",
+    "Shakargarh", "Sheikhupura", "Sialkot", "Sohawa", "Soianwala",
+    "Siranwali", "Talagang", "Taxila", "Toba Tek Singh", "Vehari",
+    "Wah Cantonment", "Wazirabad"
+)
+
+
+
+
+//------------------------------------------------------------------------
 
 @SuppressLint("ClickableViewAccessibility", "InflateParams")
 override fun onCreate(savedInstanceState: Bundle?) {
@@ -105,9 +134,8 @@ backBtn.setOnClickListener {
 val districtDropDown = binding.districtDropdown
 
     //        Logic for District DropDownClick
-    districtList = PreferencesManager.getDropdownList()
-    PreferencesManager.saveDropdownList(districtList)
-    districtAdapter = ArrayAdapter(this, custom_dropdown_item, districtList)
+    districtList = mutableListOf() // User-selected districts
+    var districtAdapter = ArrayAdapter(this, custom_dropdown_item, initialDistricts)
     districtDropDown.setAdapter(districtAdapter)
 // Start searching after typing one character
     districtDropDown.threshold = 1
@@ -221,12 +249,12 @@ binding.propertyAreaDropdown.setRawInputType(InputType.TYPE_CLASS_TEXT)
 
 val districtAddIcon = binding.addDestrictIcon
 
-// Sample data for the dropdown
-districtList = PreferencesManager.getDropdownList()
-districtAdapter = ArrayAdapter(this, custom_dropdown_item, districtList)
-districtDropDown.setAdapter(districtAdapter)
-// Start searching after typing one character
-districtDropDown.threshold = 1
+//// Sample data for the dropdown
+//districtList = PreferencesManager.getDropdownList()
+//districtAdapter = ArrayAdapter(this, custom_dropdown_item, districtList)
+//districtDropDown.setAdapter(districtAdapter)
+//// Start searching after typing one character
+//districtDropDown.threshold = 1
 
 // Apply filter and count the visible items
 val itemCount = districtAdapter.count // Gets the current filtered item count
@@ -275,29 +303,26 @@ if (itemCount <= 3) {
         PreferencesManager.getTownAreaMap()
     }
 
-// Dropdown item selection logic
-    districtDropDown.setOnItemClickListener { _, _, _, _ ->
-        // Also clear dependent dropdown fields for Town and Area
-        townDropDown.text.clear()
-        areaDropDown.text.clear()
+    binding.districtDropdown.setOnItemClickListener { _, _, position, _ ->
+        val selectedDistrict = binding.districtDropdown.text.toString().trim()
 
-        // Normalize the selected district to avoid formatting issues
-        val currentDistrictHashKey = districtDropDown.text.toString().trim().hashCode()
+        if (!districtList.contains(selectedDistrict)) {
+            districtList.add(selectedDistrict)
 
-        // Retrieve the towns for the selected district using the district hash key
-        val towns = districtTownMap[currentDistrictHashKey] ?: mutableListOf()
-        // Log the retrieved data
-        Log.d("DistrictSelection", "Selected district: $currentDistrictHashKey, towns: $towns")
+            // Optional: Save the updated district list to SharedPreferences
+            // PreferencesManager.saveDropdownList(districtList)
 
-        // Update the town dropdown
-        townList = towns
-        townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
-        townDropDown.setAdapter(townAdapter)
-        townDropDown.threshold = 1
+            Toast.makeText(this, "$selectedDistrict added successfully", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "$selectedDistrict is already selected", Toast.LENGTH_SHORT).show()
+        }
 
-        // Log the cleared selections
-        Log.d("DistrictSelection", "Cleared previous town and area selections.")
+        // Ensure the dropdown adapter remains linked to initialDistricts
+        val adapter = ArrayAdapter(this, custom_dropdown_item, initialDistricts)
+        binding.districtDropdown.setAdapter(adapter)
+        binding.districtDropdown.threshold = 1
     }
+
 
 
 
@@ -371,13 +396,13 @@ townDropDown.addTextChangedListener(object : TextWatcher {
 
 
 
-//    // Fetch the AreaLandMap once when the activity starts
-//    val areaLandMap: MutableMap<Int, MutableList<String>> by lazy {
-//        PreferencesManager.getAreaLandMap()
-//    }
+    // Fetch the AreaLandMap once when the activity starts
+    val areaLandMap: MutableMap<Int, MutableList<String>> by lazy {
+        PreferencesManager.getAreaLandMap()
+    }
 
 //    // On Area Selection
-//    areaDropDown.setOnItemClickListener { _, _, _, _ ->
+//    areaDropDown.setOnItemClickListener { _, _, position, _ ->
 //
 //        val currentSelectedDistrict = districtDropDown.text.toString().trim()
 //        val currentSelectedTown = townDropDown.text.toString().trim()
@@ -390,12 +415,10 @@ townDropDown.addTextChangedListener(object : TextWatcher {
 //
 //        // Clear and reset land types
 //        val landTypes = areaLandMap[areaHashKey] ?: mutableListOf()
-//        landList = landTypes
+//         landList = landTypes
 //        landAdapter = ArrayAdapter(this, custom_dropdown_item, landList)
-//        landTypeDropdown.setAdapter(landTypeAdapter)
-//        landTypeDropdown.threshold = 1
 //
-//        Log.d("AreaSelection", "Selected area: $selectedArea, land types: $landTypes")
+//        Log.d("AreaSelection", "Selected area: $currentSelectedArea, land types: $landTypes")
 //    }
 
 
@@ -730,6 +753,10 @@ townDropDown.addTextChangedListener(object : TextWatcher {
 
                                 // Update the townAreaMap
                                 townAreaMap[currentTownHashKey] = areas
+
+                                val lands = areaLandMap[currentAreaHashKey] ?: mutableListOf()
+                                landList = lands
+                                landAdapter = ArrayAdapter(this, custom_dropdown_item, landList)
 
                                 // Update the area list and adapter for the current town
                                 areaList = areas
@@ -1560,29 +1587,27 @@ binding.deleteDistrictIcon.setOnClickListener {
         }
 
         landTypeDropdown.setOnItemClickListener { _, _, position, _ ->
+            // Get the selected land type
             selectedLandType = landOptions[position]
+
             val currentDistrict = districtDropDown.text.toString().trim()
-            val currentArea = areaDropDown.text.toString().trim()
-//            val oldFinalKey = generateFinalKey(oldDistrictName, oldTownName, oldAreaName, selectedLandType)
-            val newFinalKey = generateFinalKey(currentDistrict, currentSelectedTown, currentArea, selectedLandType)
+            val currentDistrictHashKey = currentDistrict.hashCode()
+            val currentTownName = binding.townDropdown.text.toString().trim()
+            val currentTownHashKey = "$currentDistrictHashKey-$currentTownName".hashCode()
+            val currentAreaName = binding.propertyAreaDropdown.text.toString().trim()
+            val currentAreaHashKey = "$currentTownHashKey-$currentAreaName".hashCode()
+            val newFinalKey = generateFinalKey(currentDistrict, currentSelectedTown, currentAreaName, selectedLandType)
 
-//            Log.d("OldFinalKey", "Old Final Key: $oldFinalKey, $newFinalKey")
+            // Store the selected land type in the areaLandMap
+            val landTypes = areaLandMap.getOrPut(currentAreaHashKey) { mutableListOf() }
+            if (!landTypes.contains(selectedLandType)) {
+                landTypes.add(selectedLandType)
+//                PreferencesManager.saveAreaLandMap(areaLandMap) // Save the updated map
+                Log.d("AreaLandMap", "Updated land types for $currentAreaHashKey: $landTypes")
+            }
 
-
-
-
-
-//            // Get existing values
-//            val existingValues = PreferencesManager.getLandOptionValues()
-//                .getOrDefault(finalKey, null)
-
+            // Retrieve and prepopulate existing values for the newFinalKey
             val existingValues = PreferencesManager.getLandOptionRates()[newFinalKey]
-
-
-
-//            Log.d("ExistingValues", "Existing Values: $existingValues, $oldFinalKey, $newFinalKey, $currentSelectedDistrict, $currentSelectedTown, $currentSelectedArea, $selectedLandType ")
-
-            // Prepopulate fields if values exist
             existingValues?.let {
                 dialogView.findViewById<EditText>(R.id.marlaUnitPriceDC)?.setText(it.marlaDC)
                 dialogView.findViewById<EditText>(R.id.marlaUnitPriceFBR)?.setText(it.marlaFBR)
@@ -1590,7 +1615,10 @@ binding.deleteDistrictIcon.setOnClickListener {
                 dialogView.findViewById<EditText>(R.id.covereAreaFBR)?.setText(it.coveredAreaFBR)
                 dialogView.findViewById<EditText>(R.id.khasraNumberEditText)?.setText(it.khasraNumber)
             }
+
+            Log.d("LandTypeSelection", "Selected land type: $selectedLandType, Final Key: $newFinalKey")
         }
+
 
         // Create the dialog
         val dialog = MaterialAlertDialogBuilder(this)
@@ -1644,6 +1672,8 @@ binding.deleteDistrictIcon.setOnClickListener {
 
                     // Save updated Town-Area map in SharedPreference
                     PreferencesManager.saveTownAreaMap(townAreaMap)
+
+                    PreferencesManager.saveAreaLandMap(areaLandMap)
 
                     val currentValues = PreferencesManager.getLandOptionRates()
 

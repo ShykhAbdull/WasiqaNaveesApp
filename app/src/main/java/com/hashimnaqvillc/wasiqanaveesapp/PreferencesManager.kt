@@ -103,6 +103,18 @@ object PreferencesManager {
 
 
 
+//    Profile Settings Data
+
+    fun saveData(key: String, value: String) {
+        sharedPreferences.edit().putString(key, value).apply()
+    }
+
+    fun getData(key: String): String {
+        return sharedPreferences.getString(key, "") ?: ""
+    }
+
+
+
 
 
 

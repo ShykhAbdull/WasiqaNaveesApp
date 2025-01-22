@@ -22,10 +22,10 @@ class Page1Activity : AppCompatActivity() {
     private var selectedPropertyType: String? = null
 
 //    Lists
-    private lateinit var districtList: List<String>
-    private lateinit var townList: List<String>
-    private lateinit var areaList: List<String>
-    private lateinit var landList: List<String>
+    private lateinit var districtList: MutableList<String>
+    private lateinit var townList: MutableList<String>
+    private lateinit var areaList: MutableList<String>
+    private lateinit var landList: MutableList<String>
 
 
     // Variables for dynamically updated data
@@ -139,54 +139,58 @@ class Page1Activity : AppCompatActivity() {
 
 
 
-
-// Handle selection actions for "Land Type"
-        landTypeAutoComplete.setOnItemClickListener { _, _, _, _ ->
-//            selectedLandType = landTypeOptions[position]
-            // Take actions based on the selected land type
-            when (selectedLandType) {
-                "Residential" -> {
-                }
-                "Commercial" -> {
-                    // Action for Commercial
-                }
-                "Agricultural" -> {
-//                    Action to perform for Agricultural
-                }
-                "Industrial" -> {
-//                    Action to perform for Industrial
-                }
-                "Apartment" -> {
-//                    Action to perform for Industrial
-                }
-                "Shop" -> {
-//                    Action to perform for Industrial
-                }
-            }
-            propertyTypeAutoComplete.requestFocus()
-            propertyTypeAutoComplete.showDropDown()
-        }
+//
+//// Handle selection actions for "Land Type"
+//        landTypeAutoComplete.setOnItemClickListener { _, _, _, _ ->
+////            selectedLandType = landTypeOptions[position]
+//            // Take actions based on the selected land type
+//            when (selectedLandType) {
+//                "Residential" -> {
+//                }
+//                "Commercial" -> {
+//                    // Action for Commercial
+//                }
+//                "Agricultural" -> {
+////                    Action to perform for Agricultural
+//                }
+//                "Industrial" -> {
+////                    Action to perform for Industrial
+//                }
+//                "Apartment" -> {
+////                    Action to perform for Industrial
+//                }
+//                "Shop" -> {
+////                    Action to perform for Industrial
+//                }
+//            }
+//            propertyTypeAutoComplete.requestFocus()
+//            propertyTypeAutoComplete.showDropDown()
+//        }
 
 
         binding.propertyTypeDropdown.setOnClickListener {
             propertyTypeAutoComplete.showDropDown()
         }
+        val coveredAreaEditText = binding.coveredAreaEditText
+
+
 // Handle selection actions for "Property Type"
         propertyTypeAutoComplete.setOnItemClickListener { _, _, position, _ ->
             selectedPropertyType = propertyTypeOptions[position]
-            val coveredArea = binding.coveredAreaText
-            val coveredAreaEditText = binding.coveredAreaEditText
+
 
 
 
             // Take actions based on the selected property type
             when (selectedPropertyType) {
                 "Plot" -> {
-                    coveredArea.visibility = View.GONE
+                    binding.coveredAreaText.visibility = View.GONE
                     coveredAreaEditText.visibility = View.GONE                     }
                 "Building" -> {
-                    coveredArea.visibility = View.VISIBLE
-                    coveredAreaEditText.visibility = View.VISIBLE                }
+                    binding.coveredAreaText.visibility = View.VISIBLE
+                    coveredAreaEditText.visibility = View.VISIBLE
+
+                }
             }
         }
 
@@ -203,6 +207,20 @@ class Page1Activity : AppCompatActivity() {
                 Toast.makeText(this, "Please select all required fields (District, Town, Area, Land Type).", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+            if (selectedPropertyType == "Building" && binding.coveredAreaEditText.text.toString().isEmpty()) {
+                Toast.makeText(this, "Please enter values for buildings.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (selectedPropertyType == "Plot" &&
+                binding.kanalEditText.text.toString().isEmpty() &&
+                binding.marlaEditText.text.toString().isEmpty() &&
+                binding.sqftEditText.text.toString().isEmpty()) {
+
+                Toast.makeText(this, "Please enter values for plots.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+
 
             // Generate the key to fetch land values
             val districtHashKey = selectedDistrict.hashCode()
@@ -212,6 +230,7 @@ class Page1Activity : AppCompatActivity() {
 
             // Fetch land values using the compound key
             val landValues = PreferencesManager.getLandOptionRates()[finalKey]
+            Log.d("LandValues", "Fetched land values: $landValues")
 
             if (landValues == null) {
                 Toast.makeText(this, "No land rates found for the selected area and land type.", Toast.LENGTH_SHORT).show()
@@ -219,31 +238,40 @@ class Page1Activity : AppCompatActivity() {
             }
 
             // Retrieve numeric values safely
-            val kanalValue = binding.kanalEditText.text.toString().toDoubleOrNull() ?: 0.0
-            val marlaValue = binding.marlaEditText.text.toString().toDoubleOrNull() ?: 0.0
-            val sqftValue = binding.sqftEditText.text.toString().toDoubleOrNull() ?: 0.0
-            val sqftPerMarla = 225.0
+            val kanalValue = binding.kanalEditText.text.toString().toIntOrNull() ?: 0
+            val marlaValue = binding.marlaEditText.text.toString().toIntOrNull() ?: 0
+            val sqftValue = binding.sqftEditText.text.toString().toIntOrNull() ?: 0
+            val coveredAreaValue = coveredAreaEditText.text.toString().toIntOrNull() ?: 0
+            val sqftPerMarla = 225
 
 
             // Safely retrieve individual values with defaults
-            val marlaDc = landValues.marlaDC.toDoubleOrNull() ?: 0.0
-            val marlaFbr = landValues.marlaFBR.toDoubleOrNull() ?: 0.0
-            val coveredAreaDc = landValues.coveredAreaDC.toDoubleOrNull() ?: 0.0
-            val coveredAreaFbr = landValues.coveredAreaFBR.toDoubleOrNull() ?: 0.0
+            val marlaDc = landValues.marlaDC.toIntOrNull() ?: 0
+            val marlaFbr = landValues.marlaFBR.toIntOrNull() ?: 0
+            val coveredAreaDc = landValues.coveredAreaDC.toIntOrNull() ?: 0
+            val coveredAreaFbr = landValues.coveredAreaFBR.toIntOrNull() ?: 0
             val khasraNumber = landValues.khasraNumber
 
 
             // Calculate total square feet and plot value
             val totalSqft = kanalValue * 20 * sqftPerMarla + marlaValue * sqftPerMarla + sqftValue
+
+//            Used when Plot is selected in Property Type
             val plotValueDC = totalSqft / sqftPerMarla * marlaDc
+            val plotValueFbr = totalSqft / sqftPerMarla * marlaFbr
+
+// Now multiply with the integer value
+            val buildingValueDC = coveredAreaDc * coveredAreaValue
+            val buildingValueFbr = coveredAreaFbr * coveredAreaValue
+
+            Log.d("buildingValue", "buildingValueDC: $coveredAreaDc, buildingValueFbr: $coveredAreaFbr, coveredAreaValue: $coveredAreaValue")
+
 
             Log.d("Calculation", "Total Sqft: $totalSqft, Plot Value DC: $plotValueDC")
 
-            // Retrieve covered area value safely
-            val coveredAreaValue = binding.coveredAreaEditText.text.toString().toDoubleOrNull() ?: 0.0
 
             // Log additional details
-            Log.d("LandValues", "MarlaDC: $marlaDc, Covered Area DC: $coveredAreaDc, Khasra Number: $khasraNumber")
+            Log.d("LandValues", "MarlaDC: $marlaDc, Covered Area DC: $coveredAreaDc, MarlaFbr: $marlaFbr, Covered Area Fbr: $coveredAreaFbr, Khasra Number: $khasraNumber ")
             Log.d("Calculation", "Total Sqft: $totalSqft, Covered Area Value: $coveredAreaValue")
 
             Toast.makeText(
@@ -251,20 +279,6 @@ class Page1Activity : AppCompatActivity() {
                 "Total Sqft: $totalSqft\nPlot Value DC: $plotValueDC\nCovered Area Value: $coveredAreaValue",
                 Toast.LENGTH_LONG
             ).show()
-
-//            // Safely retrieve individual values with defaults
-//            val marlaDc = landRates["MarlaDC"]?.toDoubleOrNull() ?: 0.0
-//            val marlaFbr = landRates["MarlaFBR"]?.toDoubleOrNull() ?: 0.0
-//            val coveredAreaDc = landRates["CoveredAreaDC"]?.toDoubleOrNull() ?: 0.0
-//            val coveredAreaFbr = landRates["CoveredAreaFBR"]?.toDoubleOrNull() ?: 0.0
-//            val khasraNumber = landRates["KhasraNumber"] ?: "N/A"
-
-//            // Calculate total square feet and plot value
-//            val totalSqft = kanalValue * 20 * sqftPerMarla + marlaValue * sqftPerMarla + sqftValue
-//
-//            val plotValueDC = totalSqft / sqftPerMarla * marlaDc
-
-//            val plotValueFBR = totalSqft / sqftPerMarla * marlaFbr
 
 
 
@@ -296,7 +310,20 @@ class Page1Activity : AppCompatActivity() {
                 putExtra("selectedTown", selectedTown)
                 putExtra("selectedArea", selectedArea)
                 putExtra("selectedLandType", selectedLandType)
+                putExtra("selectedPropertyType", selectedPropertyType)
+
+                putExtra("marlaDc", marlaDc)
                 putExtra("plotValueDC", plotValueDC)
+
+                putExtra("marlaFbr", marlaFbr)
+                putExtra("plotValueFbr", plotValueFbr)
+
+                putExtra("coveredAreaDc", coveredAreaDc)
+                putExtra("buildingValueDC", buildingValueDC)
+
+                putExtra("coveredAreaFbr", coveredAreaFbr)
+                putExtra("buildingValueFbr", buildingValueFbr)
+
                 putExtra("kanalValue", kanalValue)
                 putExtra("marlaValue", marlaValue)
                 putExtra("sqftValue", sqftValue)
@@ -528,7 +555,38 @@ class Page1Activity : AppCompatActivity() {
             Log.d("AreasLoaded", "Areas for $currentTownName: $areas")
         }
 
-        // ... rest of your code for area selection listener
+        binding.propertyAreaDropdown.setOnItemClickListener { _, _, _, _ ->
+
+            val currentDistrictHashKey = binding.districtDropdown.text.toString().trim().hashCode()
+            val currentTownName = binding.townDropdown.text.toString().trim()
+            val currentTownHashKey = "$currentDistrictHashKey-$currentTownName".hashCode()
+            val currentAreaName = binding.propertyAreaDropdown.text.toString().trim()
+            val currentAreaHashKey = "$currentTownHashKey-$currentAreaName".hashCode()
+
+            val areaLandMap = PreferencesManager.getAreaLandMap()
+            val lands = areaLandMap[currentAreaHashKey] ?: mutableListOf()
+
+
+            landList = lands
+            val landsAdapter = ArrayAdapter(this, custom_dropdown_item, landList)
+            binding.landTypeDropdown.setAdapter(landsAdapter)
+            binding.landTypeDropdown.threshold = 1
+            binding.landTypeDropdown.requestFocus()
+
+
+            Log.d("LandTypesLoaded", "Land types for $currentAreaName: $lands, $landList, $currentAreaHashKey")
+
+
+        }
+
+        binding.landTypeDropdown.setOnItemClickListener { _, _, _, _ ->
+
+            binding.propertyTypeDropdown.requestFocus()
+            binding.propertyTypeDropdown.showDropDown()
+
+
+        }
+
     }
 
 

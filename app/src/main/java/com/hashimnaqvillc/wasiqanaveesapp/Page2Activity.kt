@@ -28,12 +28,32 @@ class Page2Activity : AppCompatActivity() {
         val selectedPropertyArea = intent.getStringExtra("selectedPropertyArea")
         val selectedLandType = intent.getStringExtra("selectedLandType")
         val selectedPropertyType = intent.getStringExtra("selectedPropertyType")
-        val kanalValue = intent.getDoubleExtra("kanalValue", 0.0)
-        val marlaValue = intent.getDoubleExtra("marlaValue", 0.0)
-        val sqftValue = intent.getDoubleExtra("sqftValue", 0.0)
-        val coveredArea = intent.getDoubleExtra("coveredArea", 0.0)
 
-        val plotValueDC = intent.getDoubleExtra("plotValueDC", 0.0)
+        val kanalValue = intent.getIntExtra("kanalValue", 0)
+        val marlaValue = intent.getIntExtra("marlaValue", 0)
+        val sqftValue = intent.getIntExtra("sqftValue", 0)
+        val coveredArea = intent.getIntExtra("coveredArea", 0)
+
+        val plotValueDC = intent.getIntExtra("plotValueDC", 0)
+        val marlaValueDC = intent.getIntExtra("marlaDc", 0)
+
+        val plotValueFbr = intent.getIntExtra("plotValueFbr", 0)
+        val marlaValueFbr = intent.getIntExtra("marlaFbr", 0)
+
+        val coveredAreaDc = intent.getIntExtra("coveredAreaDc", 0)
+        val buildingValueDC = intent.getIntExtra("buildingValueDC", 0)
+
+        val coveredAreaFbr = intent.getIntExtra("coveredAreaFbr", 0)
+        val buildingValueFbr = intent.getIntExtra("buildingValueFbr", 0)
+
+
+        if (coveredArea == 0) {
+            binding.coveredAreaTextPg2.visibility = View.GONE
+            binding.coveredAreaDisplayPg2.visibility = View.GONE
+        }else{
+            binding.coveredAreaTextPg2.visibility = View.VISIBLE
+            binding.coveredAreaDisplayPg2.visibility = View.VISIBLE
+        }
 
 
 
@@ -47,23 +67,21 @@ class Page2Activity : AppCompatActivity() {
 // Create a string to display land area
         val landAreaStringBuilder = StringBuilder()
 
-        if (kanalValue != 0.0) {
-            landAreaStringBuilder.append("${kanalValue.toInt()} Kanal, ")
+        if (kanalValue != 0) {
+            landAreaStringBuilder.append("$kanalValue Kanal, ")
         }
-        if (marlaValue != 0.0) {
-            landAreaStringBuilder.append("${marlaValue.toInt()} Marla, ")
+        if (marlaValue != 0) {
+            landAreaStringBuilder.append("$marlaValue Marla, ")
         }
-        if (sqftValue != 0.0) {
-            landAreaStringBuilder.append("${sqftValue.toInt()} Sqft")
+        if (sqftValue != 0) {
+            landAreaStringBuilder.append("$sqftValue Sqft")
         }
 
 // Remove the trailing comma and space, if any
         val landAreaDisplayText = landAreaStringBuilder.toString().trimEnd(',', ' ')
 
 // Set the text if there's any value, otherwise show a placeholder
-        binding.landAreaDisplayPg2.text = if (landAreaDisplayText.isNotEmpty()) {
-            landAreaDisplayText
-        } else {
+        binding.landAreaDisplayPg2.text = landAreaDisplayText.ifEmpty {
             "No land area specified"
         }
 
@@ -86,7 +104,22 @@ class Page2Activity : AppCompatActivity() {
         val dateYear = findViewById<TextView>(R.id.date_year)
         dateYear.visibility = View.GONE
 
+        binding.perMarlaDCDisplay.text = marlaValueDC.toString()
         binding.plotValueDCDisplay.text = plotValueDC.toString()
+
+        binding.coveredAreaDCDisplay.text = coveredAreaDc.toString()
+        binding.buildingValueDCDisplay.text = buildingValueDC.toString()
+
+        binding.perMarlaFBRDisplay.text = marlaValueFbr.toString()
+        binding.plotValueFBRDisplay.text = plotValueFbr.toString()
+
+        binding.coveredAreaFBRDisplay.text = coveredAreaFbr.toString()
+        binding.buildingValueFBRDisplay.text = buildingValueFbr.toString()
+
+
+
+
+
 
 
         binding.nextButtonPg2.setOnClickListener {
@@ -98,16 +131,33 @@ class Page2Activity : AppCompatActivity() {
         binding.landTypeDisplayPg2.text = selectedLandType
 
 
-        if(selectedPropertyType == "Building"){
-//            binding.coveredAreaRowPg2Separator.visibility = View.VISIBLE
+        if (selectedPropertyType == "Building") {
+            // Show relevant rows
             binding.coveredAreaRowPg2.visibility = View.VISIBLE
-//            binding.buildingValuePg2Separator.visibility = View.VISIBLE
             binding.buildingValuePg2.visibility = View.VISIBLE
-        } else{
+
+            // Calculate total values
+            val totalDC = coveredAreaDc + buildingValueDC + marlaValueDC + plotValueDC
+            val totalFBR = coveredAreaFbr + buildingValueFbr + marlaValueFbr + plotValueFbr
+
+            // Set the calculated values to the TextViews
+            binding.totalDCDisplay.text = "$totalDC"
+            binding.totalFBRDisplay.text = "$totalFBR"
+        }
+        else{
 //            binding.coveredAreaRowPg2Separator.visibility = View.GONE
             binding.coveredAreaRowPg2.visibility = View.GONE
 //            binding.buildingValuePg2Separator.visibility = View.GONE
             binding.buildingValuePg2.visibility = View.GONE
+
+            // Calculate total values
+            val totalDC = marlaValueDC + plotValueDC
+            val totalFBR = marlaValueFbr + plotValueFbr
+
+            binding.totalDCDisplay.text = "$totalDC"
+            binding.totalFBRDisplay.text = "$totalFBR"
+
+
         }
 
 
