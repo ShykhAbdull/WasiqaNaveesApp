@@ -25,7 +25,7 @@ class Page2Activity : AppCompatActivity() {
         // Retrieve the values from the Intent
         val selectedDistrict = intent.getStringExtra("selectedDistrict")
         val selectedTown = intent.getStringExtra("selectedTown")
-        val selectedPropertyArea = intent.getStringExtra("selectedPropertyArea")
+        val selectedPropertyArea = intent.getStringExtra("selectedArea")
         val selectedLandType = intent.getStringExtra("selectedLandType")
         val selectedPropertyType = intent.getStringExtra("selectedPropertyType")
 
@@ -123,7 +123,17 @@ class Page2Activity : AppCompatActivity() {
 
 
         binding.nextButtonPg2.setOnClickListener {
-            val intent = Intent(this, Page3Activity::class.java)
+            val intent = Intent(this, Page3Activity::class.java).apply {
+
+                putExtra("selectedDistrict", selectedDistrict)
+                putExtra("selectedPropertyArea", selectedPropertyArea)
+                putExtra("selectedPropertyType", selectedPropertyType)
+
+                putExtra("kanalValue", kanalValue)
+                putExtra("marlaValue", marlaValue)
+                putExtra("sqftValue", sqftValue)
+                putExtra("coveredArea", coveredArea)
+            }
             startActivity(intent)
         }
 

@@ -1,5 +1,6 @@
 package com.hashimnaqvillc.wasiqanaveesapp
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -18,12 +19,55 @@ class Page3Activity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPage3Binding
 
+    @SuppressLint("SetTextI18n")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
+
+
+//        Get Dropdown selection from Page 1
+        val selectedPropertyType = intent.getStringExtra("selectedPropertyType")
+        val selectedPropertyArea = intent.getStringExtra("selectedPropertyArea")
+        val selectedDistrict = intent.getStringExtra("selectedDistrict")
+
+//        Get Land Area Values from Page 1
+        val kanalValue = intent.getIntExtra("kanalValue", 0)
+        val marlaValue = intent.getIntExtra("marlaValue", 0)
+        val sqftValue = intent.getIntExtra("sqftValue", 0)
+        val coveredArea = intent.getIntExtra("coveredArea", 0)
 
         super.onCreate(savedInstanceState)
         binding = ActivityPage3Binding.inflate(layoutInflater)
         setContentView(binding.root)
+
+
+// Create a string to display land area
+        val landAreaStringBuilder = StringBuilder()
+
+        if (kanalValue != 0) {
+            landAreaStringBuilder.append("$kanalValue Kanal, ")
+        }
+        if (marlaValue != 0) {
+            landAreaStringBuilder.append("$marlaValue Marla, ")
+        }
+        if (sqftValue != 0) {
+            landAreaStringBuilder.append("$sqftValue Sqft")
+        }
+        // Remove the trailing comma and space, if any
+        val landAreaDisplayText = landAreaStringBuilder.toString().trimEnd(',', ' ')
+
+        // Set the text if there's any value, otherwise show a placeholder
+        binding.landAreaTextPg3.text = landAreaDisplayText.ifEmpty {
+            "No land area specified"
+        }
+
+        binding.coveredAreaTextPg3.text = "$coveredArea"
+        binding.propertyTypeTextPg3.text = selectedPropertyType
+        binding.propertyAreaTextPg3.text = "$selectedPropertyArea, $selectedDistrict"
+
+
+
+
+
 
         val settingIcon = findViewById<ImageButton>(R.id.nav_settings_icon)
         settingIcon.visibility = View.GONE
@@ -37,7 +81,7 @@ class Page3Activity : AppCompatActivity() {
 
 
         // Set up the dropdown options
-        val sellerOptions = listOf("Filer", "Late Filer", "Non-Filer")
+        val sellerOptions = mutableListOf("Filer", "Late Filer", "Non-Filer")
 
 // Create an ArrayAdapter for the AutoCompleteTextView
         val sellerAdapter = ArrayAdapter(this, R.layout.custom_dropdown_item, sellerOptions)
@@ -70,7 +114,7 @@ class Page3Activity : AppCompatActivity() {
 
 
         // Set up the dropdown options
-        val purchaserOptions = listOf("Filer", "Late Filer", "Non-Filer")
+        val purchaserOptions = mutableListOf("Filer", "Late Filer", "Non-Filer")
 
 // Create an ArrayAdapter for the AutoCompleteTextView
         val purchaserAdapter = ArrayAdapter(this, R.layout.custom_dropdown_item, purchaserOptions)
@@ -117,15 +161,15 @@ class Page3Activity : AppCompatActivity() {
 
 //        Check Boxes
 
-        val headerCheckbox: CheckBox = findViewById(R.id.typesRadioBtn)
-        val checkboxes: List<CheckBox> = listOf(
-            findViewById(R.id.stampDutyRadioBtn),
-            findViewById(R.id.tmaCorpRadioBtn),
-            findViewById(R.id.fbr236kRadioBtn),
-            findViewById(R.id.seller236CRadioBtn),
-            findViewById(R.id.sellerNOCRadioBtn),
-            findViewById(R.id.transferFeeRadioBtn),
-            findViewById(R.id.wasiqaFeeRadioBtn),
+        val headerCheckbox: CheckBox = binding.typesRadioBtn
+        val checkboxes: MutableList<CheckBox> = mutableListOf(
+            binding.stampDutyRadioBtn,
+            binding.tmaCorpRadioBtn,
+            binding.fbr236kRadioBtn,
+            binding.seller236CRadioBtn,
+            binding.sellerNOCRadioBtn,
+            binding.transferFeeRadioBtn,
+            binding.wasiqaFeeRadioBtn
         )
 
         headerCheckbox.setOnCheckedChangeListener { _, isChecked ->

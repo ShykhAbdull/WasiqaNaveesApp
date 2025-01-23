@@ -264,45 +264,23 @@ class Page1Activity : AppCompatActivity() {
             val buildingValueDC = coveredAreaDc * coveredAreaValue
             val buildingValueFbr = coveredAreaFbr * coveredAreaValue
 
-            Log.d("buildingValue", "buildingValueDC: $coveredAreaDc, buildingValueFbr: $coveredAreaFbr, coveredAreaValue: $coveredAreaValue")
-
-
-            Log.d("Calculation", "Total Sqft: $totalSqft, Plot Value DC: $plotValueDC")
-
-
-            // Log additional details
-            Log.d("LandValues", "MarlaDC: $marlaDc, Covered Area DC: $coveredAreaDc, MarlaFbr: $marlaFbr, Covered Area Fbr: $coveredAreaFbr, Khasra Number: $khasraNumber ")
-            Log.d("Calculation", "Total Sqft: $totalSqft, Covered Area Value: $coveredAreaValue")
-
-            Toast.makeText(
-                this,
-                "Total Sqft: $totalSqft\nPlot Value DC: $plotValueDC\nCovered Area Value: $coveredAreaValue",
-                Toast.LENGTH_LONG
-            ).show()
-
-
-
-
-
-
-
-
-
+//            Log.d("buildingValue", "buildingValueDC: $coveredAreaDc, buildingValueFbr: $coveredAreaFbr, coveredAreaValue: $coveredAreaValue")
+//
+//
 //            Log.d("Calculation", "Total Sqft: $totalSqft, Plot Value DC: $plotValueDC")
-
-            // Retrieve covered area value safely
-//            val coveredAreaValue = binding.coveredAreaEditText.text.toString().toDoubleOrNull() ?: 0.0
-
+//
+//
 //            // Log additional details
-//            Log.d("LandRates", "MarlaDC: $marlaDc, Covered Area DC: $coveredAreaDc, Khasra Number: $khasraNumber")
+//            Log.d("LandValues", "MarlaDC: $marlaDc, Covered Area DC: $coveredAreaDc, MarlaFbr: $marlaFbr, Covered Area Fbr: $coveredAreaFbr, Khasra Number: $khasraNumber ")
 //            Log.d("Calculation", "Total Sqft: $totalSqft, Covered Area Value: $coveredAreaValue")
-
-//            // Optional: Show results in a Toast or update UI
+//
 //            Toast.makeText(
 //                this,
 //                "Total Sqft: $totalSqft\nPlot Value DC: $plotValueDC\nCovered Area Value: $coveredAreaValue",
 //                Toast.LENGTH_LONG
 //            ).show()
+
+
 
             // Proceed to the next activity with validated data
             val intent = Intent(this, Page2Activity::class.java).apply {
@@ -329,6 +307,7 @@ class Page1Activity : AppCompatActivity() {
                 putExtra("sqftValue", sqftValue)
                 putExtra("coveredAreaValue", coveredAreaValue)
             }
+            Log.d("IntentData", "Intent Data: $selectedDistrict, $selectedTown, $selectedArea, $selectedLandType, $selectedPropertyType")
             startActivity(intent)
         }
 
