@@ -100,16 +100,16 @@
 
         />
 
-    <!-- Year -->
-    <TextView
-        android:id="@+id/date_year"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="2024"
-        android:textColor="#00008B"
-        android:textSize="16sp"
-        android:fontFamily="@font/sf_pro_display_medium"
-        />
+<!--    &lt;!&ndash; Year &ndash;&gt;-->
+<!--    <TextView-->
+<!--        android:id="@+id/date_year"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="2024"-->
+<!--        android:textColor="#00008B"-->
+<!--        android:textSize="16sp"-->
+<!--        android:fontFamily="@font/sf_pro_display_medium"-->
+<!--        />-->
     </LinearLayout>
 
 

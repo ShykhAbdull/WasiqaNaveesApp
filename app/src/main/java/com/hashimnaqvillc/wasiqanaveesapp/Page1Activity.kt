@@ -53,8 +53,8 @@ class Page1Activity : AppCompatActivity() {
 
         val dateMonth = findViewById<TextView>(R.id.date_month_day)
         dateMonth.visibility = View.GONE
-        val dateYear = findViewById<TextView>(R.id.date_year)
-        dateYear.visibility = View.GONE
+//        val dateYear = findViewById<TextView>(R.id.date_year)
+//        dateYear.visibility = View.GONE
 
 
         setupDropdowns()
@@ -289,6 +289,7 @@ class Page1Activity : AppCompatActivity() {
                 putExtra("selectedArea", selectedArea)
                 putExtra("selectedLandType", selectedLandType)
                 putExtra("selectedPropertyType", selectedPropertyType)
+                putExtra("khasraNumber", khasraNumber)
 
                 putExtra("marlaDc", marlaDc)
                 putExtra("plotValueDC", plotValueDC)
@@ -307,7 +308,7 @@ class Page1Activity : AppCompatActivity() {
                 putExtra("sqftValue", sqftValue)
                 putExtra("coveredAreaValue", coveredAreaValue)
             }
-            Log.d("IntentData", "Intent Data: $selectedDistrict, $selectedTown, $selectedArea, $selectedLandType, $selectedPropertyType")
+            Log.d("IntentData", "Intent Data: $selectedDistrict, $selectedTown, $selectedArea, $selectedLandType, $selectedPropertyType, $coveredAreaValue")
             startActivity(intent)
         }
 

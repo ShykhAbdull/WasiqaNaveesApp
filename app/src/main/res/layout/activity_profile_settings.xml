@@ -5,11 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ProfileActivtySettings"
+    android:fillViewport="true"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
 
         >
 
@@ -85,9 +87,11 @@
                 android:id="@+id/stampDutyEditTextInner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="1%"
+                android:hint="%"
+                android:text="1"
+                android:maxLength="6"
                 android:gravity="center"
-                android:inputType="number"
+                android:inputType="numberDecimal"
                 android:background="@null"
 
 
@@ -113,7 +117,10 @@
                 android:id="@+id/tmaCorpEditTextInner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="1%"
+                android:hint="%"
+                android:text="1"
+                android:maxLength="6"
+
                 android:background="@null"
                 android:fontFamily="@font/sf_pro_display_bold"
                 android:gravity="center"
@@ -121,7 +128,7 @@
 
 
 
-                android:inputType="number"
+                android:inputType="numberDecimal"
                 android:textAlignment="center"
                 android:padding="15dp"
                 android:textSize="16sp" />
@@ -160,9 +167,12 @@
                 android:id="@+id/fbr236KFilerEditTextInner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="3%"
+                android:hint="%"
+                android:text="3"
+                android:maxLength="6"
+
                 android:gravity="center"
-                android:inputType="number"
+                android:inputType="numberDecimal"
                 android:background="@null"
                 android:textAlignment="center"
 
@@ -205,9 +215,12 @@
                 android:id="@+id/fbr236KNonfilerEditTextInner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="6%"
+                android:hint="%"
+                android:text="6"
+                android:maxLength="6"
+
                 android:gravity="center"
-                android:inputType="number"
+                android:inputType="numberDecimal"
                 android:background="@null"
                 android:textAlignment="center"
 
@@ -248,9 +261,12 @@
                 android:id="@+id/fbr236CNonfilerEditTextInner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="6%"
+                android:hint="%"
+                android:text="6"
+                android:maxLength="6"
+
                 android:gravity="center"
-                android:inputType="number"
+                android:inputType="numberDecimal"
                 android:background="@null"
                 android:textAlignment="center"
 
@@ -301,9 +317,12 @@
                 android:id="@+id/fbr236CFilerEditTextInner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="3%"
+                android:hint="%"
+                android:text="3"
+                android:maxLength="6"
+
                 android:gravity="center"
-                android:inputType="number"
+                android:inputType="numberDecimal"
                 android:background="@null"
                 android:textAlignment="center"
 
@@ -353,9 +372,12 @@
                 android:id="@+id/regsFeeEditTextInner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="0.1%"
+                android:hint="%"
+                android:text="0.1"
+                android:maxLength="6"
+
                 android:gravity="center"
-                android:inputType="number"
+                android:inputType="numberDecimal"
                 android:background="@null"
                 android:textAlignment="center"
 
@@ -397,9 +419,12 @@
                 android:id="@+id/fbr236KLatefilerEditTextInner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="10.5%"
+                android:hint="%"
+                android:text="10.5"
+                android:maxLength="6"
+
                 android:gravity="center"
-                android:inputType="number"
+                android:inputType="numberDecimal"
                 android:background="@null"
                 android:textAlignment="center"
 
@@ -440,9 +465,12 @@
                 android:id="@+id/fbr236ClatefilerEditTextInner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="10.5%"
+                android:hint="%"
+                android:text="10.5"
+                android:maxLength="6"
+
                 android:gravity="center"
-                android:inputType="number"
+                android:inputType="numberDecimal"
                 android:background="@null"
                 android:textAlignment="center"
 
@@ -454,6 +482,7 @@
         <!--    Office Name title and EditText -->
 
         <TextView
+            android:visibility="gone"
             android:id="@+id/officeName_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -479,14 +508,19 @@
             app:layout_constraintEnd_toEndOf="parent">
 
             <com.google.android.material.textfield.TextInputEditText
+
+                android:visibility="gone"
+
+
                 android:id="@+id/officeNameEditTextInner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Syed Associates"
+                android:hint="Naqvi's Brothers"
                 android:importantForAutofill="no"
                 android:gravity="center"
                 android:inputType="text|textPersonName"
                 android:padding="15dp"
+                android:maxLength="24"
                 android:fontFamily="@font/sf_pro_display_medium"
                 android:textSize="18sp" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -495,6 +529,11 @@
         <!--    Office Phone title and EditText -->
 
         <TextView
+
+            android:visibility="gone"
+
+
+
             android:id="@+id/officePhone_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -522,13 +561,19 @@
             > <!-- Optional to set custom hint color -->
 
             <com.google.android.material.textfield.TextInputEditText
+
+                android:visibility="gone"
+
+
+
                 android:id="@+id/officePhoneEditTextInner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="0301-4415786"
+                android:hint="0333-4415786"
                 android:inputType="phone"
                 android:gravity="center"
                 android:padding="15dp"
+                android:maxLength="14"
                 android:fontFamily="@font/sf_pro_display_medium"
                 android:textSize="18sp" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -543,6 +588,7 @@
             android:src="@drawable/rounded_btn"
             android:gravity="center"
             android:paddingVertical="8dp"
+            android:layout_marginVertical="100dp"
             android:text="Default"
             android:textSize="16sp"
             android:fontFamily="@font/sf_pro_display_medium"

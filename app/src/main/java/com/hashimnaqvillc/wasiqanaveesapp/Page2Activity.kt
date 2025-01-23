@@ -3,6 +3,7 @@ package com.hashimnaqvillc.wasiqanaveesapp
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
@@ -28,11 +29,12 @@ class Page2Activity : AppCompatActivity() {
         val selectedPropertyArea = intent.getStringExtra("selectedArea")
         val selectedLandType = intent.getStringExtra("selectedLandType")
         val selectedPropertyType = intent.getStringExtra("selectedPropertyType")
+        val khasraNumber = intent.getStringExtra("khasraNumber")
 
         val kanalValue = intent.getIntExtra("kanalValue", 0)
         val marlaValue = intent.getIntExtra("marlaValue", 0)
         val sqftValue = intent.getIntExtra("sqftValue", 0)
-        val coveredArea = intent.getIntExtra("coveredArea", 0)
+        val coveredArea = intent.getIntExtra("coveredAreaValue", 0)
 
         val plotValueDC = intent.getIntExtra("plotValueDC", 0)
         val marlaValueDC = intent.getIntExtra("marlaDc", 0)
@@ -47,7 +49,7 @@ class Page2Activity : AppCompatActivity() {
         val buildingValueFbr = intent.getIntExtra("buildingValueFbr", 0)
 
 
-        if (coveredArea == 0) {
+        if (selectedPropertyType == "Plot") {
             binding.coveredAreaTextPg2.visibility = View.GONE
             binding.coveredAreaDisplayPg2.visibility = View.GONE
         }else{
@@ -63,6 +65,8 @@ class Page2Activity : AppCompatActivity() {
         binding.propertyAreaDisplayPg2.text = selectedPropertyArea
         binding.landTypeDisplayPg2.text = selectedLandType
         binding.coveredAreaDisplayPg2.text = coveredArea.toString()
+        binding.khasraDisplayPg2.text = khasraNumber.toString()
+
 
 // Create a string to display land area
         val landAreaStringBuilder = StringBuilder()
@@ -101,8 +105,8 @@ class Page2Activity : AppCompatActivity() {
 
         val dateMonth = findViewById<TextView>(R.id.date_month_day)
         dateMonth.visibility = View.GONE
-        val dateYear = findViewById<TextView>(R.id.date_year)
-        dateYear.visibility = View.GONE
+//        val dateYear = findViewById<TextView>(R.id.date_year)
+//        dateYear.visibility = View.GONE
 
         binding.perMarlaDCDisplay.text = marlaValueDC.toString()
         binding.plotValueDCDisplay.text = plotValueDC.toString()
@@ -119,7 +123,41 @@ class Page2Activity : AppCompatActivity() {
 
 
 
+        binding.propertyAreaDisplayPg2.text = selectedTown
+        binding.landTypeDisplayPg2.text = selectedLandType
 
+        val totalDC: Int
+        val totalFBR: Int
+
+
+        if (selectedPropertyType == "Building") {
+            // Show relevant rows
+            binding.coveredAreaRowPg2.visibility = View.VISIBLE
+            binding.buildingValuePg2.visibility = View.VISIBLE
+
+            // Calculate total values
+            totalDC = coveredAreaDc + buildingValueDC + marlaValueDC + plotValueDC
+            totalFBR = coveredAreaFbr + buildingValueFbr + marlaValueFbr + plotValueFbr
+
+            // Set the calculated values to the TextViews
+            binding.totalDCDisplay.text = "$totalDC"
+            binding.totalFBRDisplay.text = "$totalFBR"
+
+
+        }
+        else{
+//            binding.coveredAreaRowPg2Separator.visibility = View.GONE
+            binding.coveredAreaRowPg2.visibility = View.GONE
+//            binding.buildingValuePg2Separator.visibility = View.GONE
+            binding.buildingValuePg2.visibility = View.GONE
+
+            // Calculate total values
+           totalDC = marlaValueDC + plotValueDC
+            totalFBR = marlaValueFbr + plotValueFbr
+
+            binding.totalDCDisplay.text = "$totalDC"
+            binding.totalFBRDisplay.text = "$totalFBR"
+    }
 
 
         binding.nextButtonPg2.setOnClickListener {
@@ -133,41 +171,11 @@ class Page2Activity : AppCompatActivity() {
                 putExtra("marlaValue", marlaValue)
                 putExtra("sqftValue", sqftValue)
                 putExtra("coveredArea", coveredArea)
+                putExtra("totalDC", totalDC)
+                putExtra("totalFBR", totalFBR)
             }
+            Log.d("IntentData", "Intent Data: $totalDC, $totalFBR")
             startActivity(intent)
-        }
-
-        binding.propertyAreaDisplayPg2.text = selectedTown
-        binding.landTypeDisplayPg2.text = selectedLandType
-
-
-        if (selectedPropertyType == "Building") {
-            // Show relevant rows
-            binding.coveredAreaRowPg2.visibility = View.VISIBLE
-            binding.buildingValuePg2.visibility = View.VISIBLE
-
-            // Calculate total values
-            val totalDC = coveredAreaDc + buildingValueDC + marlaValueDC + plotValueDC
-            val totalFBR = coveredAreaFbr + buildingValueFbr + marlaValueFbr + plotValueFbr
-
-            // Set the calculated values to the TextViews
-            binding.totalDCDisplay.text = "$totalDC"
-            binding.totalFBRDisplay.text = "$totalFBR"
-        }
-        else{
-//            binding.coveredAreaRowPg2Separator.visibility = View.GONE
-            binding.coveredAreaRowPg2.visibility = View.GONE
-//            binding.buildingValuePg2Separator.visibility = View.GONE
-            binding.buildingValuePg2.visibility = View.GONE
-
-            // Calculate total values
-            val totalDC = marlaValueDC + plotValueDC
-            val totalFBR = marlaValueFbr + plotValueFbr
-
-            binding.totalDCDisplay.text = "$totalDC"
-            binding.totalFBRDisplay.text = "$totalFBR"
-
-
         }
 
 

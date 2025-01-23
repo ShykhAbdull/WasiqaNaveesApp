@@ -102,8 +102,8 @@ selectedLandType = ""
     val dateMonth = findViewById<TextView>(R.id.date_month_day)
     dateMonth.visibility = View.GONE
 
-    val dateYear = findViewById<TextView>(R.id.date_year)
-    dateYear.visibility = View.GONE
+//    val dateYear = findViewById<TextView>(R.id.date_year)
+//    dateYear.visibility = View.GONE
 
     val wasiqaLogo = findViewById<ImageView>(R.id.nav_wasiqa_logo)
     wasiqaLogo.visibility = View.GONE
