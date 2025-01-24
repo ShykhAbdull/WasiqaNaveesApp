@@ -158,6 +158,22 @@ class Page3Activity : AppCompatActivity() {
         binding.officePhonePg3.text = " : 0333-4415786"
 
 
+
+
+        binding.plraRow.visibility = View.GONE
+        binding.plraSeparator.visibility = View.GONE
+
+        binding.fbr236kRow.visibility = View.VISIBLE
+        binding.fbrSeperator.visibility = View.VISIBLE
+        binding.seller236CRow.visibility = View.VISIBLE
+        binding.seller236CSeparator.visibility = View.VISIBLE
+
+        binding.stampDutyTaxPKR.text = (stampDutyAmount.toInt()-1000).toString()
+
+
+
+
+
         // Set up the dropdown options
         val sellerOptions = mutableListOf("Filer", "Late Filer", "Non-Filer")
 
@@ -298,8 +314,6 @@ class Page3Activity : AppCompatActivity() {
                     binding.fbrSeperator.visibility = View.VISIBLE
                     binding.seller236CRow.visibility = View.VISIBLE
                     binding.seller236CSeparator.visibility = View.VISIBLE
-
-
 
                     binding.stampDutyTaxPKR.text = (stampDutyAmount.toInt()-1000).toString()
 
