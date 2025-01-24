@@ -288,10 +288,46 @@
         android:textColor="@color/black"
         android:layout_marginStart="20dp"
         android:fontFamily="@font/sf_pro_display_medium"
-        android:layout_marginTop="2dp"
+        android:layout_marginTop="10dp"
         app:layout_constraintTop_toBottomOf="@id/office_name_phone_layout_pg3"
+        app:layout_constraintBottom_toTopOf="@id/cardView_pg3"
         app:layout_constraintStart_toStartOf="parent"
         />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/registry_Transfer_Layout"
+        android:layout_width="180dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="5dp"
+        app:endIconMode="none"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        app:layout_constraintStart_toEndOf="@id/propertyTaxInfo_text_pg3"
+        app:layout_constraintTop_toBottomOf="@id/office_name_phone_layout_pg3"
+        app:layout_constraintBottom_toTopOf="@id/cardView_pg3"
+        app:layout_constraintEnd_toEndOf="@id/cardView_pg3"
+        android:focusableInTouchMode="true">
+
+        <AutoCompleteTextView
+            android:id="@+id/registry_transfer_dropdown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tooltipText="Click to open drop down"
+            android:fontFamily="@font/sf_pro_display_regular"
+            android:textStyle="bold"
+            android:text="سوسائٹی ٹرانسفر"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:clickable="true"
+            android:popupBackground="@drawable/popup_background"
+            android:focusable="false"
+            android:inputType="text"
+            android:background="@null"
+            android:padding="2dp"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
 
 
 
@@ -300,7 +336,7 @@
     android:id="@+id/cardView_pg3"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginVertical="5dp"
+    android:layout_marginVertical="10dp"
     app:cardCornerRadius="8dp"
     app:cardElevation="4dp"
     android:layout_marginHorizontal="25dp"
@@ -337,6 +373,7 @@
                     android:layout_height="25dp"
                     android:tooltipText="Click to select all"
                     android:buttonTint="@color/teal_700"
+                    android:checked="true"
                     android:backgroundTint="@color/material_on_surface_stroke"
                 />
 
@@ -386,6 +423,7 @@
                     android:layout_width="25dp"
                     android:layout_height="25dp"
                     android:layout_gravity="bottom"
+                    android:checked="true"
                     android:tooltipText="Click to include Tax"
                     android:buttonTint="@color/teal_700"
 
@@ -419,7 +457,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="1000"
+                    android:hint="NA"
                     android:layout_gravity="center"
                     android:textSize="15sp"
                     android:fontFamily="@font/sf_pro_display_regular"
@@ -442,6 +480,7 @@
                     android:layout_width="25dp"
                     android:layout_height="25dp"
                     android:layout_gravity="center"
+                    android:checked="true"
                     android:tooltipText="Click to include Tax"
                     android:buttonTint="@color/teal_700"
                     />
@@ -474,7 +513,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="1000"
+                    android:hint="NA"
                     android:layout_gravity="center"
                     android:textSize="15sp"
                     android:fontFamily="@font/sf_pro_display_regular"
@@ -483,6 +522,7 @@
             </TableRow>
 
             <View
+                android:id="@+id/plra_separator"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="#CCCCCC"
@@ -490,12 +530,14 @@
                 android:layout_marginHorizontal="50dp"
                 />
 
-            <TableRow>
+            <TableRow android:id="@+id/plra_row" >
                 <CheckBox
                     android:id="@+id/regsRadioBtn"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
                     android:layout_gravity="center"
+                    android:checked="true"
+
                     android:tooltipText="Click to include Tax"
                     android:buttonTint="@color/teal_700"
                     />
@@ -504,7 +546,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Registration/PLRA"
+                    android:text="PLRA"
                     android:textSize="15sp"
                     android:layout_gravity="center"
                     android:layout_marginStart="10dp"
@@ -528,7 +570,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="1000"
+                    android:hint="NA"
                     android:layout_gravity="center"
                     android:textSize="15sp"
                     android:fontFamily="@font/sf_pro_display_regular"
@@ -547,12 +589,14 @@
 
         <!--        Table Row 4  -->
             <TableRow
+                android:id="@+id/fbr236k_row"
                 >
                 <CheckBox
                     android:id="@+id/fbr236kRadioBtn"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
                     android:layout_gravity="center"
+                    android:checked="true"
                     android:tooltipText="Click to include Tax"
                     android:buttonTint="@color/teal_700"
                     />
@@ -586,7 +630,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="1000"
+                    android:hint="NA"
                     android:layout_gravity="center"
                     android:textSize="15sp"
                     android:fontFamily="@font/sf_pro_display_regular"
@@ -595,6 +639,7 @@
             </TableRow>
 
             <View
+                android:id="@+id/fbrSeperator"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="#CCCCCC"
@@ -604,13 +649,14 @@
 
         <!--        Table  Row 5 -->
 
-            <TableRow
+            <TableRow android:id="@+id/seller236C_row"
                 >
                 <CheckBox
                     android:id="@+id/seller236CRadioBtn"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
                     android:layout_gravity="center"
+                    android:checked="true"
                     android:tooltipText="Click to include Tax"
                     android:buttonTint="@color/teal_700"
                     />
@@ -644,7 +690,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="1000"
+                    android:hint="NA"
                     android:layout_gravity="center"
                     android:textSize="15sp"
                     android:fontFamily="@font/sf_pro_display_regular"
@@ -653,6 +699,7 @@
             </TableRow>
 
             <View
+                android:id="@+id/seller236C_separator"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="#CCCCCC"
@@ -667,6 +714,7 @@
                     android:layout_width="25dp"
                     android:layout_height="25dp"
                     android:layout_gravity="center"
+                    android:checked="true"
                     android:tooltipText="Click to include Tax"
                     android:buttonTint="@color/teal_700"
                     />
@@ -675,7 +723,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Seller NOC"
+                    android:text="Excise NOC"
                     android:textSize="15sp"
                     android:layout_marginBottom="1dp"
                     android:layout_gravity="center"
@@ -683,24 +731,34 @@
                     android:fontFamily="@font/sf_pro_display_regular"
                     android:textColor="#000" />
 
+<!--                <ImageButton-->
+<!--                    android:id="@+id/sellerNOC_edit_btn"-->
+<!--                    android:layout_width="18dp"-->
+<!--                    android:layout_height="18dp"-->
+<!--                    android:background="@drawable/edit_btn"-->
+<!--                    android:layout_gravity="center"-->
+<!--                    android:layout_marginTop="2dp"-->
+<!--                    android:backgroundTint="@color/teal_700"-->
+<!--                    android:contentDescription="Edit your fee"-->
+<!--                    android:tooltipText="Edit your values" />-->
+
                 <ImageButton
-                    android:id="@+id/SellerNOC_edit_btn"
-                    android:layout_width="18dp"
+                    android:id="@+id/sellerNOC_edit_btn"
+                    android:layout_width="8dp"
                     android:layout_height="18dp"
                     android:background="@drawable/edit_btn"
                     android:layout_gravity="center"
                     android:layout_marginTop="2dp"
                     android:backgroundTint="@color/teal_700"
                     android:contentDescription="Edit your fee"
-                    android:tooltipText="Edit your values"
-                    />
+                    android:tooltipText="Edit your values" />
 
                 <EditText
                     android:id="@+id/sellerNOC_Tax_PKR"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:hint="1000"
+                    android:hint="NA"
                     android:padding="0dp"
                     android:inputType="number"
                     android:singleLine="true"
@@ -708,7 +766,10 @@
                     android:backgroundTint="@color/white"
                     android:fontFamily="@font/sf_pro_display_regular"
                     android:gravity="end"
-                    android:textColor="#000" />
+                    android:textColor="#000"
+                    android:focusable="false"
+                    android:enabled="false"
+                    />
             </TableRow>
 
             <View
@@ -726,6 +787,7 @@
                     android:layout_width="25dp"
                     android:layout_height="25dp"
                     android:layout_gravity="center"
+                    android:checked="true"
                     android:tooltipText="Click to include Fee"
                     android:buttonTint="@color/teal_700"
                     />
@@ -734,7 +796,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Transfer Fee"
+                    android:text="E7 Certificate"
                     android:textSize="15sp"
                     android:layout_marginBottom="1dp"
                     android:layout_gravity="center"
@@ -758,7 +820,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:hint="1000"
+                    android:hint="NA"
                     android:inputType="number"
                     android:padding="0dp"
                     android:singleLine="true"
@@ -767,7 +829,9 @@
                     android:textSize="15sp"
                     android:fontFamily="@font/sf_pro_display_regular"
                     android:gravity="end"
-                    android:textColor="#000" />
+                    android:textColor="#000"
+                    android:focusable="false"
+                    android:enabled="false" />
             </TableRow>
 
             <View
@@ -786,6 +850,7 @@
                     android:layout_width="25dp"
                     android:layout_height="25dp"
                     android:layout_gravity="center"
+                    android:checked="true"
                     android:tooltipText="Click to include Fee"
                     android:buttonTint="@color/teal_700"
                     />
@@ -818,7 +883,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:hint="1000"
+                    android:hint="NA"
                     android:padding="0dp"
                     android:inputType="number"
                     android:layout_gravity="center"
@@ -827,7 +892,9 @@
                     android:backgroundTint="@color/white"
                     android:fontFamily="@font/sf_pro_display_regular"
                     android:gravity="end"
-                    android:textColor="#000" />
+                    android:textColor="#000"
+                    android:focusable="false"
+                    android:enabled="false" />
             </TableRow>
 
             <View
@@ -864,7 +931,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="120520"
+                    android:hint="NA"
                     android:textSize="17sp"
                     android:fontFamily="@font/sf_pro_display_bold"
                     android:textColor="#000"
