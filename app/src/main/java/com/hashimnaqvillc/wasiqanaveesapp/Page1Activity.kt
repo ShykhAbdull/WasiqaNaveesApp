@@ -185,10 +185,14 @@ class Page1Activity : AppCompatActivity() {
             when (selectedPropertyType) {
                 "Plot" -> {
                     binding.coveredAreaText.visibility = View.GONE
-                    coveredAreaEditText.visibility = View.GONE                     }
+                    coveredAreaEditText.visibility = View.GONE
+                    binding.marlaEditText.requestFocus()
+
+                }
                 "Building" -> {
                     binding.coveredAreaText.visibility = View.VISIBLE
                     coveredAreaEditText.visibility = View.VISIBLE
+                    binding.marlaEditText.requestFocus()
 
                 }
             }
@@ -563,8 +567,6 @@ class Page1Activity : AppCompatActivity() {
 
             binding.propertyTypeDropdown.requestFocus()
             binding.propertyTypeDropdown.showDropDown()
-
-
         }
 
     }

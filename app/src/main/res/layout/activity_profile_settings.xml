@@ -195,9 +195,11 @@
             android:textColor="@color/black"
             android:layout_marginTop="40dp"
             android:letterSpacing=".01"
-            app:layout_constraintTop_toBottomOf="@id/tmaCorpEditText"
-            app:layout_constraintStart_toStartOf="@id/tmaCorpEditText"
-            app:layout_constraintEnd_toEndOf="@id/tmaCorpEditText"
+
+
+            app:layout_constraintTop_toBottomOf="@id/regsFeeEditText"
+            app:layout_constraintStart_toStartOf="@id/regsFeeEditText"
+            app:layout_constraintEnd_toEndOf="@id/regsFeeEditText"
 
             />
 
@@ -216,7 +218,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="%"
-                android:text="6"
+                android:text="10.5"
                 android:maxLength="6"
 
                 android:gravity="center"
@@ -243,6 +245,7 @@
             android:textColor="@color/black"
             android:layout_marginTop="40dp"
             android:letterSpacing=".01"
+
             app:layout_constraintTop_toBottomOf="@id/fbr236KNonfilerEditText"
             app:layout_constraintEnd_toEndOf="@id/fbr236KNonfilerEditText"
             app:layout_constraintStart_toStartOf="@id/fbr236KNonfilerEditText"
@@ -262,7 +265,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="%"
-                android:text="6"
+                android:text="10.5"
                 android:maxLength="6"
 
                 android:gravity="center"
@@ -399,10 +402,10 @@
             android:fontFamily="@font/sf_pro_display_medium"
             android:textColor="@color/black"
             android:layout_marginTop="40dp"
-            android:letterSpacing=".01"
-            app:layout_constraintTop_toBottomOf="@id/regsFeeEditText"
-            app:layout_constraintStart_toStartOf="@id/regsFeeEditText"
-            app:layout_constraintEnd_toEndOf="@id/regsFeeEditText"
+
+            app:layout_constraintTop_toBottomOf="@id/tmaCorpEditText"
+            app:layout_constraintStart_toStartOf="@id/tmaCorpEditText"
+            app:layout_constraintEnd_toEndOf="@id/tmaCorpEditText"
             />
 
         <com.google.android.material.textfield.TextInputLayout
@@ -420,7 +423,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="%"
-                android:text="10.5"
+                android:text="6"
                 android:maxLength="6"
 
                 android:gravity="center"
@@ -466,7 +469,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="%"
-                android:text="10.5"
+                android:text="6"
                 android:maxLength="6"
 
                 android:gravity="center"

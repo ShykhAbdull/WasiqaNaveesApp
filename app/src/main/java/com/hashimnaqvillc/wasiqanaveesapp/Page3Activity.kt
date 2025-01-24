@@ -3,12 +3,12 @@ package com.hashimnaqvillc.wasiqanaveesapp
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.CheckBox
 import android.widget.ImageButton
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.hashimnaqvillc.wasiqanaveesapp.databinding.ActivityPage3Binding
@@ -17,11 +17,52 @@ import java.time.format.DateTimeFormatter
 
 class Page3Activity : AppCompatActivity() {
 
+    private var tMACorpAmount: Double = 0.0
+    private var stampDutyAmount: Double = 0.0
+    private var regFeeAmount: Double = 0.0
+    private var fbr236kAmount: Double = 0.0
+    private var fbr236cAmount: Double = 0.0
+
     private lateinit var binding: ActivityPage3Binding
 
-    @SuppressLint("SetTextI18n")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityPage3Binding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+
+        val settingIcon = findViewById<ImageButton>(R.id.nav_settings_icon)
+        settingIcon.visibility = View.GONE
+
+        val backBtn = findViewById<ImageButton>(R.id.nav_back)
+        backBtn.setOnClickListener {
+            finish()
+        }
+
+        findViewById<TextView>(R.id.date_month_day).text = LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MMM-yyyy"))
+
+
+
+
+
+
+
+//        setupCheckBoxes()
+
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+
+        setupCheckBoxes()
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun setupCheckBoxes() {
+
+
 
 
 //        Get Dropdown selection from Page 2
@@ -38,9 +79,7 @@ class Page3Activity : AppCompatActivity() {
         val totalDC = intent.getIntExtra("totalDC", 0)
         val totalFBR = intent.getIntExtra("totalFBR", 0)
 
-        super.onCreate(savedInstanceState)
-        binding = ActivityPage3Binding.inflate(layoutInflater)
-        setContentView(binding.root)
+
 
 
 // Create a string to display land area
@@ -119,25 +158,6 @@ class Page3Activity : AppCompatActivity() {
         binding.officePhonePg3.text = " : 0333-4415786"
 
 
-
-
-
-
-
-
-
-
-        val settingIcon = findViewById<ImageButton>(R.id.nav_settings_icon)
-        settingIcon.visibility = View.GONE
-
-        val backBtn = findViewById<ImageButton>(R.id.nav_back)
-        backBtn.setOnClickListener {
-            finish()
-        }
-
-
-
-
         // Set up the dropdown options
         val sellerOptions = mutableListOf("Filer", "Late Filer", "Non-Filer")
 
@@ -153,17 +173,41 @@ class Page3Activity : AppCompatActivity() {
             val selectedOption = sellerOptions[position]
             when (selectedOption) {
                 "Filer" -> {
-                    // Perform actions for Filer
+//                    Seller Taxes are "C"
+
                     binding.seller236CTax.text = fbr236CFiler
+
+                    // Perform actions for Filer
+                    val fbr236cT = fbr236CFiler.toDoubleOrNull() ?: 0.0 // Safely convert to Double
+                    fbr236cAmount = totalFBR.toDouble() * (fbr236cT / 100)
+                    binding.seller236CTaxPKR.text = fbr236cAmount.toInt().toString()
+
+                    binding.totalFINALAMOUNT.text = (stampDutyAmount + tMACorpAmount + regFeeAmount + fbr236kAmount + fbr236cAmount).toInt().toString()
+
                 }
                 "Late Filer" -> {
-                    // Perform actions for Late Filer
                     binding.seller236CTax.text = fbr236CLateFiler
+
+                    // Perform actions for Late Filer
+                    val fbr236cT = fbr236CLateFiler.toDoubleOrNull() ?: 0.0 // Safely convert to Double
+                    fbr236cAmount = totalFBR.toDouble() * (fbr236cT / 100)
+                    binding.seller236CTaxPKR.text = fbr236cAmount.toInt().toString()
+
+                    binding.totalFINALAMOUNT.text = (stampDutyAmount + tMACorpAmount + regFeeAmount + fbr236kAmount + fbr236cAmount).toInt().toString()
+
 
                 }
                 "Non-Filer" -> {
-                    // Perform actions for Non-Filer
+
                     binding.seller236CTax.text = fbr236CNonFiler
+
+                    // Perform actions for Filer
+                    val fbr236cT = fbr236CNonFiler.toDoubleOrNull() ?: 0.0 // Safely convert to Double
+                    fbr236cAmount = totalFBR.toDouble() * (fbr236cT / 100)
+                    binding.seller236CTaxPKR.text = fbr236cAmount.toInt().toString()
+
+                    binding.totalFINALAMOUNT.text = (stampDutyAmount + tMACorpAmount + regFeeAmount + fbr236kAmount + fbr236cAmount).toInt().toString()
+
 
                 }
             }
@@ -185,48 +229,139 @@ class Page3Activity : AppCompatActivity() {
             val selectedOption = purchaserOptions[position]
             when (selectedOption) {
                 "Filer" -> {
+
+//                    Purchaser Taxes are "K"
                     // Perform actions for Filer
                     binding.fbr236kTax.text = fbr236kFiler
+
+                    val fbr236kT = fbr236kFiler.toDoubleOrNull() ?: 0.0 // Safely convert to Double
+                    fbr236kAmount = totalFBR.toDouble() * (fbr236kT / 100)
+                    binding.fbr236kTaxPKR.text = fbr236kAmount.toInt().toString()
+
+                    binding.totalFINALAMOUNT.text = (stampDutyAmount + tMACorpAmount + regFeeAmount + fbr236kAmount + fbr236cAmount).toInt().toString()
 
 
                 }
                 "Late Filer" -> {
-                    // Perform actions for Late Filer
                     binding.fbr236kTax.text = fbr236kLateFiler
-                    Log.d("LateFiler", fbr236kLateFiler)
+
+
+                    val fbr236kT = fbr236kLateFiler.toDoubleOrNull() ?: 0.0 // Safely convert to Double
+                    fbr236kAmount = totalFBR.toDouble() * (fbr236kT / 100)
+                    binding.fbr236kTaxPKR.text = fbr236kAmount.toInt().toString()
+
+                    binding.totalFINALAMOUNT.text = (stampDutyAmount + tMACorpAmount + regFeeAmount + fbr236kAmount + fbr236cAmount).toInt().toString()
 
                 }
                 "Non-Filer" -> {
-                    // Perform actions for Non-Filer
                     binding.fbr236kTax.text = fbr236kNonFiler
-                    Log.d("NonFiler", fbr236kNonFiler)
+
+
+                    val fbr236kT = fbr236kNonFiler.toDoubleOrNull() ?: 0.0 // Safely convert to Double
+                    fbr236kAmount = totalFBR.toDouble() * (fbr236kT / 100)
+                    binding.fbr236kTaxPKR.text = fbr236kAmount.toInt().toString()
+
+                    binding.totalFINALAMOUNT.text = (stampDutyAmount + tMACorpAmount + regFeeAmount + fbr236kAmount + fbr236cAmount).toInt().toString()
+
+
 
                 }
             }
         }
 
+        val registryOptions = mutableListOf("گفت ڈیڈ","برائے رجسٹری","سوسائٹی ٹرانسفر")
+        val registryAdapter = ArrayAdapter(this, R.layout.custom_dropdown_item, registryOptions)
+        binding.registryTransferDropdown.setAdapter(registryAdapter)
+
+        binding.registryTransferDropdown.setOnItemClickListener { _, _, position, _ ->
+
+            val selectedOption = registryOptions[position]
+
+            when (selectedOption) {
+                "برائے رجسٹری" -> {
+                    binding.plraRow.visibility = View.VISIBLE
+                    binding.plraSeparator.visibility = View.VISIBLE
+
+                    binding.fbr236kRow.visibility = View.VISIBLE
+                    binding.fbrSeperator.visibility = View.VISIBLE
+                    binding.seller236CRow.visibility = View.VISIBLE
+                    binding.seller236CSeparator.visibility = View.VISIBLE
+
+                    binding.stampDutyTaxPKR.text = (stampDutyAmount.toInt()+1000).toString()
+                }
+
+                "سوسائٹی ٹرانسفر" -> {
+                    binding.plraRow.visibility = View.GONE
+                    binding.plraSeparator.visibility = View.GONE
+
+                    binding.fbr236kRow.visibility = View.VISIBLE
+                    binding.fbrSeperator.visibility = View.VISIBLE
+                    binding.seller236CRow.visibility = View.VISIBLE
+                    binding.seller236CSeparator.visibility = View.VISIBLE
+
+
+
+                    binding.stampDutyTaxPKR.text = (stampDutyAmount.toInt()-1000).toString()
+
+                }
+
+                "گفت ڈیڈ" ->{
+                    binding.plraRow.visibility = View.VISIBLE
+                    binding.plraSeparator.visibility = View.VISIBLE
+
+                    binding.fbr236kRow.visibility = View.GONE
+                    binding.fbrSeperator.visibility = View.GONE
+                    binding.seller236CRow.visibility = View.GONE
+                    binding.seller236CSeparator.visibility = View.GONE
+
+                }
+            }
+        }
+
+        binding.registryTransferDropdown.setOnClickListener {
+            binding.registryTransferDropdown.showDropDown()
+            binding.registryTransferDropdown.requestFocus()
+        }
+
+
+
+
+
+
+
+
+
+
+//        Default Values upon Activity creation
+
         val stampDutyT = stampDuty.toDoubleOrNull() ?: 0.0 // Safely convert to Double
-        val stampDutyAmount = totalDC.toDouble() * (stampDutyT / 100)
+        stampDutyAmount = totalDC.toDouble() * (stampDutyT / 100) + 1000
         binding.stampDutyTaxPKR.text = stampDutyAmount.toInt().toString()
 
 
         val tMACorpT = tmaCorp.toDoubleOrNull() ?: 0.0 // Safely convert to Double
-        val tMACorpAmount = totalDC.toDouble() * (tMACorpT / 100)
+        tMACorpAmount = totalDC.toDouble() * (tMACorpT / 100)
         binding.tmaCorpTaxPKR.text = tMACorpAmount.toInt().toString()
 
 
         val regFeeT = regFee.toDoubleOrNull() ?: 0.0 // Safely convert to Double
-        val regFeeAmount = totalFBR.toDouble() * (regFeeT / 100)
-        binding.regsTaxPKR.text = regFeeAmount.toInt().toString()
+        regFeeAmount = totalFBR.toDouble() * (regFeeT / 100)
+        if (regFeeAmount >= 3000) {
+            binding.regsTaxPKR.text = regFeeAmount.toInt().toString()
+        }else{
+            binding.regsTaxPKR.text = "3000"
+        }
 
 
+        binding.fbr236kTax.text = fbr236kFiler
         val fbr236kT = fbr236kFiler.toDoubleOrNull() ?: 0.0 // Safely convert to Double
-        val fbr236kAmount = totalFBR.toDouble() * (fbr236kT / 100)
+        fbr236kAmount = totalFBR.toDouble() * (fbr236kT / 100)
         binding.fbr236kTaxPKR.text = fbr236kAmount.toInt().toString()
 
 
+        binding.seller236CTax.text = fbr236CFiler
         val fbr236cT = fbr236CFiler.toDoubleOrNull() ?: 0.0 // Safely convert to Double
-        val fbr236cAmount = totalFBR.toDouble() * (fbr236cT / 100)
+        fbr236cAmount = totalFBR.toDouble() * (fbr236cT / 100)
         binding.seller236CTaxPKR.text = fbr236cAmount.toInt().toString()
 
 
@@ -245,37 +380,55 @@ class Page3Activity : AppCompatActivity() {
         }
 
 
+        binding.totalFINALAMOUNT.text = (stampDutyAmount + tMACorpAmount + regFeeAmount + fbr236kAmount + fbr236cAmount).toInt().toString()
 
 
 
 
 
-//        Check Boxes
-
+// Check Boxes
         val headerCheckbox: CheckBox = binding.typesRadioBtn
-        val checkboxes: MutableList<CheckBox> = mutableListOf(
-            binding.stampDutyRadioBtn,
-            binding.tmaCorpRadioBtn,
-            binding.fbr236kRadioBtn,
-            binding.seller236CRadioBtn,
-            binding.sellerNOCRadioBtn,
-            binding.transferFeeRadioBtn,
-            binding.wasiqaFeeRadioBtn
+        val checkboxesWithValues = mapOf(
+            binding.stampDutyRadioBtn to stampDutyAmount.toInt(),
+            binding.tmaCorpRadioBtn to tMACorpAmount.toInt(),
+            binding.regsRadioBtn to regFeeAmount.toInt(),
+            binding.fbr236kRadioBtn to fbr236kAmount.toInt(),
+            binding.seller236CRadioBtn to fbr236cAmount.toInt(),
+//            binding.sellerNOCRadioBtn to sellerNOCRateAmount.toInt(),
+//            binding.transferFeeRadioBtn to transferFeeAmount.toInt(),
+//            binding.wasiqaFeeRadioBtn to wasiqaFeeAmount.toInt()
         )
 
+        var totalSum = 0 // Use Int for total sum
+
+// Header Checkbox Logic
         headerCheckbox.setOnCheckedChangeListener { _, isChecked ->
-            checkboxes.forEach { checkbox ->
-                checkbox.isChecked = isChecked
+            checkboxesWithValues.keys.forEach { checkbox ->
+                checkbox.isChecked = isChecked // Toggle all child checkboxes
             }
+
+            // Update the total directly when header checkbox is toggled
+            totalSum = if (isChecked) {
+                checkboxesWithValues.values.sum() // Sum all integer values
+            } else {
+                0
+            }
+
+            binding.totalFINALAMOUNT.text = totalSum.toString() // Update UI
         }
 
+// Individual Checkbox Logic
+        checkboxesWithValues.forEach { (checkbox, value) ->
+            checkbox.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) {
+                    totalSum += value // Add the value when checkbox is checked
+                } else {
+                    totalSum -= value // Subtract the value when checkbox is unchecked
+                }
 
-        findViewById<TextView>(R.id.date_month_day).text = LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MMM-yyyy"))
-
-
-
-
-
+                binding.totalFINALAMOUNT.text = totalSum.toString() // Update UI dynamically
+            }
+        }
 
 
 

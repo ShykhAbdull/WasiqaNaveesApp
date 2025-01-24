@@ -97,6 +97,7 @@ class ProfileActivtySettings : AppCompatActivity() {
             binding.tmaCorpEditTextInner,
             binding.regsFeeEditTextInner,
 
+
             binding.fbr236KFilerEditTextInner,
             binding.fbr236KNonfilerEditTextInner,
             binding.fbr236KLatefilerEditTextInner,
@@ -104,6 +105,7 @@ class ProfileActivtySettings : AppCompatActivity() {
             binding.fbr236CFilerEditTextInner,
             binding.fbr236CNonfilerEditTextInner,
             binding.fbr236ClatefilerEditTextInner,
+
 
             binding.officeNameEditTextInner,
             binding.officePhoneEditTextInner
@@ -115,12 +117,12 @@ class ProfileActivtySettings : AppCompatActivity() {
             "regsFeeEditTextInner" to "0.1",
 
             "fbr236KFilerEditTextInner" to "3",
-            "fbr236KNonfilerEditTextInner" to "6",
-            "fbr236KLatefilerEditTextInner" to "10.5",
+            "fbr236KLatefilerEditTextInner" to "6",
+            "fbr236KNonfilerEditTextInner" to "10.5",
 
             "fbr236CFilerEditTextInner" to "3",
-            "fbr236CNonfilerEditTextInner" to "6",
-            "fbr236ClatefilerEditTextInner" to "10.5",
+            "fbr236ClatefilerEditTextInner" to "6",
+            "fbr236CNonfilerEditTextInner" to "10.5",
 
         )
 
