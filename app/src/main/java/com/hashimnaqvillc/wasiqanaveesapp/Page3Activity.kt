@@ -3,9 +3,14 @@ package com.hashimnaqvillc.wasiqanaveesapp
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
+import android.text.InputType
+import android.util.Log
 import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.CheckBox
+import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
@@ -22,6 +27,10 @@ class Page3Activity : AppCompatActivity() {
     private var regFeeAmount: Double = 0.0
     private var fbr236kAmount: Double = 0.0
     private var fbr236cAmount: Double = 0.0
+    private  var nocAmount: Int = 0
+    private  var transferFeeAmount: Int = 0
+    private  var wasiqaFeeAmount: Int = 0
+
 
     private lateinit var binding: ActivityPage3Binding
 
@@ -30,6 +39,8 @@ class Page3Activity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityPage3Binding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        initializeDefaults()
 
 
         val settingIcon = findViewById<ImageButton>(R.id.nav_settings_icon)
@@ -113,6 +124,9 @@ class Page3Activity : AppCompatActivity() {
         binding.propertyTypeTextPg3.text = selectedPropertyType
         binding.propertyAreaTextPg3.text = "$selectedPropertyArea, $selectedDistrict"
 
+
+
+
 //        Fetching updated Tax % Data from Shared Preference
 
         val stampDuty = PreferencesManager.getData("stampDutyEditTextInner")
@@ -130,6 +144,8 @@ class Page3Activity : AppCompatActivity() {
         val officeName = PreferencesManager.getData("officeNameEditTextInner")
         val officePhone = PreferencesManager.getData("officePhoneEditTextInner")
 
+        Log.d("taxes", "$stampDuty, $tmaCorp, $regFee, $fbr236kFiler, $fbr236kNonFiler, $fbr236kLateFiler, $fbr236CFiler, $fbr236CNonFiler, $fbr236CLateFiler")
+
 
 
 //        val stampDuty = 1
@@ -146,6 +162,46 @@ class Page3Activity : AppCompatActivity() {
 
 
 
+//        Default Values upon Activity creation
+
+        val stampDutyT = stampDuty.toDoubleOrNull() ?: 0.0 // Safely convert to Double
+        stampDutyAmount = totalDC.toDouble() * (stampDutyT / 100)
+        binding.stampDutyTaxPKR.text = stampDutyAmount.toInt().toString()
+
+
+        val tMACorpT = tmaCorp.toDoubleOrNull() ?: 0.0 // Safely convert to Double
+        tMACorpAmount = totalDC.toDouble() * (tMACorpT / 100)
+        binding.tmaCorpTaxPKR.text = tMACorpAmount.toInt().toString()
+
+
+        val regFeeT = regFee.toDoubleOrNull() ?: 0.0 // Safely convert to Double
+        regFeeAmount = totalFBR.toDouble() * (regFeeT / 100)
+        if (regFeeAmount >= 3000) {
+            binding.regsTaxPKR.text = regFeeAmount.toInt().toString()
+        }else{
+            binding.regsTaxPKR.text = "3000"
+        }
+
+
+        binding.fbr236kTax.text = fbr236kFiler
+        var fbr236kT = fbr236kFiler.toDoubleOrNull() ?: 0.0 // Safely convert to Double
+        fbr236kAmount = totalFBR.toDouble() * (fbr236kT / 100)
+        binding.fbr236kTaxPKR.text = fbr236kAmount.toInt().toString()
+
+
+        binding.seller236CTax.text = fbr236CFiler
+        var fbr236cT = fbr236CFiler.toDoubleOrNull() ?: 0.0 // Safely convert to Double
+        fbr236cAmount = totalFBR.toDouble() * (fbr236cT / 100)
+        binding.seller236CTaxPKR.text = fbr236cAmount.toInt().toString()
+
+
+
+
+
+
+
+
+        
 
         binding.stampDutyTax.text = stampDuty
         binding.tmaCorpTax.text = tmaCorp
@@ -167,8 +223,6 @@ class Page3Activity : AppCompatActivity() {
         binding.fbrSeperator.visibility = View.VISIBLE
         binding.seller236CRow.visibility = View.VISIBLE
         binding.seller236CSeparator.visibility = View.VISIBLE
-
-        binding.stampDutyTaxPKR.text = (stampDutyAmount.toInt()-1000).toString()
 
 
 
@@ -198,7 +252,7 @@ class Page3Activity : AppCompatActivity() {
                     fbr236cAmount = totalFBR.toDouble() * (fbr236cT / 100)
                     binding.seller236CTaxPKR.text = fbr236cAmount.toInt().toString()
 
-                    binding.totalFINALAMOUNT.text = (stampDutyAmount + tMACorpAmount + regFeeAmount + fbr236kAmount + fbr236cAmount).toInt().toString()
+                    updateTotalAmount()
 
                 }
                 "Late Filer" -> {
@@ -209,7 +263,7 @@ class Page3Activity : AppCompatActivity() {
                     fbr236cAmount = totalFBR.toDouble() * (fbr236cT / 100)
                     binding.seller236CTaxPKR.text = fbr236cAmount.toInt().toString()
 
-                    binding.totalFINALAMOUNT.text = (stampDutyAmount + tMACorpAmount + regFeeAmount + fbr236kAmount + fbr236cAmount).toInt().toString()
+                    updateTotalAmount()
 
 
                 }
@@ -222,7 +276,7 @@ class Page3Activity : AppCompatActivity() {
                     fbr236cAmount = totalFBR.toDouble() * (fbr236cT / 100)
                     binding.seller236CTaxPKR.text = fbr236cAmount.toInt().toString()
 
-                    binding.totalFINALAMOUNT.text = (stampDutyAmount + tMACorpAmount + regFeeAmount + fbr236kAmount + fbr236cAmount).toInt().toString()
+                    updateTotalAmount()
 
 
                 }
@@ -254,7 +308,7 @@ class Page3Activity : AppCompatActivity() {
                     fbr236kAmount = totalFBR.toDouble() * (fbr236kT / 100)
                     binding.fbr236kTaxPKR.text = fbr236kAmount.toInt().toString()
 
-                    binding.totalFINALAMOUNT.text = (stampDutyAmount + tMACorpAmount + regFeeAmount + fbr236kAmount + fbr236cAmount).toInt().toString()
+                    updateTotalAmount()
 
 
                 }
@@ -266,7 +320,7 @@ class Page3Activity : AppCompatActivity() {
                     fbr236kAmount = totalFBR.toDouble() * (fbr236kT / 100)
                     binding.fbr236kTaxPKR.text = fbr236kAmount.toInt().toString()
 
-                    binding.totalFINALAMOUNT.text = (stampDutyAmount + tMACorpAmount + regFeeAmount + fbr236kAmount + fbr236cAmount).toInt().toString()
+                    updateTotalAmount()
 
                 }
                 "Non-Filer" -> {
@@ -277,8 +331,7 @@ class Page3Activity : AppCompatActivity() {
                     fbr236kAmount = totalFBR.toDouble() * (fbr236kT / 100)
                     binding.fbr236kTaxPKR.text = fbr236kAmount.toInt().toString()
 
-                    binding.totalFINALAMOUNT.text = (stampDutyAmount + tMACorpAmount + regFeeAmount + fbr236kAmount + fbr236cAmount).toInt().toString()
-
+                    updateTotalAmount()
 
 
                 }
@@ -289,48 +342,60 @@ class Page3Activity : AppCompatActivity() {
         val registryAdapter = ArrayAdapter(this, R.layout.custom_dropdown_item, registryOptions)
         binding.registryTransferDropdown.setAdapter(registryAdapter)
 
-        binding.registryTransferDropdown.setOnItemClickListener { _, _, position, _ ->
+// Default stamp duty amount
+        val defaultStampDuty = stampDutyAmount
 
+        binding.registryTransferDropdown.setOnItemClickListener { _, _, position, _ ->
             val selectedOption = registryOptions[position]
 
             when (selectedOption) {
                 "برائے رجسٹری" -> {
+                    // Show PLRA-related rows
                     binding.plraRow.visibility = View.VISIBLE
                     binding.plraSeparator.visibility = View.VISIBLE
 
+                    // Show FBR-related rows
                     binding.fbr236kRow.visibility = View.VISIBLE
                     binding.fbrSeperator.visibility = View.VISIBLE
                     binding.seller236CRow.visibility = View.VISIBLE
                     binding.seller236CSeparator.visibility = View.VISIBLE
 
-                    binding.stampDutyTaxPKR.text = (stampDutyAmount.toInt()+1000).toString()
+                    // Update stamp duty value
+                    binding.stampDutyTaxPKR.text = (defaultStampDuty + 1000).toInt().toString()
                 }
 
                 "سوسائٹی ٹرانسفر" -> {
+                    // Hide PLRA-related rows
                     binding.plraRow.visibility = View.GONE
                     binding.plraSeparator.visibility = View.GONE
 
+                    // Show FBR-related rows
                     binding.fbr236kRow.visibility = View.VISIBLE
                     binding.fbrSeperator.visibility = View.VISIBLE
                     binding.seller236CRow.visibility = View.VISIBLE
                     binding.seller236CSeparator.visibility = View.VISIBLE
 
-                    binding.stampDutyTaxPKR.text = (stampDutyAmount.toInt()-1000).toString()
-
+                    // Reset stamp duty to default value
+                    binding.stampDutyTaxPKR.text = defaultStampDuty.toInt().toString()
                 }
 
-                "گفت ڈیڈ" ->{
+                "گفت ڈیڈ" -> {
+                    // Show PLRA-related rows
                     binding.plraRow.visibility = View.VISIBLE
                     binding.plraSeparator.visibility = View.VISIBLE
 
+                    // Hide FBR-related rows
                     binding.fbr236kRow.visibility = View.GONE
                     binding.fbrSeperator.visibility = View.GONE
                     binding.seller236CRow.visibility = View.GONE
                     binding.seller236CSeparator.visibility = View.GONE
 
+                    // Reset stamp duty to default value
+                    binding.stampDutyTaxPKR.text = defaultStampDuty.toInt().toString()
                 }
             }
         }
+
 
         binding.registryTransferDropdown.setOnClickListener {
             binding.registryTransferDropdown.showDropDown()
@@ -338,45 +403,93 @@ class Page3Activity : AppCompatActivity() {
         }
 
 
+        val nocEditButton =  binding.sellerNOCEditBtn
+        val nocEditText = binding.sellerNOCTaxPKR
+
+        val e7EditButton =  binding.transferFeeEditBtn
+        val e7EditText = binding.transferFeeTaxPKR
+
+        val wasiqaEditButton =  binding.wasiqaFeeEditBtn
+        val wasiqaEditText = binding.wasiqaFeeTaxPKR
 
 
+        setupEditText(nocEditButton, nocEditText) { value ->
+            nocAmount = value
+            updateTotalAmount()
+        }
 
+        setupEditText(e7EditButton, e7EditText) { value ->
+            transferFeeAmount = value
+            updateTotalAmount()
+        }
 
-
-
-
-
-//        Default Values upon Activity creation
-
-        val stampDutyT = stampDuty.toDoubleOrNull() ?: 0.0 // Safely convert to Double
-        stampDutyAmount = totalDC.toDouble() * (stampDutyT / 100) + 1000
-        binding.stampDutyTaxPKR.text = stampDutyAmount.toInt().toString()
-
-
-        val tMACorpT = tmaCorp.toDoubleOrNull() ?: 0.0 // Safely convert to Double
-        tMACorpAmount = totalDC.toDouble() * (tMACorpT / 100)
-        binding.tmaCorpTaxPKR.text = tMACorpAmount.toInt().toString()
-
-
-        val regFeeT = regFee.toDoubleOrNull() ?: 0.0 // Safely convert to Double
-        regFeeAmount = totalFBR.toDouble() * (regFeeT / 100)
-        if (regFeeAmount >= 3000) {
-            binding.regsTaxPKR.text = regFeeAmount.toInt().toString()
-        }else{
-            binding.regsTaxPKR.text = "3000"
+        setupEditText(wasiqaEditButton, wasiqaEditText) { value ->
+            wasiqaFeeAmount = value
+            updateTotalAmount()
         }
 
 
-        binding.fbr236kTax.text = fbr236kFiler
-        val fbr236kT = fbr236kFiler.toDoubleOrNull() ?: 0.0 // Safely convert to Double
-        fbr236kAmount = totalFBR.toDouble() * (fbr236kT / 100)
-        binding.fbr236kTaxPKR.text = fbr236kAmount.toInt().toString()
+        
+        
+        
 
 
-        binding.seller236CTax.text = fbr236CFiler
-        val fbr236cT = fbr236CFiler.toDoubleOrNull() ?: 0.0 // Safely convert to Double
-        fbr236cAmount = totalFBR.toDouble() * (fbr236cT / 100)
-        binding.seller236CTaxPKR.text = fbr236cAmount.toInt().toString()
+
+
+//        nocEditButton.setOnClickListener {
+//            // Enable the EditText
+//            nocEditText.isEnabled = true
+//            nocEditText.isFocusable = true
+//            nocEditText.isFocusableInTouchMode = true
+//            nocEditText.inputType = InputType.TYPE_CLASS_NUMBER
+//
+//            // Immediately show the keyboard and request focus
+//            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+//            nocEditText.post {
+//                nocEditText.requestFocus()
+//                imm.showSoftInput(nocEditText, InputMethodManager.SHOW_IMPLICIT)
+//            }
+//        }
+//
+//        nocEditText.setOnEditorActionListener { _, actionId, _ ->
+//            if (actionId == EditorInfo.IME_ACTION_DONE) {
+//                val nocInputValue = nocEditText.text.toString().toIntOrNull() ?: 0
+//                nocAmount = nocInputValue
+//
+//                updateTotalAmount()
+//
+//                // Hide the keyboard
+//                val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+//                imm.hideSoftInputFromWindow(nocEditText.windowToken, 0)
+//
+//                // Disable the EditText
+//                nocEditText.isEnabled = false
+//                nocEditText.isFocusable = false
+//                nocEditText.isFocusableInTouchMode = false
+//
+//                true
+//            } else {
+//                false
+//            }
+//        }
+//
+//        nocEditText.setOnFocusChangeListener { _, hasFocus ->
+//            if (!hasFocus) {
+//                val nocInputValue = nocEditText.text.toString().toIntOrNull() ?: 0
+//                nocAmount = nocInputValue
+//
+//                updateTotalAmount()
+//
+//                // Disable the EditText when it loses focus
+//                nocEditText.isEnabled = false
+//                nocEditText.isFocusable = false
+//                nocEditText.isFocusableInTouchMode = false
+//            }
+//        }
+
+
+
+
 
 
 
@@ -393,9 +506,7 @@ class Page3Activity : AppCompatActivity() {
             purchaserDropDown.showDropDown()
         }
 
-
-        binding.totalFINALAMOUNT.text = (stampDutyAmount + tMACorpAmount + regFeeAmount + fbr236kAmount + fbr236cAmount).toInt().toString()
-
+        updateTotalAmount()
 
 
 
@@ -408,9 +519,9 @@ class Page3Activity : AppCompatActivity() {
             binding.regsRadioBtn to regFeeAmount.toInt(),
             binding.fbr236kRadioBtn to fbr236kAmount.toInt(),
             binding.seller236CRadioBtn to fbr236cAmount.toInt(),
-//            binding.sellerNOCRadioBtn to sellerNOCRateAmount.toInt(),
-//            binding.transferFeeRadioBtn to transferFeeAmount.toInt(),
-//            binding.wasiqaFeeRadioBtn to wasiqaFeeAmount.toInt()
+            binding.sellerNOCRadioBtn to nocAmount,
+            binding.transferFeeRadioBtn to transferFeeAmount,
+            binding.wasiqaFeeRadioBtn to wasiqaFeeAmount
         )
 
         var totalSum = 0 // Use Int for total sum
@@ -448,4 +559,79 @@ class Page3Activity : AppCompatActivity() {
 
 
     }
+
+    private fun setupEditText(button: View, editText: EditText, onValueSet: (Int) -> Unit) {
+        val enableAndShowKeyboard: () -> Unit = {
+            // Enable the EditText
+            editText.isEnabled = true
+            editText.isFocusable = true
+            editText.isFocusableInTouchMode = true
+            editText.inputType = InputType.TYPE_CLASS_NUMBER
+
+            // Immediately show the keyboard and request focus
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            editText.post {
+                editText.requestFocus()
+                imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
+            }
+        }
+
+        button.setOnClickListener {
+            enableAndShowKeyboard()
+        }
+
+        editText.setOnClickListener {
+            enableAndShowKeyboard()
+        }
+
+        editText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                val inputValue = editText.text.toString().toIntOrNull() ?: 0
+                onValueSet(inputValue)
+
+                // Hide the keyboard
+                val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(editText.windowToken, 0)
+
+                true
+            } else {
+                false
+            }
+        }
+
+        editText.setOnFocusChangeListener { _, hasFocus ->
+            if (!hasFocus) {
+                val inputValue = editText.text.toString().toIntOrNull() ?: 0
+                onValueSet(inputValue)
+            }
+        }
+    }
+
+
+    @SuppressLint("SetTextI18n")
+    private fun updateTotalAmount() {
+        binding.totalFINALAMOUNT.text = (stampDutyAmount + tMACorpAmount + regFeeAmount + fbr236kAmount + fbr236cAmount + nocAmount + transferFeeAmount + wasiqaFeeAmount).toInt().toString()
+
+    }
+
+    private fun initializeDefaults() {
+        val stampDuty =  PreferencesManager.getData("stampDutyEditTextInner")
+        if (stampDuty.isEmpty()) {
+            PreferencesManager.saveData("stampDutyEditTextInner", "1")
+            PreferencesManager.saveData("tmaCorpEditTextInner", "1")
+            PreferencesManager.saveData("regsFeeEditTextInner", "0.1")
+
+            PreferencesManager.saveData("fbr236KFilerEditTextInner", "3")
+            PreferencesManager.saveData("fbr236KNonfilerEditTextInner", "6")
+            PreferencesManager.saveData("fbr236KLateFilerEditTextInner", "10.5")
+
+            PreferencesManager.saveData("fbr236CFilerEditTextInner", "3")
+            PreferencesManager.saveData("fbr236CNonfilerEditTextInner", "6")
+            PreferencesManager.saveData("fbr236ClatefilerEditTextInner", "10.5")
+
+            PreferencesManager.saveData("officeNameEditTextInner", "Default Office")
+            PreferencesManager.saveData("officePhoneEditTextInner", "1234567890")
+        }
+    }
+
 }

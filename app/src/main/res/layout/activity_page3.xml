@@ -296,7 +296,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/registry_Transfer_Layout"
-        android:layout_width="180dp"
+        android:layout_width="155dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginBottom="5dp"
@@ -310,23 +310,22 @@
 
         <AutoCompleteTextView
             android:id="@+id/registry_transfer_dropdown"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:tooltipText="Click to open drop down"
-            android:fontFamily="@font/sf_pro_display_regular"
-            android:textStyle="bold"
-            android:text="سوسائٹی ٹرانسفر"
             android:layout_gravity="center"
+            android:background="@null"
+            android:clickable="true"
+            android:focusable="false"
+            android:fontFamily="@font/sf_pro_display_regular"
             android:gravity="center"
+            android:inputType="text"
+            android:padding="2dp"
+            android:popupBackground="@drawable/popup_background"
+            android:text="سوسائٹی ٹرانسفر"
             android:textColor="@color/black"
             android:textSize="18sp"
-            android:clickable="true"
-            android:popupBackground="@drawable/popup_background"
-            android:focusable="false"
-            android:inputType="text"
-            android:background="@null"
-            android:padding="2dp"
-            />
+            android:textStyle="bold"
+            android:tooltipText="Click to open drop down" />
     </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -744,7 +743,7 @@
 
                 <ImageButton
                     android:id="@+id/sellerNOC_edit_btn"
-                    android:layout_width="8dp"
+                    android:layout_width="18dp"
                     android:layout_height="18dp"
                     android:background="@drawable/edit_btn"
                     android:layout_gravity="center"
@@ -759,7 +758,6 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:hint="NA"
-                    android:padding="0dp"
                     android:inputType="number"
                     android:singleLine="true"
                     android:textSize="15sp"
@@ -796,7 +794,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="E7 Certificate"
+                    android:text="7E Certificate"
                     android:textSize="15sp"
                     android:layout_marginBottom="1dp"
                     android:layout_gravity="center"
@@ -805,7 +803,7 @@
                     android:textColor="#000" />
 
                 <ImageButton
-                    android:id="@+id/TransferFee_edit_btn"
+                    android:id="@+id/transferFee_EditBtn"
                     android:layout_width="18dp"
                     android:layout_height="18dp"
                     android:background="@drawable/edit_btn"
@@ -822,7 +820,6 @@
                     android:layout_weight="1"
                     android:hint="NA"
                     android:inputType="number"
-                    android:padding="0dp"
                     android:singleLine="true"
                     android:backgroundTint="@color/white"
                     android:layout_gravity="center"
@@ -868,7 +865,7 @@
                     android:textColor="#000" />
 
                 <ImageButton
-                    android:id="@+id/WasiqaFee_edit_btn"
+                    android:id="@+id/wasiqaFee_EditBtn"
                     android:layout_width="18dp"
                     android:layout_height="18dp"
                     android:background="@drawable/edit_btn"
@@ -884,7 +881,6 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:hint="NA"
-                    android:padding="0dp"
                     android:inputType="number"
                     android:layout_gravity="center"
                     android:textSize="15sp"

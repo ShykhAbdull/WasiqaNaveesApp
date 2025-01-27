@@ -48,27 +48,7 @@ private lateinit var binding: ActivitySettingsBinding
 
 
 //-------------------------------------------------------------------------
-private val initialDistricts = mutableListOf(
-    "Ahmadpur East", "Ahmed Nager Chatha", "Ali Khan Abad", "Alipur",
-    "Arifwala", "Attock", "Bhera", "Bhalwal", "Bahawalnagar", "Bahawalpur",
-    "Bhakkar", "Burewala", "Chillianwala", "Chakwal", "Chichawatni",
-    "Chiniot", "Chishtian", "Daska", "Darya Khan", "Dera Ghazi Khan",
-    "Dhaular", "Dina", "Dipalpur", "Faisalabad", "Fateh Jang", "Ghakhar Mandi",
-    "Gojra", "Gujranwala", "Gujrat", "Gujar Khan", "Hafizabad", "Haroonabad",
-    "Hasilpur", "Haveli Lakha", "Jalalpur Jattan", "Jampur", "Jaranwala",
-    "Jhang", "Jhelum", "Kalabagh", "Karor Lal Esan", "Kasur", "Kamalia",
-    "Kāmoke", "Khanewal", "Khanpur", "Kharian", "Khushab", "Kot Adu",
-    "Jauharabad", "Lahore", "Lalamusa", "Layyah", "Liaquat Pur", "Lodhran",
-    "Malakwal", "Mamoori", "Mailsi", "Mandi Bahauddin", "Mian Channu",
-    "Mianwali", "Multan", "Murree", "Muridke", "Mianwali Bangla",
-    "Muzaffargarh", "Narowal", "Okara", "Renala Khurd", "Pakpattan",
-    "Pattoki", "Pir Mahal", "Qaimpur", "Qila Didar Singh", "Rabwah",
-    "Raiwind", "Rajanpur", "Rahim Yar Khan", "Rawalpindi", "Sadiqabad",
-    "Safdarabad", "Sahiwal", "Sangla Hill", "Sarai Alamgir", "Sargodha",
-    "Shakargarh", "Sheikhupura", "Sialkot", "Sohawa", "Soianwala",
-    "Siranwali", "Talagang", "Taxila", "Toba Tek Singh", "Vehari",
-    "Wah Cantonment", "Wazirabad"
-)
+private val initialDistricts = mutableListOf("Lahore", "Kasur", "Sheikhupura", "Faisalabad","Multan",)
 
 
 
@@ -133,9 +113,13 @@ backBtn.setOnClickListener {
 //        Logic for District DropDownClick
 val districtDropDown = binding.districtDropdown
 
+    val savedDistrictList = PreferencesManager.getDropdownList()
     //        Logic for District DropDownClick
-    districtList = mutableListOf() // User-selected districts
-    var districtAdapter = ArrayAdapter(this, custom_dropdown_item, initialDistricts)
+    districtList = mutableListOf()
+
+    districtList = (savedDistrictList + initialDistricts).distinct().toMutableList()
+
+    districtAdapter = ArrayAdapter(this, custom_dropdown_item, districtList)
     districtDropDown.setAdapter(districtAdapter)
 // Start searching after typing one character
     districtDropDown.threshold = 1
@@ -303,23 +287,32 @@ if (itemCount <= 3) {
         PreferencesManager.getTownAreaMap()
     }
 
-    binding.districtDropdown.setOnItemClickListener { _, _, position, _ ->
+    binding.districtDropdown.setOnItemClickListener { _, _, _, _ ->
         val selectedDistrict = binding.districtDropdown.text.toString().trim()
+        val districtHashKey = selectedDistrict.hashCode()
 
         if (!districtList.contains(selectedDistrict)) {
             districtList.add(selectedDistrict)
-
-            // Optional: Save the updated district list to SharedPreferences
-            // PreferencesManager.saveDropdownList(districtList)
-
             Toast.makeText(this, "$selectedDistrict added successfully", Toast.LENGTH_SHORT).show()
+
+            binding.townDropdown.text.clear()
+            binding.propertyAreaDropdown.text.clear()
+
+            townList = districtTownMap[districtHashKey] ?: mutableListOf()
+
+            val townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
+            binding.townDropdown.setAdapter(townAdapter)
+            binding.townDropdown.threshold = 1
+            binding.townDropdown.requestFocus()
+
+
         } else {
             Toast.makeText(this, "$selectedDistrict is already selected", Toast.LENGTH_SHORT).show()
         }
 
         // Ensure the dropdown adapter remains linked to initialDistricts
-        val adapter = ArrayAdapter(this, custom_dropdown_item, initialDistricts)
-        binding.districtDropdown.setAdapter(adapter)
+        districtAdapter = ArrayAdapter(this, custom_dropdown_item, districtList)
+        binding.districtDropdown.setAdapter(districtAdapter)
         binding.districtDropdown.threshold = 1
     }
 
@@ -375,12 +368,10 @@ townDropDown.addTextChangedListener(object : TextWatcher {
         // Normalize the selected town to avoid formatting issues
         val currentDistrictHashKey = districtDropDown.text.toString().trim().hashCode()
         val currentTownName = townDropDown.text.toString().trim()
-
         val currentTownHashKey = "$currentDistrictHashKey-$currentTownName".hashCode()
 
         // Retrieve the areas for the selected town using the town hash key
         val areas = townAreaMap[currentTownHashKey] ?: mutableListOf()
-
 
 
         // Clear and reset areas
@@ -388,7 +379,6 @@ townDropDown.addTextChangedListener(object : TextWatcher {
         areaAdapter = ArrayAdapter(this, custom_dropdown_item, areaList)
         areaDropDown.setAdapter(areaAdapter)
         areaDropDown.threshold = 1
-
 
 
         Log.d("TownSelection", "Selected town: $districtList, $townList, $areaList")
@@ -718,7 +708,7 @@ townDropDown.addTextChangedListener(object : TextWatcher {
         val currentTownHashKey = "$currentDistrictHashKey-$currentSelectedTown".hashCode()
 
         val currentArea = areaDropDown.text.toString().trim()
-        val currentAreaHashKey = "$currentDistrictHashKey-$currentTownHashKey-$currentArea".hashCode()
+        val currentAreaHashKey = "$currentTownHashKey-$currentArea".hashCode()
 
         if (currentArea.isEmpty()) {
             // Close the keyboard
@@ -1570,7 +1560,7 @@ binding.deleteDistrictIcon.setOnClickListener {
         }
 
         // Configure dropdown for land types
-        val landOptions = mutableListOf("Agriculture", "Residential", "Commercial", "Industrial")
+        val landOptions = mutableListOf( "Residential", "Commercial","Agriculture", "Industrial")
 
         landAdapter = ArrayAdapter(this, custom_dropdown_item, landOptions)
         landTypeDropdown.setAdapter(landAdapter)
@@ -1592,8 +1582,10 @@ binding.deleteDistrictIcon.setOnClickListener {
 
             val currentDistrict = districtDropDown.text.toString().trim()
             val currentDistrictHashKey = currentDistrict.hashCode()
+
             val currentTownName = binding.townDropdown.text.toString().trim()
             val currentTownHashKey = "$currentDistrictHashKey-$currentTownName".hashCode()
+
             val currentAreaName = binding.propertyAreaDropdown.text.toString().trim()
             val currentAreaHashKey = "$currentTownHashKey-$currentAreaName".hashCode()
             val newFinalKey = generateFinalKey(currentDistrict, currentSelectedTown, currentAreaName, selectedLandType)
