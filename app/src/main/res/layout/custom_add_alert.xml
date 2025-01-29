@@ -28,18 +28,18 @@
         android:fontFamily="@font/sf_pro_display_medium"
         android:gravity="center" />
 
-<!--    &lt;!&ndash; EditText for input &ndash;&gt;-->
-<!--    <EditText-->
-<!--        android:id="@+id/inputEditText"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginTop="16dp"-->
-<!--        android:inputType="text"-->
-<!--        android:padding="10dp"-->
-<!--        android:background="@drawable/email_input_background"-->
-<!--        android:fontFamily="@font/sf_pro_display_medium"-->
-<!--        android:textColor="@android:color/black"-->
-<!--        android:textSize="16sp" />-->
+    <!-- EditText for input -->
+    <EditText
+        android:id="@+id/addInputEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:inputType="text"
+        android:padding="10dp"
+        android:background="@drawable/email_input_background"
+        android:fontFamily="@font/sf_pro_display_medium"
+        android:textColor="@android:color/black"
+        android:textSize="16sp" />
 
 
 
