@@ -23,6 +23,7 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -48,14 +49,14 @@ private lateinit var binding: ActivitySettingsBinding
 
 
 //-------------------------------------------------------------------------
-private val initialDistricts = mutableListOf("Lahore", "Kasur", "Sheikhupura", "Faisalabad","Multan")
+//private val initialDistricts = mutableListOf("Lahore", "Kasur", "Sheikhupura", "Faisalabad","Multan")
 
 
 
 
 //------------------------------------------------------------------------
 
-@SuppressLint("ClickableViewAccessibility", "InflateParams")
+@SuppressLint("ClickableViewAccessibility", "InflateParams", "CutPasteId")
 override fun onCreate(savedInstanceState: Bundle?) {
 super.onCreate(savedInstanceState)
 binding = ActivitySettingsBinding.inflate(layoutInflater)
@@ -65,6 +66,18 @@ lateinit var selectedLandType: String
 landList = mutableListOf()
 
 selectedLandType = ""
+
+
+    val districtTownMap = PreferencesManager.getDistrictTownMap()
+    val townAreaMap = PreferencesManager.getTownAreaMap()
+
+    onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+
+            handleBackPress()
+        }
+    })
+
 
 //    ------------------------------------------------------ UI CHANGES -------------------------------------------------------------------
 
@@ -107,7 +120,7 @@ profileEditBtn.setOnClickListener {
 
 val backBtn = findViewById<ImageButton>(R.id.nav_back)
 backBtn.setOnClickListener {
-    finish()
+    handleBackPress()
 }
 
 
@@ -118,7 +131,7 @@ val districtDropDown = binding.districtDropdown
     //        Logic for District DropDownClick
     districtList = mutableListOf()
 
-    districtList = (savedDistrictList + initialDistricts).distinct().toMutableList()
+    districtList = savedDistrictList.toMutableList()
 
     districtAdapter = ArrayAdapter(this, custom_dropdown_item, districtList)
     districtDropDown.setAdapter(districtAdapter)
@@ -277,16 +290,16 @@ if (itemCount <= 3) {
     })
 
 
-    // Fetch the districtTownMap once when the activity starts
-    val districtTownMap: MutableMap<Int, MutableList<String>> by lazy {
-        PreferencesManager.getDistrictTownMap()
-    }
+//    // Fetch the districtTownMap once when the activity starts
+//    val districtTownMap: MutableMap<Int, MutableList<String>> by lazy {
+//        PreferencesManager.getDistrictTownMap()
+//    }
 
 
-    // Fetch the TownAreaMap once when the activity starts
-    val townAreaMap: MutableMap<Int, MutableList<String>> by lazy {
-        PreferencesManager.getTownAreaMap()
-    }
+//    // Fetch the TownAreaMap once when the activity starts
+//    val townAreaMap: MutableMap<Int, MutableList<String>> by lazy {
+//        PreferencesManager.getTownAreaMap()
+//    }
 
     binding.districtDropdown.setOnItemClickListener { _, _, _, _ ->
         val selectedDistrict = binding.districtDropdown.text.toString().trim()
@@ -509,12 +522,15 @@ townDropDown.addTextChangedListener(object : TextWatcher {
 
                     if (districtList.contains(currentDistrictName)){
                         Toast.makeText(this, "District Already Exists!", Toast.LENGTH_SHORT).show()
-                    } else {
+                    } else if (currentDistrictName.isEmpty()){
+                        Toast.makeText(this, "District cannot be empty", Toast.LENGTH_SHORT).show()
+                    }
+                    else {
 
                         // Add the new district to the list
                         savedDistrictList.add(currentDistrictName)
 
-                        districtList = (savedDistrictList + initialDistricts).distinct().toMutableList()
+                        districtList = savedDistrictList.toMutableList()
 
 
                         // Refresh adapter by recreating it
@@ -1580,9 +1596,29 @@ binding.deleteDistrictIcon.setOnClickListener {
             }
         }
 
+
+
+// Disable EditText fields initially
+        dialogView.findViewById<EditText>(R.id.marlaUnitPriceDC)?.isEnabled = false
+        dialogView.findViewById<EditText>(R.id.marlaUnitPriceFBR)?.isEnabled = false
+        dialogView.findViewById<EditText>(R.id.covereAreaDC)?.isEnabled = false
+        dialogView.findViewById<EditText>(R.id.covereAreaFBR)?.isEnabled = false
+        dialogView.findViewById<EditText>(R.id.khasraNumberEditText)?.isEnabled = false
+
+
         landTypeDropdown.setOnItemClickListener { _, _, position, _ ->
             // Get the selected land type
             selectedLandType = landOptions[position]
+
+
+            // Enable the fields now that a valid selection has been made
+            dialogView.findViewById<EditText>(R.id.marlaUnitPriceDC)?.isEnabled = true
+            dialogView.findViewById<EditText>(R.id.marlaUnitPriceFBR)?.isEnabled = true
+            dialogView.findViewById<EditText>(R.id.covereAreaDC)?.isEnabled = true
+            dialogView.findViewById<EditText>(R.id.covereAreaFBR)?.isEnabled = true
+            dialogView.findViewById<EditText>(R.id.khasraNumberEditText)?.isEnabled = true
+
+
 
             val currentDistrict = districtDropDown.text.toString().trim()
             val currentDistrictHashKey = currentDistrict.hashCode()
@@ -1598,22 +1634,31 @@ binding.deleteDistrictIcon.setOnClickListener {
             val landTypes = areaLandMap.getOrPut(currentAreaHashKey) { mutableListOf() }
             if (!landTypes.contains(selectedLandType)) {
                 landTypes.add(selectedLandType)
-//                PreferencesManager.saveAreaLandMap(areaLandMap) // Save the updated map
                 Log.d("AreaLandMap", "Updated land types for $currentAreaHashKey: $landTypes")
             }
 
             // Retrieve and prepopulate existing values for the newFinalKey
             val existingValues = PreferencesManager.getLandOptionRates()[newFinalKey]
-            existingValues?.let {
-                dialogView.findViewById<EditText>(R.id.marlaUnitPriceDC)?.setText(it.marlaDC)
-                dialogView.findViewById<EditText>(R.id.marlaUnitPriceFBR)?.setText(it.marlaFBR)
-                dialogView.findViewById<EditText>(R.id.covereAreaDC)?.setText(it.coveredAreaDC)
-                dialogView.findViewById<EditText>(R.id.covereAreaFBR)?.setText(it.coveredAreaFBR)
-                dialogView.findViewById<EditText>(R.id.khasraNumberEditText)?.setText(it.khasraNumber)
+
+            if (existingValues != null) {
+                // Populate EditText fields with existing values
+                dialogView.findViewById<EditText>(R.id.marlaUnitPriceDC)?.setText(existingValues.marlaDC)
+                dialogView.findViewById<EditText>(R.id.marlaUnitPriceFBR)?.setText(existingValues.marlaFBR)
+                dialogView.findViewById<EditText>(R.id.covereAreaDC)?.setText(existingValues.coveredAreaDC)
+                dialogView.findViewById<EditText>(R.id.covereAreaFBR)?.setText(existingValues.coveredAreaFBR)
+                dialogView.findViewById<EditText>(R.id.khasraNumberEditText)?.setText(existingValues.khasraNumber)
+            } else {
+                // Clear the EditText fields if no existing values are found
+                dialogView.findViewById<EditText>(R.id.marlaUnitPriceDC)?.setText("")
+                dialogView.findViewById<EditText>(R.id.marlaUnitPriceFBR)?.setText("")
+                dialogView.findViewById<EditText>(R.id.covereAreaDC)?.setText("")
+                dialogView.findViewById<EditText>(R.id.covereAreaFBR)?.setText("")
+                dialogView.findViewById<EditText>(R.id.khasraNumberEditText)?.setText("")
             }
 
             Log.d("LandTypeSelection", "Selected land type: $selectedLandType, Final Key: $newFinalKey")
         }
+
 
 
         // Create the dialog
@@ -1638,15 +1683,6 @@ binding.deleteDistrictIcon.setOnClickListener {
 
 
                 val finalKey = generateFinalKey(currentSelectedDistrict, currentSelectedTown, currentSelectedArea, selectedLandType)
-
-//                // Create LandValues object
-//                val landValues = PreferencesManager.LandValues(
-//                    marlaDC = marlaDc,
-//                    marlaFBR = marlaFbr,
-//                    coveredAreaDC = coveredAreaDc,
-//                    coveredAreaFBR = coveredAreaFbr,
-//                    khasraNumber = khasraNumber
-//                )
 
                 // Create LandValues object
                 val landValues = PreferencesManager.LandValues(
@@ -1732,6 +1768,44 @@ binding.deleteDistrictIcon.setOnClickListener {
         saveAllDialog.show()
     }
 }
+
+    private fun handleBackPress() {
+        val districtTownMap = PreferencesManager.getDistrictTownMap()
+        val townAreaMap = PreferencesManager.getTownAreaMap()
+
+        if (binding.districtDropdown.text.toString().isNotEmpty() ||
+            binding.townDropdown.text.toString().isNotEmpty() ||
+            binding.propertyAreaDropdown.text.toString().isNotEmpty()) {
+
+            val districtKey = binding.districtDropdown.text.toString().trim().hashCode()
+            val townName = binding.townDropdown.text.toString().trim()
+            val areaName = binding.propertyAreaDropdown.text.toString().trim()
+            val townKey = "$districtKey-$townName".hashCode()
+
+            // Properly checking if the town exists in the districtTownMap
+            val townExists = districtTownMap[districtKey]?.contains(townName) ?: false
+            val areaExists = townAreaMap[townKey]?.contains(areaName) ?: false
+
+            if (!townExists || !areaExists) {
+                showUnsavedChangesDialog()
+            } else {
+                finish() // Go back normally if town and area exist
+            }
+        } else {
+            finish() // Go back normally if no input fields are filled
+        }
+    }
+
+    private fun showUnsavedChangesDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Unsaved Changes")
+            .setMessage("Unchanged data would be lost. Are you sure you want to go back?")
+            .setPositiveButton("Yes") { _, _ -> finish() }
+            .setNegativeButton("No", null) // Dismiss dialog
+            .show()
+    }
+
+
 //    End of OnCreate
 
 

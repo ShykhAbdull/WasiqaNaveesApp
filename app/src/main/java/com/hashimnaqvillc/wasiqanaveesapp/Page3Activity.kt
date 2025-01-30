@@ -180,6 +180,7 @@ class Page3Activity : AppCompatActivity() {
             binding.regsTaxPKR.text = regFeeAmount.toInt().toString()
         }else{
             binding.regsTaxPKR.text = "3000"
+            regFeeAmount = 3000.0
         }
 
 
@@ -252,8 +253,9 @@ class Page3Activity : AppCompatActivity() {
                     fbr236cAmount = totalFBR.toDouble() * (fbr236cT / 100)
                     binding.seller236CTaxPKR.text = fbr236cAmount.toInt().toString()
 
-                    updateTotalAmount()
-
+                    if (binding.registryTransferDropdown.text.toString() == "برائے رجسٹری" || binding.registryTransferDropdown.text.toString() == "سوسائٹی ٹرانسفر" ) {
+                        updateTotalAmount()
+                    }
                 }
                 "Late Filer" -> {
                     binding.seller236CTax.text = fbr236CLateFiler
@@ -263,8 +265,9 @@ class Page3Activity : AppCompatActivity() {
                     fbr236cAmount = totalFBR.toDouble() * (fbr236cT / 100)
                     binding.seller236CTaxPKR.text = fbr236cAmount.toInt().toString()
 
-                    updateTotalAmount()
-
+                    if (binding.registryTransferDropdown.text.toString() == "برائے رجسٹری" || binding.registryTransferDropdown.text.toString() == "سوسائٹی ٹرانسفر" ) {
+                        updateTotalAmount()
+                    }
 
                 }
                 "Non-Filer" -> {
@@ -276,8 +279,9 @@ class Page3Activity : AppCompatActivity() {
                     fbr236cAmount = totalFBR.toDouble() * (fbr236cT / 100)
                     binding.seller236CTaxPKR.text = fbr236cAmount.toInt().toString()
 
-                    updateTotalAmount()
-
+                    if (binding.registryTransferDropdown.text.toString() == "برائے رجسٹری" || binding.registryTransferDropdown.text.toString() == "سوسائٹی ٹرانسفر" ) {
+                        updateTotalAmount()
+                    }
 
                 }
             }
@@ -308,7 +312,9 @@ class Page3Activity : AppCompatActivity() {
                     fbr236kAmount = totalFBR.toDouble() * (fbr236kT / 100)
                     binding.fbr236kTaxPKR.text = fbr236kAmount.toInt().toString()
 
-                    updateTotalAmount()
+                    if (binding.registryTransferDropdown.text.toString() == "برائے رجسٹری" || binding.registryTransferDropdown.text.toString() == "سوسائٹی ٹرانسفر" ) {
+                        updateTotalAmount()
+                    }
 
 
                 }
@@ -320,8 +326,9 @@ class Page3Activity : AppCompatActivity() {
                     fbr236kAmount = totalFBR.toDouble() * (fbr236kT / 100)
                     binding.fbr236kTaxPKR.text = fbr236kAmount.toInt().toString()
 
-                    updateTotalAmount()
-
+                    if (binding.registryTransferDropdown.text.toString() == "برائے رجسٹری" || binding.registryTransferDropdown.text.toString() == "سوسائٹی ٹرانسفر" ) {
+                        updateTotalAmount()
+                    }
                 }
                 "Non-Filer" -> {
                     binding.fbr236kTax.text = fbr236kNonFiler
@@ -331,8 +338,9 @@ class Page3Activity : AppCompatActivity() {
                     fbr236kAmount = totalFBR.toDouble() * (fbr236kT / 100)
                     binding.fbr236kTaxPKR.text = fbr236kAmount.toInt().toString()
 
-                    updateTotalAmount()
-
+                    if (binding.registryTransferDropdown.text.toString() == "برائے رجسٹری" || binding.registryTransferDropdown.text.toString() == "سوسائٹی ٹرانسفر" ) {
+                        updateTotalAmount()
+                    }
 
                 }
             }
@@ -360,8 +368,17 @@ class Page3Activity : AppCompatActivity() {
                     binding.seller236CRow.visibility = View.VISIBLE
                     binding.seller236CSeparator.visibility = View.VISIBLE
 
+                    if (stampDutyAmount == tMACorpAmount ) {
+                        binding.stampDutyTaxPKR.text = (defaultStampDuty.toInt() + 1000).toString()
+                        stampDutyAmount += 1000
+                    }
+
+
                     // Update stamp duty value
-                    binding.stampDutyTaxPKR.text = (defaultStampDuty + 1000).toInt().toString()
+                    val totalSum = stampDutyAmount + tMACorpAmount + regFeeAmount  + fbr236kAmount + fbr236cAmount +   nocAmount + transferFeeAmount + wasiqaFeeAmount
+
+                    binding.totalFINALAMOUNT.text = totalSum.toInt().toString()
+
                 }
 
                 "سوسائٹی ٹرانسفر" -> {
@@ -375,8 +392,15 @@ class Page3Activity : AppCompatActivity() {
                     binding.seller236CRow.visibility = View.VISIBLE
                     binding.seller236CSeparator.visibility = View.VISIBLE
 
-                    // Reset stamp duty to default value
-                    binding.stampDutyTaxPKR.text = defaultStampDuty.toInt().toString()
+                    if (stampDutyAmount > tMACorpAmount ) {
+                        binding.stampDutyTaxPKR.text = (stampDutyAmount.toInt() - 1000).toString()
+                        stampDutyAmount -= 1000
+                    }
+
+
+                    val totalSum = stampDutyAmount + tMACorpAmount +fbr236kAmount + fbr236cAmount +   nocAmount + transferFeeAmount + wasiqaFeeAmount
+
+                    binding.totalFINALAMOUNT.text = totalSum.toInt().toString()
                 }
 
                 "گفت ڈیڈ" -> {
@@ -390,8 +414,16 @@ class Page3Activity : AppCompatActivity() {
                     binding.seller236CRow.visibility = View.GONE
                     binding.seller236CSeparator.visibility = View.GONE
 
-                    // Reset stamp duty to default value
-                    binding.stampDutyTaxPKR.text = defaultStampDuty.toInt().toString()
+                    if (stampDutyAmount > tMACorpAmount ) {
+                        binding.stampDutyTaxPKR.text = (stampDutyAmount.toInt() - 1000).toString()
+                        stampDutyAmount -= 1000
+                    }
+
+
+
+                    val totalSum = stampDutyAmount + tMACorpAmount + regFeeAmount +     nocAmount + transferFeeAmount + wasiqaFeeAmount
+
+                    binding.totalFINALAMOUNT.text = totalSum.toInt().toString()
                 }
             }
         }
@@ -506,8 +538,9 @@ class Page3Activity : AppCompatActivity() {
             purchaserDropDown.showDropDown()
         }
 
-        updateTotalAmount()
 
+
+        binding.totalFINALAMOUNT.text =  (stampDutyAmount + tMACorpAmount +fbr236kAmount + fbr236cAmount +   nocAmount + transferFeeAmount + wasiqaFeeAmount).toInt().toString()
 
 
 
@@ -628,9 +661,6 @@ class Page3Activity : AppCompatActivity() {
             PreferencesManager.saveData("fbr236CFilerEditTextInner", "3")
             PreferencesManager.saveData("fbr236CNonfilerEditTextInner", "6")
             PreferencesManager.saveData("fbr236ClatefilerEditTextInner", "10.5")
-
-            PreferencesManager.saveData("officeNameEditTextInner", "Default Office")
-            PreferencesManager.saveData("officePhoneEditTextInner", "1234567890")
         }
     }
 

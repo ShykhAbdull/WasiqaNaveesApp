@@ -125,9 +125,6 @@
             android:hint="Select Land Classification"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="20dp"
-            app:endIconDrawable="@drawable/cross"
-            app:endIconMode="clear_text"
-            app:endIconTint="@color/wasiqa_dark"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             >
         <AutoCompleteTextView
