@@ -13,7 +13,6 @@ import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.hashimnaqvillc.wasiqanaveesapp.databinding.ActivityPage3Binding
@@ -351,8 +350,6 @@ class Page3Activity : AppCompatActivity() {
         binding.registryTransferDropdown.setAdapter(registryAdapter)
 
 // Default stamp duty amount
-        val defaultStampDuty = stampDutyAmount
-
         binding.registryTransferDropdown.setOnItemClickListener { _, _, position, _ ->
             val selectedOption = registryOptions[position]
 
@@ -368,16 +365,28 @@ class Page3Activity : AppCompatActivity() {
                     binding.seller236CRow.visibility = View.VISIBLE
                     binding.seller236CSeparator.visibility = View.VISIBLE
 
-                    if (stampDutyAmount == tMACorpAmount ) {
-                        binding.stampDutyTaxPKR.text = (defaultStampDuty.toInt() + 1000).toString()
-                        stampDutyAmount += 1000
+//                    if (stampDutyAmount == tMACorpAmount ) {
+//                        binding.stampDutyTaxPKR.text = (defaultStampDuty.toInt() + 1000).toString()
+//                        stampDutyAmount += 1000
+//                    }
+
+                    if (binding.stampDutyTaxPKR.text.toString().toInt() == binding.tmaCorpTaxPKR.text.toString().toInt() ) {
+                        binding.stampDutyTaxPKR.text = (binding.stampDutyTaxPKR.text.toString().toInt() + 1000).toString()
                     }
+                    Log.d("taxes", "Stamp Duty: ${binding.stampDutyTaxPKR.text}")
 
 
-                    // Update stamp duty value
-                    val totalSum = stampDutyAmount + tMACorpAmount + regFeeAmount  + fbr236kAmount + fbr236cAmount +   nocAmount + transferFeeAmount + wasiqaFeeAmount
+// Update stamp duty value
+                    val totalSum = (binding.stampDutyTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+                            (binding.tmaCorpTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+                            (binding.regsTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+                            (binding.fbr236kTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+                            (binding.seller236CTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+                            (binding.sellerNOCTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+                            (binding.transferFeeTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+                            (binding.wasiqaFeeTaxPKR.text?.toString()?.toIntOrNull() ?: 0)
 
-                    binding.totalFINALAMOUNT.text = totalSum.toInt().toString()
+                    binding.totalFINALAMOUNT.text = totalSum.toString()
 
                 }
 
@@ -392,15 +401,26 @@ class Page3Activity : AppCompatActivity() {
                     binding.seller236CRow.visibility = View.VISIBLE
                     binding.seller236CSeparator.visibility = View.VISIBLE
 
-                    if (stampDutyAmount > tMACorpAmount ) {
-                        binding.stampDutyTaxPKR.text = (stampDutyAmount.toInt() - 1000).toString()
-                        stampDutyAmount -= 1000
+//                    if (stampDutyAmount > tMACorpAmount ) {
+//                        binding.stampDutyTaxPKR.text = (stampDutyAmount.toInt() - 1000).toString()
+//                        stampDutyAmount -= 1000
+//                    }
+
+                    if (binding.stampDutyTaxPKR.text.toString().toInt() > binding.tmaCorpTaxPKR.text.toString().toInt() ) {
+                        binding.stampDutyTaxPKR.text = (binding.stampDutyTaxPKR.text.toString().toInt() - 1000).toString()
                     }
 
 
-                    val totalSum = stampDutyAmount + tMACorpAmount +fbr236kAmount + fbr236cAmount +   nocAmount + transferFeeAmount + wasiqaFeeAmount
+                    val totalSum = (binding.stampDutyTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+                            (binding.tmaCorpTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
 
-                    binding.totalFINALAMOUNT.text = totalSum.toInt().toString()
+                            (binding.fbr236kTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+                            (binding.seller236CTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+                            (binding.sellerNOCTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+                            (binding.transferFeeTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+                            (binding.wasiqaFeeTaxPKR.text?.toString()?.toIntOrNull() ?: 0)
+
+                    binding.totalFINALAMOUNT.text = totalSum.toString()
                 }
 
                 "گفت ڈیڈ" -> {
@@ -414,16 +434,26 @@ class Page3Activity : AppCompatActivity() {
                     binding.seller236CRow.visibility = View.GONE
                     binding.seller236CSeparator.visibility = View.GONE
 
-                    if (stampDutyAmount > tMACorpAmount ) {
-                        binding.stampDutyTaxPKR.text = (stampDutyAmount.toInt() - 1000).toString()
-                        stampDutyAmount -= 1000
+//                    if (stampDutyAmount > tMACorpAmount ) {
+//                        binding.stampDutyTaxPKR.text = (stampDutyAmount.toInt() - 1000).toString()
+//                        stampDutyAmount -= 1000
+//                    }
+
+                    if (binding.stampDutyTaxPKR.text.toString().toInt() > binding.tmaCorpTaxPKR.text.toString().toInt() ) {
+                        binding.stampDutyTaxPKR.text = (binding.stampDutyTaxPKR.text.toString().toInt() - 1000).toString()
                     }
 
 
 
-                    val totalSum = stampDutyAmount + tMACorpAmount + regFeeAmount +     nocAmount + transferFeeAmount + wasiqaFeeAmount
+                    val totalSum = (binding.stampDutyTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+                            (binding.tmaCorpTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+                            (binding.regsTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
 
-                    binding.totalFINALAMOUNT.text = totalSum.toInt().toString()
+                            (binding.sellerNOCTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+                            (binding.transferFeeTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+                            (binding.wasiqaFeeTaxPKR.text?.toString()?.toIntOrNull() ?: 0)
+
+                    binding.totalFINALAMOUNT.text = totalSum.toString()
                 }
             }
         }
@@ -540,51 +570,56 @@ class Page3Activity : AppCompatActivity() {
 
 
 
-        binding.totalFINALAMOUNT.text =  (stampDutyAmount + tMACorpAmount +fbr236kAmount + fbr236cAmount +   nocAmount + transferFeeAmount + wasiqaFeeAmount).toInt().toString()
+        val finalSumDefault = (binding.stampDutyTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+                (binding.tmaCorpTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+                (binding.fbr236kTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+                (binding.seller236CTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+                (binding.sellerNOCTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+                (binding.transferFeeTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+                (binding.wasiqaFeeTaxPKR.text?.toString()?.toIntOrNull() ?: 0)
+
+        binding.totalFINALAMOUNT.text = finalSumDefault.toString()
 
 
-
-// Check Boxes
         val headerCheckbox: CheckBox = binding.typesRadioBtn
-        val checkboxesWithValues = mapOf(
-            binding.stampDutyRadioBtn to stampDutyAmount.toInt(),
-            binding.tmaCorpRadioBtn to tMACorpAmount.toInt(),
-            binding.regsRadioBtn to regFeeAmount.toInt(),
-            binding.fbr236kRadioBtn to fbr236kAmount.toInt(),
-            binding.seller236CRadioBtn to fbr236cAmount.toInt(),
-            binding.sellerNOCRadioBtn to nocAmount,
-            binding.transferFeeRadioBtn to transferFeeAmount,
-            binding.wasiqaFeeRadioBtn to wasiqaFeeAmount
+        val checkboxesWithValues: Map<CheckBox, Int> = mapOf(
+            binding.stampDutyRadioBtn to (binding.stampDutyTaxPKR.text?.toString()?.trim()?.toIntOrNull() ?: 0),
+            binding.tmaCorpRadioBtn to (binding.tmaCorpTaxPKR.text?.toString()?.trim()?.toIntOrNull() ?: 0),
+            binding.regsRadioBtn to (binding.regsTaxPKR.text?.toString()?.trim()?.toIntOrNull() ?: 0),
+            binding.fbr236kRadioBtn to (binding.fbr236kTaxPKR.text?.toString()?.trim()?.toIntOrNull() ?: 0),
+            binding.seller236CRadioBtn to (binding.seller236CTaxPKR.text?.toString()?.trim()?.toIntOrNull() ?: 0),
+            binding.sellerNOCRadioBtn to (binding.sellerNOCTaxPKR.text?.toString()?.trim()?.toIntOrNull() ?: 0),
+            binding.transferFeeRadioBtn to (binding.transferFeeTaxPKR.text?.toString()?.trim()?.toIntOrNull() ?: 0),
+            binding.wasiqaFeeRadioBtn to (binding.wasiqaFeeTaxPKR.text?.toString()?.trim()?.toIntOrNull() ?: 0)
         )
 
         var totalSum = 0 // Use Int for total sum
+
+        // Function to update the total sum and UI
+        fun updateTotalSum() {
+            totalSum = checkboxesWithValues
+                .filter { (checkbox, _) -> checkbox.isChecked } // Filter checked checkboxes
+                .values
+                .sum() // Sum their values
+
+            binding.totalFINALAMOUNT.text = totalSum.toString() // Update UI
+        }
 
 // Header Checkbox Logic
         headerCheckbox.setOnCheckedChangeListener { _, isChecked ->
             checkboxesWithValues.keys.forEach { checkbox ->
                 checkbox.isChecked = isChecked // Toggle all child checkboxes
             }
-
-            // Update the total directly when header checkbox is toggled
-            totalSum = if (isChecked) {
-                checkboxesWithValues.values.sum() // Sum all integer values
-            } else {
-                0
-            }
-
-            binding.totalFINALAMOUNT.text = totalSum.toString() // Update UI
+            updateTotalSum() // Update the total sum and UI
         }
 
 // Individual Checkbox Logic
-        checkboxesWithValues.forEach { (checkbox, value) ->
-            checkbox.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked) {
-                    totalSum += value // Add the value when checkbox is checked
-                } else {
-                    totalSum -= value // Subtract the value when checkbox is unchecked
-                }
+        checkboxesWithValues.forEach { (checkbox, _) ->
+            checkbox.setOnCheckedChangeListener { _, _ ->
+                updateTotalSum() // Update the total sum and UI when any checkbox is toggled
 
-                binding.totalFINALAMOUNT.text = totalSum.toString() // Update UI dynamically
+                // Update header checkbox state based on child checkboxes
+                headerCheckbox.isChecked = checkboxesWithValues.keys.all { it.isChecked }
             }
         }
 
@@ -643,8 +678,16 @@ class Page3Activity : AppCompatActivity() {
 
     @SuppressLint("SetTextI18n")
     private fun updateTotalAmount() {
-        binding.totalFINALAMOUNT.text = (stampDutyAmount + tMACorpAmount + regFeeAmount + fbr236kAmount + fbr236cAmount + nocAmount + transferFeeAmount + wasiqaFeeAmount).toInt().toString()
+        val totalSum = (binding.stampDutyTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+                (binding.tmaCorpTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+                (binding.regsTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+                (binding.fbr236kTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+                (binding.seller236CTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+                (binding.sellerNOCTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+                (binding.transferFeeTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+                (binding.wasiqaFeeTaxPKR.text?.toString()?.toIntOrNull() ?: 0)
 
+        binding.totalFINALAMOUNT.text = totalSum.toString()
     }
 
     private fun initializeDefaults() {
