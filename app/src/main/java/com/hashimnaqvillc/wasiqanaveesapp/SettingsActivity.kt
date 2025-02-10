@@ -45,6 +45,7 @@ import com.hashimnaqvillc.wasiqanaveesapp.PreferencesManager.saveTownAreaMap
 import com.hashimnaqvillc.wasiqanaveesapp.R.layout.custom_dropdown_item
 import com.hashimnaqvillc.wasiqanaveesapp.databinding.ActivitySettingsBinding
 
+
 class SettingsActivity : AppCompatActivity() {
 
 private lateinit var districtList: MutableList<String>
@@ -929,11 +930,11 @@ townDropDown.addTextChangedListener(object : TextWatcher {
 
                         Log.d("newFinalKey", "newFinalKey: $oldFinalKey, $newFinalKey")
 
-                        val currentValues = PreferencesManager.getLandOptionRates()
+                        val currentValues = getLandOptionRates()
                         val existingLandValues = currentValues[oldFinalKey] ?: return@setPositiveButton
                         currentValues.remove(oldFinalKey) // Remove old key
                         currentValues[newFinalKey] = existingLandValues // Add with new key
-                        PreferencesManager.saveLandRates(currentValues)
+                        saveLandRates(currentValues)
 
 
                         districtDropDown.setText(newDistrictName, false)
@@ -1081,11 +1082,11 @@ townDropDown.addTextChangedListener(object : TextWatcher {
                                 val oldFinalKey = generateFinalKey(currentSelectedDistrict, currentTownName, currentArea, selectedLandType)
                                 val newFinalKey = generateFinalKey(currentSelectedDistrict, newTownName, currentArea, selectedLandType)
 
-                                val currentValues = PreferencesManager.getLandOptionRates()
+                                val currentValues = getLandOptionRates()
                                 val existingLandValues = currentValues[oldFinalKey] ?: return@setPositiveButton
                                 currentValues.remove(oldFinalKey)
                                 currentValues[newFinalKey] = existingLandValues
-                                PreferencesManager.saveLandRates(currentValues)
+                                saveLandRates(currentValues)
 
                                 // Update UI elements
                                 townDropDown.setText(newTownName, false)
@@ -1216,11 +1217,11 @@ townDropDown.addTextChangedListener(object : TextWatcher {
                             val oldFinalKey = generateFinalKey(currentSelectedDistrict, currentSelectedTown, currentAreaName, selectedLandType)
                             val newFinalKey = generateFinalKey(currentSelectedDistrict, currentSelectedTown, newAreaName, selectedLandType)
 
-                            val currentValues = PreferencesManager.getLandOptionRates()
+                            val currentValues = getLandOptionRates()
                             val existingLandValues = currentValues[oldFinalKey] ?: return@setPositiveButton
                             currentValues.remove(oldFinalKey)
                             currentValues[newFinalKey] = existingLandValues
-                            PreferencesManager.saveLandRates(currentValues)
+                            saveLandRates(currentValues)
 
                             // Update UI elements
                             areaDropDown.setText(newAreaName, false)
@@ -1651,7 +1652,7 @@ binding.deleteDistrictIcon.setOnClickListener {
             }
 
             // Retrieve and prepopulate existing values for the newFinalKey
-            val existingValues = PreferencesManager.getLandOptionRates()[newFinalKey]
+            val existingValues = getLandOptionRates()[newFinalKey]
 
             if (existingValues != null) {
                 // Populate EditText fields with existing values
@@ -1710,21 +1711,21 @@ binding.deleteDistrictIcon.setOnClickListener {
 
                 try {
                     // Save the updated list in SharedPreferences
-                    PreferencesManager.saveDropdownList(districtList)
+                    saveDropdownList(districtList)
 
                     // Save updated district-town map in SharedPreference
-                    PreferencesManager.saveDistrictTownMap(districtTownMap)
+                    saveDistrictTownMap(districtTownMap)
 
                     // Save updated Town-Area map in SharedPreference
-                    PreferencesManager.saveTownAreaMap(townAreaMap)
+                    saveTownAreaMap(townAreaMap)
 
-                    PreferencesManager.saveAreaLandMap(areaLandMap)
+                    saveAreaLandMap(areaLandMap)
 
-                    val currentValues = PreferencesManager.getLandOptionRates()
+                    val currentValues = getLandOptionRates()
 
                     currentValues[finalKey] = landValues
 
-                    PreferencesManager.saveLandRates(currentValues)
+                    saveLandRates(currentValues)
 
 
                     Toast.makeText(this, "Data saved successfully!", Toast.LENGTH_SHORT).show()

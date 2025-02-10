@@ -152,12 +152,12 @@ class Page3Activity : AppCompatActivity() {
 //        val regFee =  0.1
 //
 //        val fbr236kFiler = 3
-//        val fbr236kNonFiler = 6
-//        val fbr236kLateFiler = 10.5
+//        val fbr236kLateFiler = 6
+//        val fbr236kNonFiler = 10.5
 //
 //        val fbr236CFiler = 3
-//        val fbr236CNonFiler = 6
-//        val fbr236CLateFiler = 10.5
+//        val fbr236CLateFiler = 6
+//        val fbr236CNonFiler = 10.5
 
 
 

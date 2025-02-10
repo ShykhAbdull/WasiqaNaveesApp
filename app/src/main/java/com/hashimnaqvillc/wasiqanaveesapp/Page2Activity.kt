@@ -79,8 +79,8 @@ class Page2Activity : AppCompatActivity() {
         if (kanalValue != 0) {
             landAreaStringBuilder.append("$kanalValue Kanal, ")
         }
-        if (marlaValue != 0.0.toFloat()) {
-            landAreaStringBuilder.append("${"%.3f".format(marlaValue)} Marla, ")
+        if (marlaValue != 0.0f) {
+            landAreaStringBuilder.append("$marlaValue Marla, ")
         }
         if (sqftValue != 0) {
             landAreaStringBuilder.append("$sqftValue Sqft")

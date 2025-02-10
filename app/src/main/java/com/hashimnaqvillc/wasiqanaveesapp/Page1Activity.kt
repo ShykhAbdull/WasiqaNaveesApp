@@ -10,7 +10,6 @@ import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.hashimnaqvillc.wasiqanaveesapp.PreferencesManager.getDropdownList
 import com.hashimnaqvillc.wasiqanaveesapp.R.layout.custom_dropdown_item
 import com.hashimnaqvillc.wasiqanaveesapp.databinding.ActivityPage1Binding
 
@@ -56,6 +55,8 @@ class Page1Activity : AppCompatActivity() {
         dateMonth.visibility = View.GONE
 //        val dateYear = findViewById<TextView>(R.id.date_year)
 //        dateYear.visibility = View.GONE
+
+
 
 
         setupDropdowns()
@@ -326,7 +327,7 @@ class Page1Activity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        updateUIAfterDeletion()
+//        updateUIAfterDeletion()
         setupDropdowns()
 
 
@@ -479,6 +480,17 @@ class Page1Activity : AppCompatActivity() {
 
 
     private fun setupDropdowns() {
+
+        val savedDistrictList = PreferencesManager.getDropdownList()
+//        Logic for District DropDownClick
+        districtList = mutableListOf()
+        districtList = savedDistrictList.toMutableList()
+        val districtAdapter = ArrayAdapter(this, custom_dropdown_item, districtList)
+        binding.districtDropdown.setAdapter(districtAdapter)
+// Start searching after typing one character
+        binding.districtDropdown.threshold = 1
+
+
 // District Selection Listener
         binding.districtDropdown.setOnItemClickListener { _, _, _, _ ->
             val selectedDistrict = binding.districtDropdown.text.toString().trim()

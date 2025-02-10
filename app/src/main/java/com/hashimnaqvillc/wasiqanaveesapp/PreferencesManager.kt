@@ -11,8 +11,6 @@ object PreferencesManager {
 
     // Keys for SharedPreferences
     private const val DROPDOWN_LIST_KEY = "DropdownList"
-    private const val DISTRICT_TOWN_MAP_KEY = "DistrictTownMap"
-    private const val EDIT_TEXT_KEY = "EditTextValue"
     private lateinit var sharedPreferences: SharedPreferences
     private val gson = Gson()
 
@@ -22,16 +20,26 @@ object PreferencesManager {
     }
 
 
+
     // Save and Get district dropdown list
     fun saveDropdownList(dropdownList: MutableList<String>) {
         val json = gson.toJson(dropdownList)
         sharedPreferences.edit().putString(DROPDOWN_LIST_KEY, json).apply()
     }
+
     fun getDropdownList(): MutableList<String> {
-        val json = sharedPreferences.getString(DROPDOWN_LIST_KEY, "[]")
+        val json = sharedPreferences.getString(DROPDOWN_LIST_KEY, null) ?: "[]"
         val type = object : TypeToken<List<String>>() {}.type
-        return gson.fromJson(json, type) ?: emptyList<String>().toMutableList()
+        return gson.fromJson(json, type) ?: mutableListOf()
     }
+
+//    fun getDropdownList(): MutableList<String> {
+//        val json = sharedPreferences.getString(DROPDOWN_LIST_KEY, "[]")
+//        val type = object : TypeToken<List<String>>() {}.type
+//        return gson.fromJson(json, type) ?: emptyList<String>().toMutableList()
+//    }
+
+
 
 
 //                                                     KEY ,  VALUE
