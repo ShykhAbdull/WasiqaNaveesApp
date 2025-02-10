@@ -10,6 +10,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.hashimnaqvillc.wasiqanaveesapp.PreferencesManager.getDropdownList
 import com.hashimnaqvillc.wasiqanaveesapp.R.layout.custom_dropdown_item
 import com.hashimnaqvillc.wasiqanaveesapp.databinding.ActivityPage1Binding
 
@@ -203,11 +204,11 @@ class Page1Activity : AppCompatActivity() {
 
             val selectedDistrict = binding.districtDropdown.text.toString().trim()
             val selectedTown = binding.townDropdown.text.toString().trim()
-            val selectedArea = binding.propertyAreaDropdown.text.toString().trim()
+            val selectedPropertyArea = binding.propertyAreaDropdown.text.toString().trim()
             val selectedLandType = binding.landTypeDropdown.text.toString().trim()
 
             // Validate dropdown selections
-            if (selectedDistrict.isEmpty() || selectedTown.isEmpty() || selectedArea.isEmpty() || selectedLandType.isEmpty()) {
+            if (selectedDistrict.isEmpty() || selectedTown.isEmpty() || selectedPropertyArea.isEmpty() || selectedLandType.isEmpty()) {
                 Toast.makeText(this, "Please select all required fields (District, Town, Area, Land Type).", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -229,7 +230,7 @@ class Page1Activity : AppCompatActivity() {
             // Generate the key to fetch land values
             val districtHashKey = selectedDistrict.hashCode()
             val townHashKey = "$districtHashKey-$selectedTown".hashCode()
-            val areaHashKey = "$townHashKey-$selectedArea".hashCode()
+            val areaHashKey = "$townHashKey-$selectedPropertyArea".hashCode()
             val finalKey = "$areaHashKey-$selectedLandType".hashCode()
 
             // Fetch land values using the compound key
@@ -243,7 +244,7 @@ class Page1Activity : AppCompatActivity() {
 
             // Retrieve numeric values safely
             val kanalValue = binding.kanalEditText.text.toString().toIntOrNull() ?: 0
-            val marlaValue = binding.marlaEditText.text.toString().toIntOrNull() ?: 0
+            val marlaValue = binding.marlaEditText.text.toString().toFloatOrNull() ?: 0f
             val sqftValue = binding.sqftEditText.text.toString().toIntOrNull() ?: 0
             val coveredAreaValue = coveredAreaEditText.text.toString().toIntOrNull() ?: 0
             val sqftPerMarla = 225
@@ -258,7 +259,7 @@ class Page1Activity : AppCompatActivity() {
 
 
             // Calculate total square feet and plot value
-            val totalSqft = kanalValue * 20 * sqftPerMarla + marlaValue * sqftPerMarla + sqftValue
+            val totalSqft = kanalValue * 20 * sqftPerMarla + marlaValue.toInt() * sqftPerMarla + sqftValue
 
 //            Used when Plot is selected in Property Type
             val plotValueDC = totalSqft / sqftPerMarla * marlaDc
@@ -290,7 +291,7 @@ class Page1Activity : AppCompatActivity() {
             val intent = Intent(this, Page2Activity::class.java).apply {
                 putExtra("selectedDistrict", selectedDistrict)
                 putExtra("selectedTown", selectedTown)
-                putExtra("selectedArea", selectedArea)
+                putExtra("selectedPropertyArea", selectedPropertyArea)
                 putExtra("selectedLandType", selectedLandType)
                 putExtra("selectedPropertyType", selectedPropertyType)
                 putExtra("khasraNumber", khasraNumber)
@@ -312,7 +313,7 @@ class Page1Activity : AppCompatActivity() {
                 putExtra("sqftValue", sqftValue)
                 putExtra("coveredAreaValue", coveredAreaValue)
             }
-            Log.d("IntentData", "Intent Data: $selectedDistrict, $selectedTown, $selectedArea, $selectedLandType, $selectedPropertyType, $coveredAreaValue")
+            Log.d("IntentData", "Intent Data: $selectedDistrict, $selectedTown, $selectedPropertyArea, $selectedLandType, $selectedPropertyType, $coveredAreaValue")
             startActivity(intent)
         }
 
@@ -325,8 +326,22 @@ class Page1Activity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
+        updateUIAfterDeletion()
         setupDropdowns()
 
+
+    }
+
+    private fun updateUIAfterDeletion() {
+            binding.districtDropdown.text.clear()
+            binding.townDropdown.text.clear()
+            binding.propertyAreaDropdown.text.clear()
+            binding.landTypeDropdown.text.clear()
+            binding.propertyTypeDropdown.text.clear()
+            binding.kanalEditText.text.clear()
+            binding.marlaEditText.text.clear()
+            binding.sqftEditText.text.clear()
+            binding.coveredAreaEditText.text.clear()
     }
 
 
@@ -464,74 +479,43 @@ class Page1Activity : AppCompatActivity() {
 
 
     private fun setupDropdowns() {
-        // District Dropdown Setup
-        districtList = PreferencesManager.getDropdownList().toMutableList()
-        val districtAdapter = ArrayAdapter(this, custom_dropdown_item, districtList)
-        binding.districtDropdown.setAdapter(districtAdapter)
-
-        // Initial load if we have selections
-        val currentDistrict = binding.districtDropdown.text.toString().trim()
-        if (currentDistrict.isNotEmpty()) {
-            val currentDistrictHashKey = currentDistrict.hashCode()
-
-            // Load towns
-            val districtTownMap = PreferencesManager.getDistrictTownMap()
-            townList = districtTownMap[currentDistrictHashKey] ?: mutableListOf()
-            val townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
-            binding.townDropdown.setAdapter(townAdapter)
-            binding.townDropdown.threshold = 1
-
-            // Load areas using the same hash key pattern as settings
-            val currentTown = binding.townDropdown.text.toString().trim()
-            if (currentTown.isNotEmpty()) {
-                val currentTownHashKey = "$currentDistrictHashKey-$currentTown".hashCode()
-                val townAreaMap = PreferencesManager.getTownAreaMap()
-
-                // Use the exact same pattern as in settings
-                val areas = townAreaMap[currentTownHashKey] ?: mutableListOf()
-                areaList = areas
-                val areaAdapter = ArrayAdapter(this, custom_dropdown_item, areaList)
-                binding.propertyAreaDropdown.setAdapter(areaAdapter)
-                binding.propertyAreaDropdown.threshold = 1
-
-                Log.d("AreasLoaded", "Current areas for $currentTown: $areas")
-            }
-        }
-
-        // District Selection Listener
+// District Selection Listener
         binding.districtDropdown.setOnItemClickListener { _, _, _, _ ->
             val selectedDistrict = binding.districtDropdown.text.toString().trim()
             val districtHashKey = selectedDistrict.hashCode()
 
+            // Clear dependent dropdowns when district changes
             binding.townDropdown.text.clear()
             binding.propertyAreaDropdown.text.clear()
             binding.landTypeDropdown.text.clear()
 
+            // Get towns for selected district
             val districtTownMap = PreferencesManager.getDistrictTownMap()
             townList = districtTownMap[districtHashKey] ?: mutableListOf()
 
-            val townAdapter = ArrayAdapter(this, custom_dropdown_item, townList)
+            // 🔹 Fix: Reset adapter with empty list if townList is empty
+            val townAdapter = ArrayAdapter(this, custom_dropdown_item, townList.ifEmpty { mutableListOf() })
             binding.townDropdown.setAdapter(townAdapter)
             binding.townDropdown.threshold = 1
             binding.townDropdown.requestFocus()
         }
 
-        // Town Selection Listener
+// Town Selection Listener
         binding.townDropdown.setOnItemClickListener { _, _, _, _ ->
-            // Use the exact same hash key pattern as in settings
             val currentDistrictHashKey = binding.districtDropdown.text.toString().trim().hashCode()
             val currentTownName = binding.townDropdown.text.toString().trim()
             val currentTownHashKey = "$currentDistrictHashKey-$currentTownName".hashCode()
 
+            // Clear dependent dropdowns when town changes
             binding.propertyAreaDropdown.text.clear()
             binding.landTypeDropdown.text.clear()
 
+            // Get areas for selected town
             val townAreaMap = PreferencesManager.getTownAreaMap()
             val areas = townAreaMap[currentTownHashKey] ?: mutableListOf()
 
-            // Update area list and adapter
-            areaList = areas
-            val areaAdapter = ArrayAdapter(this, custom_dropdown_item, areaList)
+            // 🔹 Fix: Reset adapter with empty list if areas is empty
+            val areaAdapter = ArrayAdapter(this, custom_dropdown_item, areas.ifEmpty { mutableListOf() })
             binding.propertyAreaDropdown.setAdapter(areaAdapter)
             binding.propertyAreaDropdown.threshold = 1
             binding.propertyAreaDropdown.requestFocus()
@@ -539,35 +523,33 @@ class Page1Activity : AppCompatActivity() {
             Log.d("AreasLoaded", "Areas for $currentTownName: $areas")
         }
 
+// Property Area Selection Listener
         binding.propertyAreaDropdown.setOnItemClickListener { _, _, _, _ ->
-
             val currentDistrictHashKey = binding.districtDropdown.text.toString().trim().hashCode()
             val currentTownName = binding.townDropdown.text.toString().trim()
             val currentTownHashKey = "$currentDistrictHashKey-$currentTownName".hashCode()
             val currentAreaName = binding.propertyAreaDropdown.text.toString().trim()
             val currentAreaHashKey = "$currentTownHashKey-$currentAreaName".hashCode()
 
+            // Get land types for selected area
             val areaLandMap = PreferencesManager.getAreaLandMap()
             val lands = areaLandMap[currentAreaHashKey] ?: mutableListOf()
 
-
-            landList = lands
-            val landsAdapter = ArrayAdapter(this, custom_dropdown_item, landList)
+            // 🔹 Fix: Reset adapter with empty list if lands is empty
+            val landsAdapter = ArrayAdapter(this, custom_dropdown_item, lands.ifEmpty { mutableListOf() })
             binding.landTypeDropdown.setAdapter(landsAdapter)
             binding.landTypeDropdown.threshold = 1
             binding.landTypeDropdown.requestFocus()
 
-
-            Log.d("LandTypesLoaded", "Land types for $currentAreaName: $lands, $landList, $currentAreaHashKey")
-
-
+            Log.d("LandTypesLoaded", "Land types for $currentAreaName: $lands, $currentAreaHashKey")
         }
 
+// Land Type Selection Listener
         binding.landTypeDropdown.setOnItemClickListener { _, _, _, _ ->
-
             binding.propertyTypeDropdown.requestFocus()
             binding.propertyTypeDropdown.showDropDown()
         }
+
 
     }
 

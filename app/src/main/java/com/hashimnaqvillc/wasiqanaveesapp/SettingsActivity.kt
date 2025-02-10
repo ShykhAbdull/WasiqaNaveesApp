@@ -7,6 +7,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
@@ -29,6 +30,18 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.hashimnaqvillc.wasiqanaveesapp.PreferencesManager.getAreaLandMap
+import com.hashimnaqvillc.wasiqanaveesapp.PreferencesManager.getDistrictTownMap
+import com.hashimnaqvillc.wasiqanaveesapp.PreferencesManager.getDropdownList
+import com.hashimnaqvillc.wasiqanaveesapp.PreferencesManager.getLandOptionRates
+import com.hashimnaqvillc.wasiqanaveesapp.PreferencesManager.getTownAreaMap
+import com.hashimnaqvillc.wasiqanaveesapp.PreferencesManager.saveAreaLandMap
+import com.hashimnaqvillc.wasiqanaveesapp.PreferencesManager.saveDistrictTownMap
+import com.hashimnaqvillc.wasiqanaveesapp.PreferencesManager.saveDropdownList
+import com.hashimnaqvillc.wasiqanaveesapp.PreferencesManager.saveLandRates
+import com.hashimnaqvillc.wasiqanaveesapp.PreferencesManager.saveTownAreaMap
 import com.hashimnaqvillc.wasiqanaveesapp.R.layout.custom_dropdown_item
 import com.hashimnaqvillc.wasiqanaveesapp.databinding.ActivitySettingsBinding
 
@@ -1316,20 +1329,20 @@ binding.deleteDistrictIcon.setOnClickListener {
                     townAreaMap.remove(townKey)  // Just remove, don't put back
                 }
 
-
+                // ✅ Remove from SharedPreferences
+                removeDistrictAndRelatedData(currentSelectedDistrict)
 
                 districtDropDown.text.clear() // Clear dropdown text.
                 townDropDown.text.clear() // Clear dropdown text.
                 areaDropDown.text.clear() // Clear dropdown text.
 
+                districtAdapter.clear()
                 townAdapter.clear()
                 areaAdapter.clear()
-
 
                 // Refresh adapter by recreating it
                 districtAdapter = ArrayAdapter(this, custom_dropdown_item, districtList)
                 districtDropDown.setAdapter(districtAdapter)
-
 
                 Log.d("DistrictList", "Deleted district list: $districtList, $districtTownMap, $townList, $townAreaMap ,$areaList")
                 Toast.makeText(this, "District deleted successfully", Toast.LENGTH_SHORT).show()
@@ -1769,9 +1782,62 @@ binding.deleteDistrictIcon.setOnClickListener {
     }
 }
 
+    private fun removeDistrictAndRelatedData(selectedDistrict: String) {
+
+        // ✅ 1️⃣ Remove from district dropdown list
+        val districtList = getDropdownList()
+        if (districtList.contains(selectedDistrict)) {
+            districtList.remove(selectedDistrict)
+            saveDropdownList(districtList)
+        }
+
+        // Generate district hash key
+        val currentDistrictHashKey = selectedDistrict.hashCode()
+
+        // ✅ 2️⃣ Get all towns for this district
+        val districtTownMap = getDistrictTownMap()
+        val townsToDelete = districtTownMap[currentDistrictHashKey] ?: emptyList()
+
+        // Remove the district from the district-town mapping
+        districtTownMap.remove(currentDistrictHashKey)
+        saveDistrictTownMap(districtTownMap)
+
+        // ✅ 3️⃣ Remove all areas related to these towns
+        val townAreaMap = getTownAreaMap()
+        townsToDelete.forEach { town ->
+            val townKey = "$currentDistrictHashKey-$town".hashCode()
+            townAreaMap.remove(townKey)  // Remove town from mapping
+        }
+        saveTownAreaMap(townAreaMap)
+
+        // ✅ 4️⃣ Remove all land types related to the removed areas
+        val areaLandMap = getAreaLandMap()
+        townAreaMap.forEach { (townKey, areaList) ->
+            areaList.forEach { area ->
+                val areaKey = "$townKey-$area".hashCode()
+                areaLandMap.remove(areaKey)  // Remove land mapping
+            }
+        }
+        saveAreaLandMap(areaLandMap)
+
+        // ✅ 5️⃣ Remove all land rates related to the removed land types
+        val areaLandRates = getLandOptionRates()
+        areaLandMap.forEach { (areaKey, landList) ->
+            landList.forEach { land ->
+                val landKey = "$areaKey-$land".hashCode()
+                areaLandRates.remove(landKey)  // Remove land rates
+            }
+        }
+        saveLandRates(areaLandRates)
+
+        Log.d("SharedPreferences", "District and all associated data removed: $selectedDistrict")
+    }
+
+
+
     private fun handleBackPress() {
-        val districtTownMap = PreferencesManager.getDistrictTownMap()
-        val townAreaMap = PreferencesManager.getTownAreaMap()
+        val districtTownMap = getDistrictTownMap()
+        val townAreaMap = getTownAreaMap()
 
         if (binding.districtDropdown.text.toString().isNotEmpty() ||
             binding.townDropdown.text.toString().isNotEmpty() ||

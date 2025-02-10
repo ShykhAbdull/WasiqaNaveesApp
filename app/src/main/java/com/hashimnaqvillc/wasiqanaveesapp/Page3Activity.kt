@@ -82,7 +82,7 @@ class Page3Activity : AppCompatActivity() {
 
 //        Get Land Area Values from Page 2
         val kanalValue = intent.getIntExtra("kanalValue", 0)
-        val marlaValue = intent.getIntExtra("marlaValue", 0)
+        val marlaValue = intent.getFloatExtra("marlaValue", 0f)
         val sqftValue = intent.getIntExtra("sqftValue", 0)
         val coveredArea = intent.getIntExtra("coveredArea", 0)
 
@@ -98,7 +98,7 @@ class Page3Activity : AppCompatActivity() {
         if (kanalValue != 0) {
             landAreaStringBuilder.append("$kanalValue Kanal, ")
         }
-        if (marlaValue != 0) {
+        if (marlaValue != 0.0.toFloat()) {
             landAreaStringBuilder.append("$marlaValue Marla, ")
         }
         if (sqftValue != 0) {

@@ -26,13 +26,13 @@ class Page2Activity : AppCompatActivity() {
         // Retrieve the values from the Intent
         val selectedDistrict = intent.getStringExtra("selectedDistrict")
         val selectedTown = intent.getStringExtra("selectedTown")
-        val selectedPropertyArea = intent.getStringExtra("selectedArea")
+        val selectedPropertyArea = intent.getStringExtra("selectedPropertyArea") ?: ""
         val selectedLandType = intent.getStringExtra("selectedLandType")
         val selectedPropertyType = intent.getStringExtra("selectedPropertyType")
         val khasraNumber = intent.getStringExtra("khasraNumber")
 
         val kanalValue = intent.getIntExtra("kanalValue", 0)
-        val marlaValue = intent.getIntExtra("marlaValue", 0)
+        val marlaValue = intent.getFloatExtra("marlaValue", 0f)
         val sqftValue = intent.getIntExtra("sqftValue", 0)
         val coveredArea = intent.getIntExtra("coveredAreaValue", 0)
 
@@ -48,6 +48,17 @@ class Page2Activity : AppCompatActivity() {
         val coveredAreaFbr = intent.getIntExtra("coveredAreaFbr", 0)
         val buildingValueFbr = intent.getIntExtra("buildingValueFbr", 0)
 
+        Log.d("IntentData", "Intent Data: $selectedDistrict, $selectedTown, $selectedPropertyArea,  $selectedPropertyType")
+
+
+        //        Displaying selected values on Pg2 Views
+        binding.districtDisplayPg2.text = selectedDistrict
+        binding.propertyAreaDisplayPg2.text = selectedPropertyArea
+        binding.townDisplayPg2.text = selectedTown
+        binding.landTypeDisplayPg2.text = selectedLandType
+        binding.coveredAreaDisplayPg2.text = coveredArea.toString()
+        binding.khasraDisplayPg2.text = khasraNumber.toString()
+
 
         if (selectedPropertyType == "Plot") {
             binding.coveredAreaTextPg2.visibility = View.GONE
@@ -59,13 +70,7 @@ class Page2Activity : AppCompatActivity() {
 
 
 
-//        Displaying selected values on Pg2 Views
-        binding.districtDisplayPg2.text = selectedDistrict
-        binding.townDisplayPg2.text = selectedTown
-        binding.propertyAreaDisplayPg2.text = selectedPropertyArea
-        binding.landTypeDisplayPg2.text = selectedLandType
-        binding.coveredAreaDisplayPg2.text = coveredArea.toString()
-        binding.khasraDisplayPg2.text = khasraNumber.toString()
+
 
 
 // Create a string to display land area
@@ -74,8 +79,8 @@ class Page2Activity : AppCompatActivity() {
         if (kanalValue != 0) {
             landAreaStringBuilder.append("$kanalValue Kanal, ")
         }
-        if (marlaValue != 0) {
-            landAreaStringBuilder.append("$marlaValue Marla, ")
+        if (marlaValue != 0.0.toFloat()) {
+            landAreaStringBuilder.append("${"%.3f".format(marlaValue)} Marla, ")
         }
         if (sqftValue != 0) {
             landAreaStringBuilder.append("$sqftValue Sqft")
@@ -123,8 +128,8 @@ class Page2Activity : AppCompatActivity() {
 
 
 
-        binding.propertyAreaDisplayPg2.text = selectedTown
-        binding.landTypeDisplayPg2.text = selectedLandType
+
+
 
         val totalDC: Int
         val totalFBR: Int
@@ -174,7 +179,6 @@ class Page2Activity : AppCompatActivity() {
                 putExtra("totalDC", totalDC)
                 putExtra("totalFBR", totalFBR)
             }
-            Log.d("IntentData", "Intent Data: $totalDC, $totalFBR")
             startActivity(intent)
         }
 
