@@ -141,8 +141,8 @@ class Page2Activity : AppCompatActivity() {
             binding.buildingValuePg2.visibility = View.VISIBLE
 
             // Calculate total values
-            totalDC = coveredAreaDc + buildingValueDC + marlaValueDC + plotValueDC
-            totalFBR = coveredAreaFbr + buildingValueFbr + marlaValueFbr + plotValueFbr
+            totalDC =  buildingValueDC  + plotValueDC
+            totalFBR =  buildingValueFbr + plotValueFbr
 
             // Set the calculated values to the TextViews
             binding.totalDCDisplay.text = "$totalDC"
