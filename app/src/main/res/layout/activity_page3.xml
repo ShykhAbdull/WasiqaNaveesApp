@@ -273,8 +273,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginVertical="5dp"
-            android:fontFamily="@font/sf_pro_display_regular"
-            android:text=" 0333-4415786"
+            android:fontFamily="@font/sf_pro_display_bold"
+            android:text=" 0301-4415786"
             android:textColor="@color/white"
             android:textSize="15sp" />
     </LinearLayout>

@@ -116,13 +116,13 @@ class ProfileActivtySettings : AppCompatActivity() {
             "tmaCorpEditTextInner" to "1",
             "regsFeeEditTextInner" to "0.1",
 
-            "fbr236KFilerEditTextInner" to "3",
-            "fbr236KLatefilerEditTextInner" to "6",
+            "fbr236KFilerEditTextInner" to "1.5",
+            "fbr236KLatefilerEditTextInner" to "4.5",
             "fbr236KNonfilerEditTextInner" to "10.5",
 
-            "fbr236CFilerEditTextInner" to "3",
-            "fbr236ClatefilerEditTextInner" to "6",
-            "fbr236CNonfilerEditTextInner" to "10.5",
+            "fbr236CFilerEditTextInner" to "4.5",
+            "fbr236ClatefilerEditTextInner" to "7.5",
+            "fbr236CNonfilerEditTextInner" to "11.5",
 
         )
 

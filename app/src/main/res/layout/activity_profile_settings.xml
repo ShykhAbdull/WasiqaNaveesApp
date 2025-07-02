@@ -168,7 +168,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="%"
-                android:text="3"
+                android:text="1.5"
                 android:maxLength="6"
 
                 android:gravity="center"
@@ -265,7 +265,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="%"
-                android:text="10.5"
+                android:text="11.5"
                 android:maxLength="6"
 
                 android:gravity="center"
@@ -321,7 +321,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="%"
-                android:text="3"
+                android:text="4.5"
                 android:maxLength="6"
 
                 android:gravity="center"
@@ -423,7 +423,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="%"
-                android:text="6"
+                android:text="4.5"
                 android:maxLength="6"
 
                 android:gravity="center"
@@ -468,17 +468,17 @@
                 android:id="@+id/fbr236ClatefilerEditTextInner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="%"
-                android:text="6"
-                android:maxLength="6"
-
-                android:gravity="center"
-                android:inputType="numberDecimal"
                 android:background="@null"
-                android:textAlignment="center"
-
                 android:fontFamily="@font/sf_pro_display_bold"
+                android:gravity="center"
+
+                android:hint="%"
+                android:inputType="numberDecimal"
+                android:maxLength="6"
                 android:padding="15dp"
+
+                android:text="7.5"
+                android:textAlignment="center"
                 android:textSize="16sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
