@@ -3,7 +3,9 @@ package com.hashimnaqvillc.wasiqanaveesapp
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
+import android.text.Editable
 import android.text.InputType
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -15,6 +17,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import com.hashimnaqvillc.wasiqanaveesapp.databinding.ActivityPage3Binding
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -40,6 +43,7 @@ class Page3Activity : AppCompatActivity() {
         setContentView(binding.root)
 
         initializeDefaults()
+        setupTextWatchers()
 
 
         val settingIcon = findViewById<ImageButton>(R.id.nav_settings_icon)
@@ -164,18 +168,18 @@ class Page3Activity : AppCompatActivity() {
 //        Default Values upon Activity creation
 
         val stampDutyT = stampDuty.toDoubleOrNull() ?: 0.0 // Safely convert to Double
-        stampDutyAmount = totalDC.toDouble() * (stampDutyT / 100)
+        val stampDutyAmount = totalDC.toDouble() * (stampDutyT / 100)
         binding.stampDutyTaxPKR.text = stampDutyAmount.toInt().toString()
 
 
         val tMACorpT = tmaCorp.toDoubleOrNull() ?: 0.0 // Safely convert to Double
-        tMACorpAmount = totalDC.toDouble() * (tMACorpT / 100)
+        val tMACorpAmount = totalDC.toDouble() * (tMACorpT / 100)
         binding.tmaCorpTaxPKR.text = tMACorpAmount.toInt().toString()
 
 
         val regFeeT = regFee.toDoubleOrNull() ?: 0.0 // Safely convert to Double
         regFeeAmount = totalFBR.toDouble() * (regFeeT / 100)
-        if (regFeeAmount >= 3000) {
+        if (regFeeAmount >= 3000 ) {
             binding.regsTaxPKR.text = regFeeAmount.toInt().toString()
         }else{
             binding.regsTaxPKR.text = "3000"
@@ -184,14 +188,14 @@ class Page3Activity : AppCompatActivity() {
 
 
         binding.fbr236kTax.text = fbr236kFiler
-        var fbr236kT = fbr236kFiler.toDoubleOrNull() ?: 0.0 // Safely convert to Double
-        fbr236kAmount = totalFBR.toDouble() * (fbr236kT / 100)
+        val fbr236kT = fbr236kFiler.toDoubleOrNull() ?: 0.0 // Safely convert to Double
+        val fbr236kAmount = totalFBR.toDouble() * (fbr236kT / 100)
         binding.fbr236kTaxPKR.text = fbr236kAmount.toInt().toString()
 
 
         binding.seller236CTax.text = fbr236CFiler
-        var fbr236cT = fbr236CFiler.toDoubleOrNull() ?: 0.0 // Safely convert to Double
-        fbr236cAmount = totalFBR.toDouble() * (fbr236cT / 100)
+        val fbr236cT = fbr236CFiler.toDoubleOrNull() ?: 0.0 // Safely convert to Double
+        val fbr236cAmount = totalFBR.toDouble() * (fbr236cT / 100)
         binding.seller236CTaxPKR.text = fbr236cAmount.toInt().toString()
 
 
@@ -249,7 +253,7 @@ class Page3Activity : AppCompatActivity() {
 
                     // Perform actions for Filer
                     val fbr236cT = fbr236CFiler.toDoubleOrNull() ?: 0.0 // Safely convert to Double
-                    fbr236cAmount = totalFBR.toDouble() * (fbr236cT / 100)
+                    val fbr236cAmount = totalFBR.toDouble() * (fbr236cT / 100)
                     binding.seller236CTaxPKR.text = fbr236cAmount.toInt().toString()
 
                     if (binding.registryTransferDropdown.text.toString() == "برائے رجسٹری" || binding.registryTransferDropdown.text.toString() == "سوسائٹی ٹرانسفر" ) {
@@ -261,7 +265,7 @@ class Page3Activity : AppCompatActivity() {
 
                     // Perform actions for Late Filer
                     val fbr236cT = fbr236CLateFiler.toDoubleOrNull() ?: 0.0 // Safely convert to Double
-                    fbr236cAmount = totalFBR.toDouble() * (fbr236cT / 100)
+                    val fbr236cAmount = totalFBR.toDouble() * (fbr236cT / 100)
                     binding.seller236CTaxPKR.text = fbr236cAmount.toInt().toString()
 
                     if (binding.registryTransferDropdown.text.toString() == "برائے رجسٹری" || binding.registryTransferDropdown.text.toString() == "سوسائٹی ٹرانسفر" ) {
@@ -275,7 +279,7 @@ class Page3Activity : AppCompatActivity() {
 
                     // Perform actions for Filer
                     val fbr236cT = fbr236CNonFiler.toDoubleOrNull() ?: 0.0 // Safely convert to Double
-                    fbr236cAmount = totalFBR.toDouble() * (fbr236cT / 100)
+                    val fbr236cAmount = totalFBR.toDouble() * (fbr236cT / 100)
                     binding.seller236CTaxPKR.text = fbr236cAmount.toInt().toString()
 
                     if (binding.registryTransferDropdown.text.toString() == "برائے رجسٹری" || binding.registryTransferDropdown.text.toString() == "سوسائٹی ٹرانسفر" ) {
@@ -308,7 +312,7 @@ class Page3Activity : AppCompatActivity() {
                     binding.fbr236kTax.text = fbr236kFiler
 
                     val fbr236kT = fbr236kFiler.toDoubleOrNull() ?: 0.0 // Safely convert to Double
-                    fbr236kAmount = totalFBR.toDouble() * (fbr236kT / 100)
+                    val fbr236kAmount = totalFBR.toDouble() * (fbr236kT / 100)
                     binding.fbr236kTaxPKR.text = fbr236kAmount.toInt().toString()
 
                     if (binding.registryTransferDropdown.text.toString() == "برائے رجسٹری" || binding.registryTransferDropdown.text.toString() == "سوسائٹی ٹرانسفر" ) {
@@ -322,7 +326,7 @@ class Page3Activity : AppCompatActivity() {
 
 
                     val fbr236kT = fbr236kLateFiler.toDoubleOrNull() ?: 0.0 // Safely convert to Double
-                    fbr236kAmount = totalFBR.toDouble() * (fbr236kT / 100)
+                    val fbr236kAmount = totalFBR.toDouble() * (fbr236kT / 100)
                     binding.fbr236kTaxPKR.text = fbr236kAmount.toInt().toString()
 
                     if (binding.registryTransferDropdown.text.toString() == "برائے رجسٹری" || binding.registryTransferDropdown.text.toString() == "سوسائٹی ٹرانسفر" ) {
@@ -334,7 +338,7 @@ class Page3Activity : AppCompatActivity() {
 
 
                     val fbr236kT = fbr236kNonFiler.toDoubleOrNull() ?: 0.0 // Safely convert to Double
-                    fbr236kAmount = totalFBR.toDouble() * (fbr236kT / 100)
+                    val fbr236kAmount = totalFBR.toDouble() * (fbr236kT / 100)
                     binding.fbr236kTaxPKR.text = fbr236kAmount.toInt().toString()
 
                     if (binding.registryTransferDropdown.text.toString() == "برائے رجسٹری" || binding.registryTransferDropdown.text.toString() == "سوسائٹی ٹرانسفر" ) {
@@ -376,17 +380,19 @@ class Page3Activity : AppCompatActivity() {
                     Log.d("taxes", "Stamp Duty: ${binding.stampDutyTaxPKR.text}")
 
 
-// Update stamp duty value
-                    val totalSum = (binding.stampDutyTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
-                            (binding.tmaCorpTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
-                            (binding.regsTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
-                            (binding.fbr236kTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
-                            (binding.seller236CTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
-                            (binding.sellerNOCTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
-                            (binding.transferFeeTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
-                            (binding.wasiqaFeeTaxPKR.text?.toString()?.toIntOrNull() ?: 0)
 
-                    binding.totalFINALAMOUNT.text = totalSum.toString()
+                    updateTotalAmount()
+//// Update stamp duty value
+//                    val totalSum = (binding.stampDutyTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+//                            (binding.tmaCorpTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+//                            (binding.regsTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+//                            (binding.fbr236kTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+//                            (binding.seller236CTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+//                            (binding.sellerNOCTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+//                            (binding.transferFeeTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+//                            (binding.wasiqaFeeTaxPKR.text?.toString()?.toIntOrNull() ?: 0)
+//
+//                    binding.totalFINALAMOUNT.text = totalSum.toString()
 
                 }
 
@@ -410,17 +416,18 @@ class Page3Activity : AppCompatActivity() {
                         binding.stampDutyTaxPKR.text = (binding.stampDutyTaxPKR.text.toString().toInt() - 1000).toString()
                     }
 
-
-                    val totalSum = (binding.stampDutyTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
-                            (binding.tmaCorpTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
-
-                            (binding.fbr236kTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
-                            (binding.seller236CTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
-                            (binding.sellerNOCTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
-                            (binding.transferFeeTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
-                            (binding.wasiqaFeeTaxPKR.text?.toString()?.toIntOrNull() ?: 0)
-
-                    binding.totalFINALAMOUNT.text = totalSum.toString()
+                    updateTotalAmount()
+//
+//                    val totalSum = (binding.stampDutyTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+//                            (binding.tmaCorpTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+//
+//                            (binding.fbr236kTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+//                            (binding.seller236CTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+//                            (binding.sellerNOCTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+//                            (binding.transferFeeTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+//                            (binding.wasiqaFeeTaxPKR.text?.toString()?.toIntOrNull() ?: 0)
+//
+//                    binding.totalFINALAMOUNT.text = totalSum.toString()
                 }
 
                 "گفت ڈیڈ" -> {
@@ -444,16 +451,17 @@ class Page3Activity : AppCompatActivity() {
                     }
 
 
+                    updateTotalAmount()
 
-                    val totalSum = (binding.stampDutyTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
-                            (binding.tmaCorpTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
-                            (binding.regsTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
-
-                            (binding.sellerNOCTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
-                            (binding.transferFeeTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
-                            (binding.wasiqaFeeTaxPKR.text?.toString()?.toIntOrNull() ?: 0)
-
-                    binding.totalFINALAMOUNT.text = totalSum.toString()
+//                    val totalSum = (binding.stampDutyTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+//                            (binding.tmaCorpTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+//                            (binding.regsTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+//
+//                            (binding.sellerNOCTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+//                            (binding.transferFeeTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+//                            (binding.wasiqaFeeTaxPKR.text?.toString()?.toIntOrNull() ?: 0)
+//
+//                    binding.totalFINALAMOUNT.text = totalSum.toString()
                 }
             }
         }
@@ -477,17 +485,16 @@ class Page3Activity : AppCompatActivity() {
 
         setupEditText(nocEditButton, nocEditText) { value ->
             nocAmount = value
-            updateTotalAmount()
         }
 
         setupEditText(e7EditButton, e7EditText) { value ->
             transferFeeAmount = value
-            updateTotalAmount()
         }
 
         setupEditText(wasiqaEditButton, wasiqaEditText) { value ->
             wasiqaFeeAmount = value
-            updateTotalAmount()
+//            updateTotalCharges()
+
         }
 
 
@@ -593,11 +600,10 @@ class Page3Activity : AppCompatActivity() {
             binding.wasiqaFeeRadioBtn to (binding.wasiqaFeeTaxPKR.text?.toString()?.trim()?.toIntOrNull() ?: 0)
         )
 
-        var totalSum = 0 // Use Int for total sum
 
         // Function to update the total sum and UI
         fun updateTotalSum() {
-            totalSum = checkboxesWithValues
+            val totalSum = checkboxesWithValues
                 .filter { (checkbox, _) -> checkbox.isChecked } // Filter checked checkboxes
                 .values
                 .sum() // Sum their values
@@ -660,8 +666,8 @@ class Page3Activity : AppCompatActivity() {
                 // Hide the keyboard
                 val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(editText.windowToken, 0)
-
                 true
+
             } else {
                 false
             }
@@ -676,16 +682,28 @@ class Page3Activity : AppCompatActivity() {
     }
 
 
-    @SuppressLint("SetTextI18n")
     private fun updateTotalAmount() {
-        val totalSum = (binding.stampDutyTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
-                (binding.tmaCorpTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
-                (binding.regsTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
-                (binding.fbr236kTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
-                (binding.seller236CTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
-                (binding.sellerNOCTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
-                (binding.transferFeeTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
-                (binding.wasiqaFeeTaxPKR.text?.toString()?.toIntOrNull() ?: 0)
+        var totalSum = 0
+
+        // Always included
+        totalSum += binding.stampDutyTaxPKR.text?.toString()?.toIntOrNull() ?: 0
+        totalSum += binding.tmaCorpTaxPKR.text?.toString()?.toIntOrNull() ?: 0
+        totalSum += binding.sellerNOCTaxPKR.text?.toString()?.toIntOrNull() ?: 0
+        totalSum += binding.transferFeeTaxPKR.text?.toString()?.toIntOrNull() ?: 0
+        totalSum += binding.wasiqaFeeTaxPKR.text?.toString()?.toIntOrNull() ?: 0
+
+        // Only include if plraRow is visible
+        if (binding.plraRow.visibility == View.VISIBLE) {
+            totalSum += binding.regsTaxPKR.text?.toString()?.toIntOrNull() ?: 0
+        }
+        if (binding.seller236CRow.visibility == View.VISIBLE){
+            totalSum += binding.seller236CTaxPKR.text?.toString()?.toIntOrNull() ?: 0
+        }
+
+        if (binding.fbr236kRow.visibility == View.VISIBLE){
+            totalSum += binding.fbr236kTaxPKR.text?.toString()?.toIntOrNull() ?: 0
+        }
+
 
         binding.totalFINALAMOUNT.text = totalSum.toString()
     }
@@ -697,14 +715,38 @@ class Page3Activity : AppCompatActivity() {
             PreferencesManager.saveData("tmaCorpEditTextInner", "1")
             PreferencesManager.saveData("regsFeeEditTextInner", "0.1")
 
-            PreferencesManager.saveData("fbr236KFilerEditTextInner", "3")
-            PreferencesManager.saveData("fbr236KNonfilerEditTextInner", "6")
-            PreferencesManager.saveData("fbr236KLateFilerEditTextInner", "10.5")
+            PreferencesManager.saveData("fbr236KFilerEditTextInner", "1.5")
+            PreferencesManager.saveData("fbr236KLateFilerEditTextInner", "4.5")
+            PreferencesManager.saveData("fbr236KNonfilerEditTextInner", "10.5")
 
-            PreferencesManager.saveData("fbr236CFilerEditTextInner", "3")
-            PreferencesManager.saveData("fbr236CNonfilerEditTextInner", "6")
-            PreferencesManager.saveData("fbr236ClatefilerEditTextInner", "10.5")
+            PreferencesManager.saveData("fbr236CFilerEditTextInner", "4.5")
+            PreferencesManager.saveData("fbr236ClatefilerEditTextInner", "7.5")
+            PreferencesManager.saveData("fbr236CNonfilerEditTextInner", "11.5")
         }
     }
+
+
+
+    private fun setupTextWatchers() {
+        val watcher = object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                updateTotalAmount()
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        }
+
+        binding.stampDutyTaxPKR.addTextChangedListener(watcher)
+        binding.tmaCorpTaxPKR.addTextChangedListener(watcher)
+        binding.regsTaxPKR.addTextChangedListener(watcher)
+
+        binding.fbr236kTaxPKR.addTextChangedListener(watcher)
+        binding.seller236CTaxPKR.addTextChangedListener(watcher)
+
+        binding.sellerNOCTaxPKR.addTextChangedListener(watcher)
+        binding.transferFeeTaxPKR.addTextChangedListener(watcher)
+        binding.wasiqaFeeTaxPKR.addTextChangedListener(watcher)
+    }
+
 
 }

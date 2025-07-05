@@ -157,8 +157,8 @@ class Page2Activity : AppCompatActivity() {
             binding.buildingValuePg2.visibility = View.GONE
 
             // Calculate total values
-           totalDC = marlaValueDC + plotValueDC
-            totalFBR = marlaValueFbr + plotValueFbr
+           totalDC =  plotValueDC
+            totalFBR =  plotValueFbr
 
             binding.totalDCDisplay.text = "$totalDC"
             binding.totalFBRDisplay.text = "$totalFBR"
