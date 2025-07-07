@@ -43,7 +43,7 @@ class Page3Activity : AppCompatActivity() {
         setContentView(binding.root)
 
         initializeDefaults()
-        setupTextWatchers()
+
 
 
         val settingIcon = findViewById<ImageButton>(R.id.nav_settings_icon)
@@ -71,10 +71,13 @@ class Page3Activity : AppCompatActivity() {
         super.onResume()
 
         setupCheckBoxes()
+
     }
 
     @SuppressLint("SetTextI18n")
     private fun setupCheckBoxes() {
+
+
 
 
 
@@ -256,9 +259,10 @@ class Page3Activity : AppCompatActivity() {
                     val fbr236cAmount = totalFBR.toDouble() * (fbr236cT / 100)
                     binding.seller236CTaxPKR.text = fbr236cAmount.toInt().toString()
 
-                    if (binding.registryTransferDropdown.text.toString() == "برائے رجسٹری" || binding.registryTransferDropdown.text.toString() == "سوسائٹی ٹرانسفر" ) {
-                        updateTotalAmount()
-                    }
+//                    if (binding.registryTransferDropdown.text.toString() == "برائے رجسٹری" || binding.registryTransferDropdown.text.toString() == "سوسائٹی ٹرانسفر" ) {
+//                        updateTotalAmount()
+//                    }
+                    updateTotalAmount()
                 }
                 "Late Filer" -> {
                     binding.seller236CTax.text = fbr236CLateFiler
@@ -268,9 +272,11 @@ class Page3Activity : AppCompatActivity() {
                     val fbr236cAmount = totalFBR.toDouble() * (fbr236cT / 100)
                     binding.seller236CTaxPKR.text = fbr236cAmount.toInt().toString()
 
-                    if (binding.registryTransferDropdown.text.toString() == "برائے رجسٹری" || binding.registryTransferDropdown.text.toString() == "سوسائٹی ٹرانسفر" ) {
-                        updateTotalAmount()
-                    }
+//                    if (binding.registryTransferDropdown.text.toString() == "برائے رجسٹری" || binding.registryTransferDropdown.text.toString() == "سوسائٹی ٹرانسفر" ) {
+//                        updateTotalAmount()
+//                    }
+                    updateTotalAmount()
+
 
                 }
                 "Non-Filer" -> {
@@ -282,9 +288,11 @@ class Page3Activity : AppCompatActivity() {
                     val fbr236cAmount = totalFBR.toDouble() * (fbr236cT / 100)
                     binding.seller236CTaxPKR.text = fbr236cAmount.toInt().toString()
 
-                    if (binding.registryTransferDropdown.text.toString() == "برائے رجسٹری" || binding.registryTransferDropdown.text.toString() == "سوسائٹی ٹرانسفر" ) {
-                        updateTotalAmount()
-                    }
+//                    if (binding.registryTransferDropdown.text.toString() == "برائے رجسٹری" || binding.registryTransferDropdown.text.toString() == "سوسائٹی ٹرانسفر" ) {
+//                        updateTotalAmount()
+//                    }
+                    updateTotalAmount()
+
 
                 }
             }
@@ -315,9 +323,11 @@ class Page3Activity : AppCompatActivity() {
                     val fbr236kAmount = totalFBR.toDouble() * (fbr236kT / 100)
                     binding.fbr236kTaxPKR.text = fbr236kAmount.toInt().toString()
 
-                    if (binding.registryTransferDropdown.text.toString() == "برائے رجسٹری" || binding.registryTransferDropdown.text.toString() == "سوسائٹی ٹرانسفر" ) {
-                        updateTotalAmount()
-                    }
+//                    if (binding.registryTransferDropdown.text.toString() == "برائے رجسٹری" || binding.registryTransferDropdown.text.toString() == "سوسائٹی ٹرانسفر" ) {
+//                        updateTotalAmount()
+//                    }
+                    updateTotalAmount()
+
 
 
                 }
@@ -329,9 +339,10 @@ class Page3Activity : AppCompatActivity() {
                     val fbr236kAmount = totalFBR.toDouble() * (fbr236kT / 100)
                     binding.fbr236kTaxPKR.text = fbr236kAmount.toInt().toString()
 
-                    if (binding.registryTransferDropdown.text.toString() == "برائے رجسٹری" || binding.registryTransferDropdown.text.toString() == "سوسائٹی ٹرانسفر" ) {
-                        updateTotalAmount()
-                    }
+//                    if (binding.registryTransferDropdown.text.toString() == "برائے رجسٹری" || binding.registryTransferDropdown.text.toString() == "سوسائٹی ٹرانسفر" ) {
+//                        updateTotalAmount()
+//                    }
+                    updateTotalAmount()
                 }
                 "Non-Filer" -> {
                     binding.fbr236kTax.text = fbr236kNonFiler
@@ -341,9 +352,10 @@ class Page3Activity : AppCompatActivity() {
                     val fbr236kAmount = totalFBR.toDouble() * (fbr236kT / 100)
                     binding.fbr236kTaxPKR.text = fbr236kAmount.toInt().toString()
 
-                    if (binding.registryTransferDropdown.text.toString() == "برائے رجسٹری" || binding.registryTransferDropdown.text.toString() == "سوسائٹی ٹرانسفر" ) {
-                        updateTotalAmount()
-                    }
+//                    if (binding.registryTransferDropdown.text.toString() == "برائے رجسٹری" || binding.registryTransferDropdown.text.toString() == "سوسائٹی ٹرانسفر" ) {
+//                        updateTotalAmount()
+//                    }
+                    updateTotalAmount()
 
                 }
             }
@@ -498,66 +510,6 @@ class Page3Activity : AppCompatActivity() {
         }
 
 
-        
-        
-        
-
-
-
-
-//        nocEditButton.setOnClickListener {
-//            // Enable the EditText
-//            nocEditText.isEnabled = true
-//            nocEditText.isFocusable = true
-//            nocEditText.isFocusableInTouchMode = true
-//            nocEditText.inputType = InputType.TYPE_CLASS_NUMBER
-//
-//            // Immediately show the keyboard and request focus
-//            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-//            nocEditText.post {
-//                nocEditText.requestFocus()
-//                imm.showSoftInput(nocEditText, InputMethodManager.SHOW_IMPLICIT)
-//            }
-//        }
-//
-//        nocEditText.setOnEditorActionListener { _, actionId, _ ->
-//            if (actionId == EditorInfo.IME_ACTION_DONE) {
-//                val nocInputValue = nocEditText.text.toString().toIntOrNull() ?: 0
-//                nocAmount = nocInputValue
-//
-//                updateTotalAmount()
-//
-//                // Hide the keyboard
-//                val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-//                imm.hideSoftInputFromWindow(nocEditText.windowToken, 0)
-//
-//                // Disable the EditText
-//                nocEditText.isEnabled = false
-//                nocEditText.isFocusable = false
-//                nocEditText.isFocusableInTouchMode = false
-//
-//                true
-//            } else {
-//                false
-//            }
-//        }
-//
-//        nocEditText.setOnFocusChangeListener { _, hasFocus ->
-//            if (!hasFocus) {
-//                val nocInputValue = nocEditText.text.toString().toIntOrNull() ?: 0
-//                nocAmount = nocInputValue
-//
-//                updateTotalAmount()
-//
-//                // Disable the EditText when it loses focus
-//                nocEditText.isEnabled = false
-//                nocEditText.isFocusable = false
-//                nocEditText.isFocusableInTouchMode = false
-//            }
-//        }
-
-
-
 
 
 
@@ -601,33 +553,62 @@ class Page3Activity : AppCompatActivity() {
         )
 
 
-        // Function to update the total sum and UI
-        fun updateTotalSum() {
-            val totalSum = checkboxesWithValues
-                .filter { (checkbox, _) -> checkbox.isChecked } // Filter checked checkboxes
-                .values
-                .sum() // Sum their values
 
-            binding.totalFINALAMOUNT.text = totalSum.toString() // Update UI
-        }
+        // Function to handle TextWatcher for dynamic value updates
+        fun setupTextWatchers() {
+            val watcher = object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
-// Header Checkbox Logic
-        headerCheckbox.setOnCheckedChangeListener { _, isChecked ->
-            checkboxesWithValues.keys.forEach { checkbox ->
-                checkbox.isChecked = isChecked // Toggle all child checkboxes
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    updateTotalAmount() // Recalculate total sum whenever text changes
+                }
+
+                override fun afterTextChanged(s: Editable?) {}
             }
-            updateTotalSum() // Update the total sum and UI
+
+            // Add TextWatcher to all EditText fields
+            binding.stampDutyTaxPKR.addTextChangedListener(watcher)
+            binding.tmaCorpTaxPKR.addTextChangedListener(watcher)
+            binding.regsTaxPKR.addTextChangedListener(watcher)
+            binding.fbr236kTaxPKR.addTextChangedListener(watcher)
+            binding.seller236CTaxPKR.addTextChangedListener(watcher)
+            binding.sellerNOCTaxPKR.addTextChangedListener(watcher)
+            binding.transferFeeTaxPKR.addTextChangedListener(watcher)
+            binding.wasiqaFeeTaxPKR.addTextChangedListener(watcher)
         }
 
-// Individual Checkbox Logic
+
+
+
+        // Set up the checkboxes' logic (header checkbox and individual checkboxes)
+        headerCheckbox.setOnCheckedChangeListener { _, isChecked ->
+            // Toggle all child checkboxes
+            checkboxesWithValues.keys.forEach { checkbox ->
+                checkbox.isChecked = isChecked
+            }
+            updateTotalAmount() // Recalculate the total sum after toggling
+        }
+
+
+        // Set up individual checkboxes to update total when toggled
         checkboxesWithValues.forEach { (checkbox, _) ->
             checkbox.setOnCheckedChangeListener { _, _ ->
-                updateTotalSum() // Update the total sum and UI when any checkbox is toggled
+                updateTotalAmount() // Recalculate total sum when any checkbox is toggled
 
-                // Update header checkbox state based on child checkboxes
+                // Update the header checkbox state based on child checkboxes
                 headerCheckbox.isChecked = checkboxesWithValues.keys.all { it.isChecked }
             }
         }
+
+        setupTextWatchers()
+
+
+
+
+
+
+
+
 
 
 
@@ -683,29 +664,43 @@ class Page3Activity : AppCompatActivity() {
 
 
     private fun updateTotalAmount() {
-        var totalSum = 0
 
-        // Always included
-        totalSum += binding.stampDutyTaxPKR.text?.toString()?.toIntOrNull() ?: 0
-        totalSum += binding.tmaCorpTaxPKR.text?.toString()?.toIntOrNull() ?: 0
-        totalSum += binding.sellerNOCTaxPKR.text?.toString()?.toIntOrNull() ?: 0
-        totalSum += binding.transferFeeTaxPKR.text?.toString()?.toIntOrNull() ?: 0
-        totalSum += binding.wasiqaFeeTaxPKR.text?.toString()?.toIntOrNull() ?: 0
+        var totalSum2 = 0
 
-        // Only include if plraRow is visible
-        if (binding.plraRow.visibility == View.VISIBLE) {
-            totalSum += binding.regsTaxPKR.text?.toString()?.toIntOrNull() ?: 0
+        // Sum values only for checked checkboxes, and consider visibility condition
+        val checkboxesWithValues: Map<CheckBox, Int> = mapOf(
+            binding.stampDutyRadioBtn to (binding.stampDutyTaxPKR.text?.toString()?.trim()?.toIntOrNull() ?: 0),
+            binding.tmaCorpRadioBtn to (binding.tmaCorpTaxPKR.text?.toString()?.trim()?.toIntOrNull() ?: 0),
+
+            // Only add value if the corresponding row is visible
+            binding.regsRadioBtn to (if (binding.plraRow.visibility == View.VISIBLE) {
+                binding.regsTaxPKR.text?.toString()?.trim()?.toIntOrNull() ?: 0
+            } else 0),
+
+            binding.fbr236kRadioBtn to (if (binding.fbr236kRow.visibility == View.VISIBLE) {
+                binding.fbr236kTaxPKR.text?.toString()?.trim()?.toIntOrNull() ?: 0
+            } else 0),
+
+            binding.seller236CRadioBtn to (if (binding.seller236CRow.visibility == View.VISIBLE) {
+                binding.seller236CTaxPKR.text?.toString()?.trim()?.toIntOrNull() ?: 0
+            } else 0),
+
+            binding.sellerNOCRadioBtn to (binding.sellerNOCTaxPKR.text?.toString()?.trim()?.toIntOrNull() ?: 0),
+            binding.transferFeeRadioBtn to (binding.transferFeeTaxPKR.text?.toString()?.trim()?.toIntOrNull() ?: 0),
+            binding.wasiqaFeeRadioBtn to (binding.wasiqaFeeTaxPKR.text?.toString()?.trim()?.toIntOrNull() ?: 0)
+
+
+        )
+
+        // Now iterate and sum only the checked checkboxes
+        checkboxesWithValues.forEach { (checkbox, value) ->
+            if (checkbox.isChecked) {
+                totalSum2 += value
+            }
         }
-        if (binding.seller236CRow.visibility == View.VISIBLE){
-            totalSum += binding.seller236CTaxPKR.text?.toString()?.toIntOrNull() ?: 0
-        }
 
-        if (binding.fbr236kRow.visibility == View.VISIBLE){
-            totalSum += binding.fbr236kTaxPKR.text?.toString()?.toIntOrNull() ?: 0
-        }
-
-
-        binding.totalFINALAMOUNT.text = totalSum.toString()
+        // Update total in the UI
+        binding.totalFINALAMOUNT.text = totalSum2.toString()
     }
 
     private fun initializeDefaults() {
@@ -727,26 +722,6 @@ class Page3Activity : AppCompatActivity() {
 
 
 
-    private fun setupTextWatchers() {
-        val watcher = object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                updateTotalAmount()
-            }
-            override fun afterTextChanged(s: Editable?) {}
-        }
-
-        binding.stampDutyTaxPKR.addTextChangedListener(watcher)
-        binding.tmaCorpTaxPKR.addTextChangedListener(watcher)
-        binding.regsTaxPKR.addTextChangedListener(watcher)
-
-        binding.fbr236kTaxPKR.addTextChangedListener(watcher)
-        binding.seller236CTaxPKR.addTextChangedListener(watcher)
-
-        binding.sellerNOCTaxPKR.addTextChangedListener(watcher)
-        binding.transferFeeTaxPKR.addTextChangedListener(watcher)
-        binding.wasiqaFeeTaxPKR.addTextChangedListener(watcher)
-    }
 
 
 }
