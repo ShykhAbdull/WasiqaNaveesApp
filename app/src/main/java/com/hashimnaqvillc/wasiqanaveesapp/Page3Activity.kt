@@ -24,11 +24,8 @@ import java.time.format.DateTimeFormatter
 
 class Page3Activity : AppCompatActivity() {
 
-    private var tMACorpAmount: Double = 0.0
-    private var stampDutyAmount: Double = 0.0
     private var regFeeAmount: Double = 0.0
-    private var fbr236kAmount: Double = 0.0
-    private var fbr236cAmount: Double = 0.0
+
     private  var nocAmount: Int = 0
     private  var transferFeeAmount: Int = 0
     private  var wasiqaFeeAmount: Int = 0
@@ -70,13 +67,14 @@ class Page3Activity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
+        initializeDefaults()
         setupCheckBoxes()
+        updateTotalAmount()
 
     }
 
     @SuppressLint("SetTextI18n")
     private fun setupCheckBoxes() {
-
 
 
 
@@ -580,23 +578,146 @@ class Page3Activity : AppCompatActivity() {
 
 
 
-        // Set up the checkboxes' logic (header checkbox and individual checkboxes)
+        var isUpdatingCheckboxes = false // Member variable in your class
+        val originalValues = mutableMapOf<CheckBox, String>()
+
+
+// Set up the checkboxes' logic (header checkbox and individual checkboxes)
         headerCheckbox.setOnCheckedChangeListener { _, isChecked ->
-            // Toggle all child checkboxes
-            checkboxesWithValues.keys.forEach { checkbox ->
-                checkbox.isChecked = isChecked
+            if (!isUpdatingCheckboxes) { // Only execute if not programmatically updating
+                isUpdatingCheckboxes = true
+
+                // Toggle all child checkboxes
+                checkboxesWithValues.keys.forEach { checkbox ->
+                    checkbox.isChecked = isChecked
+
+                    if (!isChecked) {
+                        // Store original value before setting to "0"
+                        when (checkbox) {
+                            binding.stampDutyRadioBtn -> {
+                                originalValues[checkbox] = binding.stampDutyTaxPKR.text.toString()
+                                binding.stampDutyTaxPKR.setText("0")
+                            }
+                            binding.tmaCorpRadioBtn -> {
+                                originalValues[checkbox] = binding.tmaCorpTaxPKR.text.toString()
+                                binding.tmaCorpTaxPKR.setText("0")
+                            }
+                            binding.regsRadioBtn -> {
+                                originalValues[checkbox] = binding.regsTaxPKR.text.toString()
+                                binding.regsTaxPKR.setText("0")
+                            }
+                            binding.fbr236kRadioBtn -> {
+                                originalValues[checkbox] = binding.fbr236kTaxPKR.text.toString()
+                                binding.fbr236kTaxPKR.setText("0")
+                            }
+                            binding.seller236CRadioBtn -> {
+                                originalValues[checkbox] = binding.seller236CTaxPKR.text.toString()
+                                binding.seller236CTaxPKR.setText("0")
+                            }
+                            binding.sellerNOCRadioBtn -> {
+                                originalValues[checkbox] = binding.sellerNOCTaxPKR.text.toString()
+                                binding.sellerNOCTaxPKR.setText("0")
+                            }
+                            binding.transferFeeRadioBtn -> {
+                                originalValues[checkbox] = binding.transferFeeTaxPKR.text.toString()
+                                binding.transferFeeTaxPKR.setText("0")
+                            }
+                            binding.wasiqaFeeRadioBtn -> {
+                                originalValues[checkbox] = binding.wasiqaFeeTaxPKR.text.toString()
+                                binding.wasiqaFeeTaxPKR.setText("0")
+                            }
+                        }
+                    } else {
+                        // Restore original value when checked
+                        originalValues[checkbox]?.let { originalValue ->
+                            when (checkbox) {
+                                binding.stampDutyRadioBtn -> binding.stampDutyTaxPKR.setText(originalValue)
+                                binding.tmaCorpRadioBtn -> binding.tmaCorpTaxPKR.setText(originalValue)
+                                binding.regsRadioBtn -> binding.regsTaxPKR.setText(originalValue)
+                                binding.fbr236kRadioBtn -> binding.fbr236kTaxPKR.setText(originalValue)
+                                binding.seller236CRadioBtn -> binding.seller236CTaxPKR.setText(originalValue)
+                                binding.sellerNOCRadioBtn -> binding.sellerNOCTaxPKR.setText(originalValue)
+                                binding.transferFeeRadioBtn -> binding.transferFeeTaxPKR.setText(originalValue)
+                                binding.wasiqaFeeRadioBtn -> binding.wasiqaFeeTaxPKR.setText(originalValue)
+                            }
+                        }
+                    }
+                }
+
+                updateTotalAmount() // Recalculate the total sum after toggling
+                isUpdatingCheckboxes = false
             }
-            updateTotalAmount() // Recalculate the total sum after toggling
         }
 
 
-        // Set up individual checkboxes to update total when toggled
-        checkboxesWithValues.forEach { (checkbox, _) ->
-            checkbox.setOnCheckedChangeListener { _, _ ->
-                updateTotalAmount() // Recalculate total sum when any checkbox is toggled
 
-                // Update the header checkbox state based on child checkboxes
-                headerCheckbox.isChecked = checkboxesWithValues.keys.all { it.isChecked }
+
+
+
+// Set up individual checkboxes to update total when toggled
+        checkboxesWithValues.forEach { (checkbox, _) ->
+            checkbox.setOnCheckedChangeListener { _, isChecked ->
+                if (!isUpdatingCheckboxes) { // Only execute if not programmatically updating
+
+                    if (!isChecked) {
+                        // Store original value before setting to "0"
+                        when (checkbox) {
+                            binding.stampDutyRadioBtn -> {
+                                originalValues[checkbox] = binding.stampDutyTaxPKR.text.toString()
+                                binding.stampDutyTaxPKR.setText("0")
+                            }
+                            binding.tmaCorpRadioBtn -> {
+                                originalValues[checkbox] = binding.tmaCorpTaxPKR.text.toString()
+                                binding.tmaCorpTaxPKR.setText("0")
+                            }
+                            binding.regsRadioBtn -> {
+                                originalValues[checkbox] = binding.regsTaxPKR.text.toString()
+                                binding.regsTaxPKR.setText("0")
+                            }
+                            binding.fbr236kRadioBtn -> {
+                                originalValues[checkbox] = binding.fbr236kTaxPKR.text.toString()
+                                binding.fbr236kTaxPKR.setText("0")
+                            }
+                            binding.seller236CRadioBtn -> {
+                                originalValues[checkbox] = binding.seller236CTaxPKR.text.toString()
+                                binding.seller236CTaxPKR.setText("0")
+                            }
+                            binding.sellerNOCRadioBtn -> {
+                                originalValues[checkbox] = binding.sellerNOCTaxPKR.text.toString()
+                                binding.sellerNOCTaxPKR.setText("0")
+                            }
+                            binding.transferFeeRadioBtn -> {
+                                originalValues[checkbox] = binding.transferFeeTaxPKR.text.toString()
+                                binding.transferFeeTaxPKR.setText("0")
+                            }
+                            binding.wasiqaFeeRadioBtn -> {
+                                originalValues[checkbox] = binding.wasiqaFeeTaxPKR.text.toString()
+                                binding.wasiqaFeeTaxPKR.setText("0")
+                            }
+                        }
+                    } else {
+                        // Restore original value when checked
+                        originalValues[checkbox]?.let { originalValue ->
+                            when (checkbox) {
+                                binding.stampDutyRadioBtn -> binding.stampDutyTaxPKR.setText(originalValue)
+                                binding.tmaCorpRadioBtn -> binding.tmaCorpTaxPKR.setText(originalValue)
+                                binding.regsRadioBtn -> binding.regsTaxPKR.setText(originalValue)
+                                binding.fbr236kRadioBtn -> binding.fbr236kTaxPKR.setText(originalValue)
+                                binding.seller236CRadioBtn -> binding.seller236CTaxPKR.setText(originalValue)
+                                binding.sellerNOCRadioBtn -> binding.sellerNOCTaxPKR.setText(originalValue)
+                                binding.transferFeeRadioBtn -> binding.transferFeeTaxPKR.setText(originalValue)
+                                binding.wasiqaFeeRadioBtn -> binding.wasiqaFeeTaxPKR.setText(originalValue)
+                            }
+                        }
+                    }
+
+                    updateTotalAmount() // Recalculate total sum when any checkbox is toggled
+
+                    isUpdatingCheckboxes = true // Set flag before updating headerCheckbox
+                    // Update the header checkbox state based on child checkboxes
+                    headerCheckbox.isChecked = checkboxesWithValues.keys.all { it.isChecked }
+                    isUpdatingCheckboxes = false // Reset flag after updating headerCheckbox
+                }
             }
         }
 
