@@ -12,6 +12,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.hashimnaqvillc.wasiqanaveesapp.R.layout.custom_dropdown_item
 import com.hashimnaqvillc.wasiqanaveesapp.databinding.ActivityPage1Binding
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 class Page1Activity : AppCompatActivity() {
     private lateinit var binding: ActivityPage1Binding
@@ -243,12 +245,12 @@ class Page1Activity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Retrieve numeric values safely
-            val kanalValue = binding.kanalEditText.text.toString().toIntOrNull() ?: 0
+// Retrieve numeric values safely
+            val kanalValue = binding.kanalEditText.text.toString().toFloatOrNull() ?: 0f
             val marlaValue = binding.marlaEditText.text.toString().toFloatOrNull() ?: 0f
             val sqftValue = binding.sqftEditText.text.toString().toIntOrNull() ?: 0
             val coveredAreaValue = coveredAreaEditText.text.toString().toIntOrNull() ?: 0
-            val sqftPerMarla = 225
+            val sqftPerMarla = 225f // Make sure sqftPerMarla is also a float
 
 
             // Safely retrieve individual values with defaults
@@ -259,16 +261,26 @@ class Page1Activity : AppCompatActivity() {
             val khasraNumber = landValues.khasraNumber
 
 
-            // Calculate total square feet and plot value
-            val totalSqft = kanalValue * 20 * sqftPerMarla + marlaValue.toInt() * sqftPerMarla + sqftValue
+// Calculate total square feet and plot value
+            val totalSqft = kanalValue * 20 * sqftPerMarla + marlaValue * sqftPerMarla + sqftValue
+            val totalSqftBigDecimal = BigDecimal(totalSqft.toString())
+            val sqftPerMarlaBigDecimal = BigDecimal(sqftPerMarla.toString())
+            val marlaDcBigDecimal = BigDecimal(marlaDc.toString()) // Convert Int to BigDecimal
+            val marlaFbrBigDecimal = BigDecimal(marlaFbr.toString()) // Convert Int to BigDecimal
 
-//            Used when Plot is selected in Property Type
-            val plotValueDC = totalSqft / sqftPerMarla * marlaDc
-            val plotValueFbr = totalSqft / sqftPerMarla * marlaFbr
+
+
+            val divisionResult = totalSqftBigDecimal.divide(sqftPerMarlaBigDecimal, 1, RoundingMode.HALF_UP)
+
+// Used when Plot is selected in Property Type
+            val plotValueDC = divisionResult.multiply(marlaDcBigDecimal)
+            val plotValueFbr = divisionResult.multiply(marlaFbrBigDecimal)
 
 // Now multiply with the integer value
             val buildingValueDC = coveredAreaDc * coveredAreaValue
             val buildingValueFbr = coveredAreaFbr * coveredAreaValue
+
+            Log.d("Check1", "totalSqft : $totalSqft, marlaDc : $marlaDc, sqftPerMarla : $sqftPerMarla, marlaValue : $marlaValue, plotValueDC : ${plotValueDC.toInt()} ",   )
 
 //            Log.d("buildingValue", "buildingValueDC: $coveredAreaDc, buildingValueFbr: $coveredAreaFbr, coveredAreaValue: $coveredAreaValue")
 //
@@ -298,10 +310,10 @@ class Page1Activity : AppCompatActivity() {
                 putExtra("khasraNumber", khasraNumber)
 
                 putExtra("marlaDc", marlaDc)
-                putExtra("plotValueDC", plotValueDC)
+                putExtra("plotValueDC", plotValueDC.toDouble())
 
                 putExtra("marlaFbr", marlaFbr)
-                putExtra("plotValueFbr", plotValueFbr)
+                putExtra("plotValueFbr", plotValueFbr.toDouble())
 
                 putExtra("coveredAreaDc", coveredAreaDc)
                 putExtra("buildingValueDC", buildingValueDC)
@@ -309,12 +321,12 @@ class Page1Activity : AppCompatActivity() {
                 putExtra("coveredAreaFbr", coveredAreaFbr)
                 putExtra("buildingValueFbr", buildingValueFbr)
 
-                putExtra("kanalValue", kanalValue)
-                putExtra("marlaValue", marlaValue)
+                putExtra("kanalValue", kanalValue) // Ensure kanalValue is passed as Float
+                putExtra("marlaValue", marlaValue) // Ensure marlaValue is passed as Float
                 putExtra("sqftValue", sqftValue)
                 putExtra("coveredAreaValue", coveredAreaValue)
             }
-            Log.d("IntentData", "Intent Data: $selectedDistrict, $selectedTown, $selectedPropertyArea, $selectedLandType, $selectedPropertyType, $coveredAreaValue")
+            Log.d("IntentData", "Intent Data: $selectedDistrict, $selectedTown, $selectedPropertyArea, $selectedLandType, $selectedPropertyType, $plotValueDC, $plotValueFbr")
             startActivity(intent)
         }
 

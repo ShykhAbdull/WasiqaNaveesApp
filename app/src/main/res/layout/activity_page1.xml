@@ -368,8 +368,8 @@
             android:textAlignment="center"
             android:focusable="true"
             android:fontFamily="@font/sf_pro_display_medium"
-            android:maxLength="4"
-            android:inputType="number"
+            android:maxLength="5"
+            android:inputType="numberDecimal"
             android:background="@drawable/email_input_background"
             android:padding="15dp"
             />

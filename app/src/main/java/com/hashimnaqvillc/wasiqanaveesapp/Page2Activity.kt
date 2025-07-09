@@ -9,6 +9,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.hashimnaqvillc.wasiqanaveesapp.databinding.ActivityPage2Binding
+import kotlin.math.roundToInt
 
 class Page2Activity : AppCompatActivity() {
 
@@ -31,15 +32,15 @@ class Page2Activity : AppCompatActivity() {
         val selectedPropertyType = intent.getStringExtra("selectedPropertyType")
         val khasraNumber = intent.getStringExtra("khasraNumber")
 
-        val kanalValue = intent.getIntExtra("kanalValue", 0)
-        val marlaValue = intent.getFloatExtra("marlaValue", 0f)
+        val kanalValue = intent.getFloatExtra("kanalValue", 0f) // kanalValue should be a float
+        val marlaValue = intent.getFloatExtra("marlaValue", 0f) // marlaValue should be a float
         val sqftValue = intent.getIntExtra("sqftValue", 0)
         val coveredArea = intent.getIntExtra("coveredAreaValue", 0)
 
-        val plotValueDC = intent.getIntExtra("plotValueDC", 0)
+        val plotValueDC = intent.getDoubleExtra("plotValueDC", 0.0)  // Use getDoubleExtra() for Double
         val marlaValueDC = intent.getIntExtra("marlaDc", 0)
 
-        val plotValueFbr = intent.getIntExtra("plotValueFbr", 0)
+        val plotValueFbr = intent.getDoubleExtra("plotValueFbr", 0.0)  // Use getDoubleExtra() for Double
         val marlaValueFbr = intent.getIntExtra("marlaFbr", 0)
 
         val coveredAreaDc = intent.getIntExtra("coveredAreaDc", 0)
@@ -48,7 +49,7 @@ class Page2Activity : AppCompatActivity() {
         val coveredAreaFbr = intent.getIntExtra("coveredAreaFbr", 0)
         val buildingValueFbr = intent.getIntExtra("buildingValueFbr", 0)
 
-        Log.d("IntentData", "Intent Data: $selectedDistrict, $selectedTown, $selectedPropertyArea,  $selectedPropertyType")
+        Log.d("IntentData2", "Intent Data: $selectedDistrict, $selectedTown, $plotValueDC,  $plotValueFbr")
 
 
         //        Displaying selected values on Pg2 Views
@@ -76,7 +77,7 @@ class Page2Activity : AppCompatActivity() {
 // Create a string to display land area
         val landAreaStringBuilder = StringBuilder()
 
-        if (kanalValue != 0) {
+        if (kanalValue != 0.0f) {
             landAreaStringBuilder.append("$kanalValue Kanal, ")
         }
         if (marlaValue != 0.0f) {
@@ -113,14 +114,21 @@ class Page2Activity : AppCompatActivity() {
 //        val dateYear = findViewById<TextView>(R.id.date_year)
 //        dateYear.visibility = View.GONE
 
+        // Format the value to prevent scientific notation
+        val formattedPlotValueDC = String.format("%.0f", plotValueDC)  // No decimal points
+        val formattedPlotValueFbr = String.format("%.0f", plotValueFbr)  // No decimal points
+
+        Log.d("FormattedPlotValues", "plotValueDC: $formattedPlotValueDC, plotValueFbr: $formattedPlotValueFbr")
+
+
         binding.perMarlaDCDisplay.text = marlaValueDC.toString()
-        binding.plotValueDCDisplay.text = plotValueDC.toString()
+        binding.plotValueDCDisplay.text = formattedPlotValueDC
 
         binding.coveredAreaDCDisplay.text = coveredAreaDc.toString()
         binding.buildingValueDCDisplay.text = buildingValueDC.toString()
 
         binding.perMarlaFBRDisplay.text = marlaValueFbr.toString()
-        binding.plotValueFBRDisplay.text = plotValueFbr.toString()
+        binding.plotValueFBRDisplay.text = formattedPlotValueFbr
 
         binding.coveredAreaFBRDisplay.text = coveredAreaFbr.toString()
         binding.buildingValueFBRDisplay.text = buildingValueFbr.toString()
@@ -141,8 +149,8 @@ class Page2Activity : AppCompatActivity() {
             binding.buildingValuePg2.visibility = View.VISIBLE
 
             // Calculate total values
-            totalDC =  buildingValueDC  + plotValueDC
-            totalFBR =  buildingValueFbr + plotValueFbr
+            totalDC = (buildingValueDC  + plotValueDC).roundToInt()
+            totalFBR = (buildingValueFbr + plotValueFbr).toInt()
 
             // Set the calculated values to the TextViews
             binding.totalDCDisplay.text = "$totalDC"
@@ -157,8 +165,8 @@ class Page2Activity : AppCompatActivity() {
             binding.buildingValuePg2.visibility = View.GONE
 
             // Calculate total values
-           totalDC =  plotValueDC
-            totalFBR =  plotValueFbr
+           totalDC = plotValueDC.roundToInt()
+            totalFBR = plotValueFbr.roundToInt()
 
             binding.totalDCDisplay.text = "$totalDC"
             binding.totalFBRDisplay.text = "$totalFBR"
