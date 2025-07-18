@@ -86,7 +86,7 @@ class Page3Activity : AppCompatActivity() {
         val selectedDistrict = intent.getStringExtra("selectedDistrict")
 
 //        Get Land Area Values from Page 2
-        val kanalValue = intent.getIntExtra("kanalValue", 0)
+        val kanalValue = intent.getFloatExtra("kanalValue", 0f)
         val marlaValue = intent.getFloatExtra("marlaValue", 0f)
         val sqftValue = intent.getIntExtra("sqftValue", 0)
         val coveredArea = intent.getIntExtra("coveredArea", 0)
@@ -100,7 +100,7 @@ class Page3Activity : AppCompatActivity() {
 // Create a string to display land area
         val landAreaStringBuilder = StringBuilder()
 
-        if (kanalValue != 0) {
+        if (kanalValue != 0.0.toFloat()) {
             landAreaStringBuilder.append("$kanalValue Kanal, ")
         }
         if (marlaValue != 0.0.toFloat()) {
@@ -179,12 +179,12 @@ class Page3Activity : AppCompatActivity() {
 
 
         val regFeeT = regFee.toDoubleOrNull() ?: 0.0 // Safely convert to Double
-        regFeeAmount = totalFBR.toDouble() * (regFeeT / 100)
+        regFeeAmount = tMACorpAmount * (regFeeT / 100)
         if (regFeeAmount >= 3000 ) {
             binding.regsTaxPKR.text = regFeeAmount.toInt().toString()
         }else{
-            binding.regsTaxPKR.text = "3000"
-            regFeeAmount = 3000.0
+            binding.regsTaxPKR.text = "3300"
+            regFeeAmount = 3300.0
         }
 
 
