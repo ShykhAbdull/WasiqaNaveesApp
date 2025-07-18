@@ -843,12 +843,90 @@
             </TableRow>
 
             <View
+
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="#CCCCCC"
                 android:layout_marginVertical="10dp"
                 android:layout_marginHorizontal="50dp"
                 />
+
+
+<!--            Advocate Fee Optional -->
+
+
+
+
+
+            <TableRow android:id="@+id/advocateFeeRow"
+                android:visibility="gone"
+                >
+                <CheckBox
+                    android:id="@+id/advocateRadioBtn"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center"
+                    android:checked="true"
+                    android:tooltipText="Click to include Tax"
+                    android:buttonTint="@color/teal_700"
+                    />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Advocate Fee"
+                    android:textSize="15sp"
+                    android:layout_marginBottom="1dp"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="10dp"
+                    android:fontFamily="@font/sf_pro_display_regular"
+                    android:textColor="#000" />
+
+                <ImageButton
+                    android:id="@+id/advocateFee_Edit_Btn"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:background="@drawable/edit_btn"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="2dp"
+                    android:backgroundTint="@color/teal_700"
+                    android:contentDescription="Edit your fee"
+                    android:tooltipText="Edit your values" />
+
+                <EditText
+                    android:id="@+id/advocateFee_PKR"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="0"
+                    android:inputType="number"
+                    android:singleLine="true"
+                    android:textSize="15sp"
+                    android:backgroundTint="@color/white"
+                    android:fontFamily="@font/sf_pro_display_regular"
+                    android:gravity="end"
+                    android:textColor="#000"
+                    android:focusable="false"
+                    android:enabled="false"
+                    />
+            </TableRow>
+
+
+
+            <View
+                android:visibility="gone"
+                android:id="@+id/advocateView"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#CCCCCC"
+                android:layout_marginVertical="10dp"
+                android:layout_marginHorizontal="50dp"
+                />
+
+
+
+<!--            Advocate End  -->
 
             <!-- Table Row 6 -->
             <TableRow

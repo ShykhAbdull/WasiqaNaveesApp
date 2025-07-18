@@ -28,6 +28,7 @@ class Page3Activity : AppCompatActivity() {
 
     private  var nocAmount: Int = 0
     private  var transferFeeAmount: Int = 0
+    private  var advocateFeeAmount: Int = 0
     private  var wasiqaFeeAmount: Int = 0
 
 
@@ -179,8 +180,8 @@ class Page3Activity : AppCompatActivity() {
 
 
         val regFeeT = regFee.toDoubleOrNull() ?: 0.0 // Safely convert to Double
-        regFeeAmount = tMACorpAmount * (regFeeT / 100)
-        if (regFeeAmount >= 3000 ) {
+        regFeeAmount = totalDC * (regFeeT / 100) + 3300
+        if (regFeeAmount >= 3300 ) {
             binding.regsTaxPKR.text = regFeeAmount.toInt().toString()
         }else{
             binding.regsTaxPKR.text = "3300"
@@ -216,7 +217,7 @@ class Page3Activity : AppCompatActivity() {
         binding.seller236CTax.text = fbr236CFiler
 
         binding.officeNamePg3.text = "Naqvi's Brothers"
-        binding.officePhonePg3.text = " : 0333-4415786"
+//        binding.officePhonePg3.text = " : 0333-4415786"
 
 
 
@@ -379,6 +380,10 @@ class Page3Activity : AppCompatActivity() {
                     binding.seller236CRow.visibility = View.VISIBLE
                     binding.seller236CSeparator.visibility = View.VISIBLE
 
+//                    Show Advocate Fee Row
+                    binding.advocateFeeRow.visibility = View.VISIBLE
+                    binding.advocateView.visibility = View.VISIBLE
+
 //                    if (stampDutyAmount == tMACorpAmount ) {
 //                        binding.stampDutyTaxPKR.text = (defaultStampDuty.toInt() + 1000).toString()
 //                        stampDutyAmount += 1000
@@ -417,6 +422,10 @@ class Page3Activity : AppCompatActivity() {
                     binding.seller236CRow.visibility = View.VISIBLE
                     binding.seller236CSeparator.visibility = View.VISIBLE
 
+//                    Hide Advocate Fee Row
+                    binding.advocateFeeRow.visibility = View.GONE
+                    binding.advocateView.visibility = View.GONE
+
 //                    if (stampDutyAmount > tMACorpAmount ) {
 //                        binding.stampDutyTaxPKR.text = (stampDutyAmount.toInt() - 1000).toString()
 //                        stampDutyAmount -= 1000
@@ -450,6 +459,10 @@ class Page3Activity : AppCompatActivity() {
                     binding.fbrSeperator.visibility = View.GONE
                     binding.seller236CRow.visibility = View.GONE
                     binding.seller236CSeparator.visibility = View.GONE
+
+//                  Hide Advocate Fee Row
+                    binding.advocateFeeRow.visibility = View.GONE
+                    binding.advocateView.visibility = View.GONE
 
 //                    if (stampDutyAmount > tMACorpAmount ) {
 //                        binding.stampDutyTaxPKR.text = (stampDutyAmount.toInt() - 1000).toString()
@@ -489,6 +502,9 @@ class Page3Activity : AppCompatActivity() {
         val e7EditButton =  binding.transferFeeEditBtn
         val e7EditText = binding.transferFeeTaxPKR
 
+        val advocateEditButton = binding.advocateFeeEditBtn
+        val advocateEditText = binding.advocateFeePKR
+
         val wasiqaEditButton =  binding.wasiqaFeeEditBtn
         val wasiqaEditText = binding.wasiqaFeeTaxPKR
 
@@ -501,9 +517,12 @@ class Page3Activity : AppCompatActivity() {
             transferFeeAmount = value
         }
 
+        setupEditText(advocateEditButton, advocateEditText) { value ->
+            advocateFeeAmount = value
+        }
+
         setupEditText(wasiqaEditButton, wasiqaEditText) { value ->
             wasiqaFeeAmount = value
-//            updateTotalCharges()
 
         }
 
@@ -527,13 +546,15 @@ class Page3Activity : AppCompatActivity() {
 
 
 
-        val finalSumDefault = (binding.stampDutyTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
-                (binding.tmaCorpTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
-                (binding.fbr236kTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
-                (binding.seller236CTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
-                (binding.sellerNOCTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
-                (binding.transferFeeTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
-                (binding.wasiqaFeeTaxPKR.text?.toString()?.toIntOrNull() ?: 0)
+        val finalSumDefault =
+            (binding.stampDutyTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+            (binding.tmaCorpTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+            (binding.fbr236kTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+            (binding.seller236CTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+            (binding.sellerNOCTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+            (binding.transferFeeTaxPKR.text?.toString()?.toIntOrNull() ?: 0) +
+            (binding.advocateFeePKR.text?.toString()?.toIntOrNull() ?: 0) +
+            (binding.wasiqaFeeTaxPKR.text?.toString()?.toIntOrNull() ?: 0)
 
         binding.totalFINALAMOUNT.text = finalSumDefault.toString()
 
@@ -547,6 +568,7 @@ class Page3Activity : AppCompatActivity() {
             binding.seller236CRadioBtn to (binding.seller236CTaxPKR.text?.toString()?.trim()?.toIntOrNull() ?: 0),
             binding.sellerNOCRadioBtn to (binding.sellerNOCTaxPKR.text?.toString()?.trim()?.toIntOrNull() ?: 0),
             binding.transferFeeRadioBtn to (binding.transferFeeTaxPKR.text?.toString()?.trim()?.toIntOrNull() ?: 0),
+            binding.advocateRadioBtn to (binding.advocateFeePKR.text?.toString()?.trim()?.toIntOrNull() ?: 0),
             binding.wasiqaFeeRadioBtn to (binding.wasiqaFeeTaxPKR.text?.toString()?.trim()?.toIntOrNull() ?: 0)
         )
 
@@ -572,6 +594,7 @@ class Page3Activity : AppCompatActivity() {
             binding.seller236CTaxPKR.addTextChangedListener(watcher)
             binding.sellerNOCTaxPKR.addTextChangedListener(watcher)
             binding.transferFeeTaxPKR.addTextChangedListener(watcher)
+            binding.advocateFeePKR.addTextChangedListener(watcher)
             binding.wasiqaFeeTaxPKR.addTextChangedListener(watcher)
         }
 
@@ -622,6 +645,10 @@ class Page3Activity : AppCompatActivity() {
                                 originalValues[checkbox] = binding.transferFeeTaxPKR.text.toString()
                                 binding.transferFeeTaxPKR.setText("0")
                             }
+                            binding.advocateRadioBtn -> {
+                                originalValues[checkbox] = binding.advocateFeePKR.text.toString()
+                                binding.advocateFeePKR.setText("0")
+                            }
                             binding.wasiqaFeeRadioBtn -> {
                                 originalValues[checkbox] = binding.wasiqaFeeTaxPKR.text.toString()
                                 binding.wasiqaFeeTaxPKR.setText("0")
@@ -638,6 +665,7 @@ class Page3Activity : AppCompatActivity() {
                                 binding.seller236CRadioBtn -> binding.seller236CTaxPKR.setText(originalValue)
                                 binding.sellerNOCRadioBtn -> binding.sellerNOCTaxPKR.setText(originalValue)
                                 binding.transferFeeRadioBtn -> binding.transferFeeTaxPKR.setText(originalValue)
+                                binding.advocateRadioBtn -> binding.advocateFeePKR.setText(originalValue)
                                 binding.wasiqaFeeRadioBtn -> binding.wasiqaFeeTaxPKR.setText(originalValue)
                             }
                         }
@@ -690,6 +718,10 @@ class Page3Activity : AppCompatActivity() {
                                 originalValues[checkbox] = binding.transferFeeTaxPKR.text.toString()
                                 binding.transferFeeTaxPKR.setText("0")
                             }
+                            binding.advocateRadioBtn -> {
+                                originalValues[checkbox] = binding.advocateFeePKR.text.toString()
+                                binding.advocateFeePKR.setText("0")
+                            }
                             binding.wasiqaFeeRadioBtn -> {
                                 originalValues[checkbox] = binding.wasiqaFeeTaxPKR.text.toString()
                                 binding.wasiqaFeeTaxPKR.setText("0")
@@ -706,6 +738,7 @@ class Page3Activity : AppCompatActivity() {
                                 binding.seller236CRadioBtn -> binding.seller236CTaxPKR.setText(originalValue)
                                 binding.sellerNOCRadioBtn -> binding.sellerNOCTaxPKR.setText(originalValue)
                                 binding.transferFeeRadioBtn -> binding.transferFeeTaxPKR.setText(originalValue)
+                                binding.advocateRadioBtn -> binding.advocateFeePKR.setText(originalValue)
                                 binding.wasiqaFeeRadioBtn -> binding.wasiqaFeeTaxPKR.setText(originalValue)
                             }
                         }
@@ -804,6 +837,10 @@ class Page3Activity : AppCompatActivity() {
 
             binding.seller236CRadioBtn to (if (binding.seller236CRow.visibility == View.VISIBLE) {
                 binding.seller236CTaxPKR.text?.toString()?.trim()?.toIntOrNull() ?: 0
+            } else 0),
+
+            binding.advocateRadioBtn to (if (binding.advocateFeeRow.visibility == View.VISIBLE) {
+                binding.advocateFeePKR.text?.toString()?.trim()?.toIntOrNull() ?: 0
             } else 0),
 
             binding.sellerNOCRadioBtn to (binding.sellerNOCTaxPKR.text?.toString()?.trim()?.toIntOrNull() ?: 0),
